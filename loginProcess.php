@@ -43,6 +43,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     break;
                 default:
                 header("Location: index.php");
+                
+                    // De momento te  redirige a la página de inicio
                     exit;
                     break;
             }
