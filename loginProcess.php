@@ -46,7 +46,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 
                     // De momento te  redirige a la página de inicio
                     exit;
-                    break;
+                    // break;
             }
              
             exit;
