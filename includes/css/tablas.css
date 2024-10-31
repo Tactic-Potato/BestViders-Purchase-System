@@ -15,6 +15,7 @@
       padding: 0;
       table-layout: fixed;
       background-color:rgb(46, 46, 46);
+      box-shadow: 0 0.4rem 2rem rgba(255, 255, 255, 0.5);
   }	
   table caption {  
     font-size: 1.5em;
@@ -30,7 +31,7 @@
     background-color:rgb(19, 19, 19);
   }
   td:hover{
-    background-color: rgba(65, 160, 56, 0.548);
+    background-color: rgba(56, 156, 160, 0.548);
     border-radius: 20rem;
   }
   table td {
@@ -43,7 +44,7 @@
   .btn{
     color: white;
     margin: 1rem auto;
-    background-color: rgb(53, 158, 32);
+    background-color: rgb(32, 139, 158);
     border-radius: 3rem;
     border-color: rgba(0, 0, 0, 0);
     font-size: 2rem;
