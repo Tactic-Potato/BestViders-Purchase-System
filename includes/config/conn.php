@@ -1,14 +1,12 @@
-<?php
-$servername = "localhost";
-$username = "root"; 
-$password = ""; 
-$dbname = "bestviders";
+<?php 
+function connect(): mysqli {
+    $db = mysqli_connect("127.0.0.1", "root", "123_456", "BestViders");
 
-// Crear la conexión
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Verificar la conexión
-if ($conn->connect_error) {
-    die("Conexión fallida: " . $conn->connect_error);
+    if (!$db) {
+        die("Connection failed: " . mysqli_connect_error());
+    } else {
+        echo "Connected successfully";
+    }
+    return $db;
 }
 ?>
