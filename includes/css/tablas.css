@@ -1,0 +1,51 @@
+@font-face {
+    font-family: 'Mojangles';
+    src: url('fonts/minecraft_font.ttf');
+    font-weight: normal;
+    font-style: normal;
+  }table {
+    margin-top: 10rem;
+      width:80%;
+      border-collapse: collapse;
+      border-radius: 2rem;
+      border-color: rgba(0, 0, 0, 0);
+    font-family: 'Mojangles';
+      text-align: center;
+      color: rgb(231, 231, 231);
+      padding: 0;
+      table-layout: fixed;
+      background-color:rgb(46, 46, 46);
+  }	
+  table caption {  
+    font-size: 1.5em;
+    margin: .5em 0 .75em;
+  }
+  table tr {
+    padding: .35em;
+    border-color: rgba(0, 0, 0, 0);
+  }
+  table th{
+    font-size:2.3rem;
+    border-color: rgba(0, 0, 0, 0);
+    background-color:rgb(19, 19, 19);
+  }
+  td:hover{
+    background-color: rgba(65, 160, 56, 0.548);
+    border-radius: 20rem;
+  }
+  table td {
+    padding: 1rem;
+    border-color: rgba(0, 0, 0, 0);
+  }
+  table td .anchoColumna{
+      width:12rem;
+  }
+  .btn{
+    color: white;
+    margin: 1rem auto;
+    background-color: rgb(53, 158, 32);
+    border-radius: 3rem;
+    border-color: rgba(0, 0, 0, 0);
+    font-size: 2rem;
+    width: 14rem;
+  }
