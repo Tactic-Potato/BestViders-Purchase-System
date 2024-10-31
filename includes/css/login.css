@@ -1,0 +1,138 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%; 
+    background-image: url('/BestViders/includes/image/fondo.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed; 
+}
+
+#login-cont {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+#login-card {
+    background-color: #34989f;
+    padding: 2rem;
+    border-radius: 3rem; 
+    box-shadow: 0 4px 8px rgb(55, 127, 83);
+    text-align: center;
+    width: 90%; 
+    max-width: 700px; 
+}
+
+#h2 {
+    font-size: 2.5rem; 
+    color: #0044cc;
+    margin-bottom: 1rem;
+}
+
+.loginimg {
+    height: auto; 
+    width: 50%; 
+    max-width: 25rem; 
+    border-radius: 50%;
+}
+
+#imglogin {
+    margin-bottom: 1rem;
+}
+
+#columns {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 1rem 0; 
+}
+
+#columns label {
+    font-size: 2rem; 
+    color: #333;
+    margin: 0.5rem 1rem;
+}
+
+#columns input {
+    width: 100%;
+    padding: 0.5rem;
+    font-size: 1.5rem;
+    border: 0.1rem solid #ccc;
+    border-radius: 1.5rem; 
+}
+
+#btnlog {
+    text-align: center;
+    color: white;
+    margin: 10px auto;
+    background-color: rgb(18, 121, 88);
+    border-radius: 10px;
+    border-color: rgba(0, 0, 0, 0);
+    font-size: 1.5rem; 
+    padding: 0.5rem 1rem; 
+}
+
+#btnlog:hover {
+    background-color: rgb(5, 66, 46);
+}
+
+.logo {
+    position: fixed;
+    top: 1rem; 
+    left: 1rem; 
+    width: 10vh;
+    height: auto; 
+    z-index: 1000; 
+}
+
+
+@media (max-width: 768px) {
+    #h2 {
+        font-size: 2rem; /* Ajustar tamaño para pantallas más pequeñas */
+    }
+
+    #columns label {
+        font-size: 1.5rem; /* Ajustar tamaño de fuente */
+    }
+
+    #columns input {
+        font-size: 1rem; /* Ajustar tamaño de fuente */
+    }
+
+    #btnlog {
+        font-size: 1.2rem; /* Ajustar tamaño de fuente */
+    }
+
+    .loginimg {
+        width: 75%; /* Aumentar proporción en pantallas pequeñas */
+    }
+}
+
+@media (max-width: 480px) {
+    #h2 {
+        font-size: 1.5rem; /* Ajustar aún más para pantallas pequeñas */
+    }
+
+    #columns label {
+        font-size: 1.2rem; /* Ajustar tamaño de fuente */
+    }
+
+    #btnlog {
+        font-size: 1rem; /* Ajustar tamaño de fuente */
+    }
+
+    #login-card {
+        padding: 1rem; /* Reducir padding */
+    }
+}
