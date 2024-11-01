@@ -27,6 +27,7 @@
                         <td><?=$result['charge']?></td>
                         <td><?=$result['area']?></td>
                     </tr>
+                    <!-- COMMIT -->
                 <?php } mysqli_close($db); ?>
         </table>
     </center>
