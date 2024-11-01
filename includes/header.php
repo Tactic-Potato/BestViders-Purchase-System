@@ -25,7 +25,7 @@
                     </li>
                     <li><a>Orders</a>
                         <ul>
-                            <li><a href="order.php">Make an order</a></li>
+                            <li><a href="order.php">Orders</a></li>
                         </ul>
                     </li>
                 </ul>

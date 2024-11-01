@@ -1,15 +1,13 @@
 @font-face {
-    font-family: 'Mojangles';
+    font-family: 'minecraft_font';
     src: url('fonts/minecraft_font.ttf');
-    font-weight: normal;
-    font-style: normal;
   }table {
     margin-top: 10rem;
       width:80%;
       border-collapse: collapse;
       border-radius: 2rem;
       border-color: rgba(0, 0, 0, 0);
-    font-family: 'Mojangles';
+    font-family: 'minecraft_font';
       text-align: center;
       color: rgb(231, 231, 231);
       padding: 0;
