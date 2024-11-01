@@ -68,13 +68,14 @@
 
 /* Elementos dentro de los submenús */
 #menu ul ul li {
+    white-space: normal;
     float: none;
     border-radius: 2rem;
 }
 
 #menu ul ul a {
-    padding: 1rem;
-    font-size: 1.6rem;
+    padding: 0rem;
+    font-size: 1rem;
 }
 
 /* Submenús de tercer nivel */
