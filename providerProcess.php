@@ -1,6 +1,6 @@
 <?php
-include "includes/config/conn.php"
-$conn = conn();
+include "includes/config/conn.php";
+$conn = connect();
 
 $num = $_POST['num'];
 $fiscalName = $_POST['fiscalName'];
