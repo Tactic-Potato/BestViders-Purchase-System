@@ -148,8 +148,6 @@ BEGIN
     VALUES (NEW.num, Username, '1234567890');
 END $$
 
--- Asegúrate de tener registros en las tablas CHARGE, AREA, y un registro inicial en EMPLOYEE para el manager.
-
 -- Insertar un registro en la tabla CHARGE (si aún no tienes uno)
 INSERT INTO CHARGE (code, name) VALUES ('C001', 'Manager');
 
