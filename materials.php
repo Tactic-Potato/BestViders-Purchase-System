@@ -1,6 +1,5 @@
 <?php  include "includes/header.php";?>
 <div id="infMaterials">
-    <center>
         <table>
             <tr>
                 <th>Code</th>
@@ -29,6 +28,5 @@
                     </tr>
                 <?php } mysqli_close($db); ?>
         </table>
-    </center>
 </div>
 <?php include "includes/footer.php"?>

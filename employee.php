@@ -1,6 +1,5 @@
 <?php  include "includes/header.php";?>
 <div id="infEmployee">
-    <center>
         <table>
             <tr>
                 <th>Number</th>
@@ -30,6 +29,5 @@
                     <!-- COMMIT -->
                 <?php } mysqli_close($db); ?>
         </table>
-    </center>
 </div>
 <?php include "includes/footer.php"?>

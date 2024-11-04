@@ -1,6 +1,5 @@
 <?php  include "includes/header.php";?>
 <div id="infProviders">
-    <center>
         <table>
             <tr>
                 <th>Provider Number</th>
@@ -21,6 +20,5 @@
                     </tr>
                 <?php } mysqli_close($db); ?>
         </table>
-    </center>
 </div>
 <?php include "includes/footer.php"?>
