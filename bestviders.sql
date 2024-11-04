@@ -162,7 +162,7 @@ VALUES ('E0001', 'John', 'Doe', 'Smith', 'Active', '1234567890', 'john.doe@examp
 INSERT INTO EMPLOYEE (num, firstName, lastName, surname, status, numTel, email, manager, charge, area)
 VALUES ('E0002', 'Jane', 'Roe', 'Johnson', 'Active', '0987654321', 'jane.roe@example.com', 'E0001', 'C001', 'A001');
 
-select * from employee
+select * from EMPLOYEE
 
 INSERT INTO AREA (code, name, manager) VALUES ('A002', 'Purchasing', NULL);
 INSERT INTO AREA (code, name, manager) VALUES ('A003', 'Store', NULL);

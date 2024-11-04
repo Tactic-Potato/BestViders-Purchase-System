@@ -13,7 +13,7 @@
 
 #menu {
     margin-left: auto;
-    width:fit-content;
+    width: fit-content;
 }
 
 /* Menú principal */
@@ -35,6 +35,11 @@
     line-height: 0.5rem;
     padding: 1rem;
     color: var(--white);
+    transition: color 0.3s ease;
+}
+
+#menu ul a:hover {
+    color: rgba(255, 255, 255, 0.8); /* Efecto de desvanecimiento al pasar el ratón */
 }
 
 /* Elementos principales del menú */
@@ -45,6 +50,7 @@
     z-index: 1;
     flex: 1;
     text-align: center;
+    transition: background-color 0.3s ease; /* Transición en el cambio de color de fondo */
 }
 
 /* Cambio de fondo al hacer hover en los elementos principales */
@@ -53,7 +59,7 @@
     border-radius: 1.5rem;
 }
 
-/* Submenús ocultos inicialmente */
+/* Submenús ocultos inicialmente con animación */
 #menu ul ul {
     display: none;
     position: absolute;
@@ -64,6 +70,10 @@
     border-top-left-radius: 0rem;
     border-top-right-radius: 0rem;
     width: 100%;
+    opacity: 0; /* Inicialmente invisible */
+    transform: translateY(-2rem); /* Mover más hacia arriba para una transición suave */
+    transition: opacity 0.5s ease, transform 0.5s ease; /* Mayor duración en la transición */
+    z-index: 10;
 }
 
 /* Elementos dentro de los submenús */
@@ -75,7 +85,7 @@
 
 #menu ul ul a {
     padding: 0rem;
-    font-size: 1rem;
+    font-size: 1.3rem;
 }
 
 /* Submenús de tercer nivel */
@@ -87,6 +97,8 @@
 /* Mostrar submenús al hacer hover en el elemento principal */
 #menu ul li:hover > ul {
     display: flex;
+    opacity: 1; /* Hace visible el submenú */
+    transform: translateY(0); /* Devuelve el submenú a su posición original */
 }
 
 /* Media queries para pantallas más pequeñas */
