@@ -5,7 +5,7 @@ $conn = connect();
 $result = $conn->query("select max(num) as last_id from EMPLOYEE");
 $row = $result->fetch_assoc();
 $last_id = $row['last_id'] + 1;
-
+// nose wei
 $manager = "SELECT num, firstName FROM employee;";
 $mangers = mysqli_query($db, $query_charge);
 
