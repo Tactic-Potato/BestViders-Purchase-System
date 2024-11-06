@@ -37,6 +37,7 @@
                     <li><a>Employee</a>
                         <ul>
                             <li><a href="employee.php">View</a></li>
+                            <li><a href="createEmployee.php">Register</a></li>
                         </ul>
                     </li>
                 </ul>
