@@ -29,16 +29,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Redirect based on the area of work
         switch ($user['area']) {
             case 'A001':
-                header("Location: rhindex.php");
+                header("Location: index.php");
                 break;
             case 'A002':
                 header("Location: purchasingindex.php");
-                break;
-            case 'Supervisor':
-                header("Location: supervisorindex.php");
-                break;
-            case 'Store':
-                header("Location: storeindex.php");
                 break;
             default:
                 header("Location: error.php");

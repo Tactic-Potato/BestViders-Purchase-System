@@ -2,7 +2,7 @@
 include "includes/config/conn.php";
 $conn = connect(); 
 
-$result = $conn->query("select max(num) as last_id from provider");
+$result = $conn->query("select max(num) as last_id from PROVIDER");
 $row = $result->fetch_assoc();
 $last_id = $row['last_id'] + 1;
 ?>

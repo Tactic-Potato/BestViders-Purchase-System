@@ -29,7 +29,7 @@ h2 {
 
 footer {
     text-align: center;
-    margin-top: 25rem;
+    margin-top: 1rem;
 }
 footer p,
 footer a {
@@ -42,15 +42,15 @@ footer a {
     background-color: rgba(0, 225, 255, 0.192);
     width: fit-content;
     margin: 0 auto;
-    margin-top: 3rem;
+    margin-top: 1.6rem;
     padding: 1.5rem;
     border-radius: 1rem;
 }
 #home p {
-    font-size: 1.8rem;
+    font-size: 1.4rem;
 }
 #homeimage {
-    width: 40rem;
+    width: 35rem;
     margin-bottom: 0;
 }
 #infProviders {

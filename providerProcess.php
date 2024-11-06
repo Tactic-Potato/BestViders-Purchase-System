@@ -7,7 +7,7 @@ $fiscalName = $_POST['fiscalName'];
 $email = $_POST['email'];
 $numTel = $_POST['numTel'];
 
-$insert = "INSERT INTO provider (num, fiscalName, email, numTel) VALUES ('$num','$fiscalName', '$email','$numTel')";
+$insert = "INSERT INTO PROVIDER (num, fiscalName, email, numTel) VALUES ('$num','$fiscalName', '$email','$numTel')";
 
 if($conn->query($insert) === TRUE){
     echo '<script type="text/javascript"> alert("Registro Exitoso"); window.location.href="createProvider.php" </script>';

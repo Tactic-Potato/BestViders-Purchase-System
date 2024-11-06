@@ -15,27 +15,28 @@
                 <li><a href="index.php">Home</a></li>
                     <li><a>Providers</a>
                         <ul>
-                            <li><a href="providers.php">View Providers</a></li>
+                            <li><a href="providers.php">View</a></li>
+                            <li><a href="createProvider.php">Register</a></li>
                         </ul>
                     </li>
                     <li><a>Materials</a>
                         <ul>
-                            <li><a href="materials.php">Check Materials</a></li>
+                            <li><a href="materials.php">Check</a></li>
                         </ul>
                     </li>
                     <li><a>Orders</a>
                         <ul>
-                            <li><a href="order.php">Check Orders</a></li>
+                            <li><a href="order.php">Check</a></li>
                         </ul>
                     </li>
                     <li><a>Request</a>
                         <ul>
-                            <li><a href="request.php">Chech Requests</a></li>
+                            <li><a href="request.php">Check</a></li>
                         </ul>
                     </li>
                     <li><a>Employee</a>
                         <ul>
-                            <li><a href="employee.php">View employees</a></li>
+                            <li><a href="employee.php">View</a></li>
                         </ul>
                     </li>
                 </ul>

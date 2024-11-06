@@ -69,29 +69,27 @@
     padding: 0;
     border-top-left-radius: 0rem;
     border-top-right-radius: 0rem;
-    width: 100%;
+    width: fit-content; /* Ajuste al contenido para evitar columnas */
     opacity: 0; /* Inicialmente invisible */
     transform: translateY(-2rem); /* Mover más hacia arriba para una transición suave */
     transition: opacity 0.5s ease, transform 0.5s ease; /* Mayor duración en la transición */
     z-index: 10;
+    flex-direction: column; /* Alineación vertical de los submenús */
 }
 
 /* Elementos dentro de los submenús */
 #menu ul ul li {
     white-space: normal;
     float: none;
-    border-radius: 2rem;
+    border-radius: 0.5rem;
+    text-align: center;
 }
 
+/* Estilos de los enlaces en submenús */
 #menu ul ul a {
     padding: 0rem;
-    font-size: 1.3rem;
-}
-
-/* Submenús de tercer nivel */
-#menu ul ul ul {
-    top: 0;
-    left: 100%;
+    font-size: 2rem;
+    width: 10rem;
 }
 
 /* Mostrar submenús al hacer hover en el elemento principal */
