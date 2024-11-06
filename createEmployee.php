@@ -1,6 +1,6 @@
 <?php
 include "includes/config/conn.php";
-$conn = conn(); 
+$conn = connect(); 
 
 $result = $conn->query("select max(num) as last_id from provider");
 $row = $result->fetch_assoc();
