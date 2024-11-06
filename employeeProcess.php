@@ -16,17 +16,27 @@ $area = $_POST['area'];
 // comprueba que el campo este vacio y lo transforma en NULL
 $manager = empty($_POST['manager']) ? NULL : $_POST['manager'];
 
-$insert = "INSERT INTO employee (num, firstName, lastName, surname, numTel, email, manager, charge, area) 
+$insert = "INSERT INTO EMPLOYEE (num, firstName, lastName, surname, numTel, email, manager, charge, area) 
            VALUES ('$num', '$firstName', '$lastName', '$surname', '$numTel', '$email', " . ($manager === NULL ? 'NULL' : "'$manager'") . ", '$charge', '$area')"; //en caso de ser NULL comprueba y lo inserta como NULL
 
 
 
-if ($conn->query($insert) === TRUE) {
-    echo '<script type="text/javascript"> alert("Registro Exitoso"); window.location.href="createEmployee.php" </script>';
+if($conn->query($insert) === TRUE){
+    echo '<script type="text/javascript">
+            if (confirm("Registro Exitoso. ¿Desea registrar de nuevo?")) {
+                window.location.href = "createEmployee.php"; // Redirige a la página de registro
+            } else {
+                window.location.href = "index.php"; // Redirige al menú principal
+            }
+          </script>';
 } else {
-    echo '<script type="text/javascript"> alert("Error al registrar"); window.location.href="createEmployee.php" </script>';
+    echo '<script type="text/javascript">
+            alert("Error al registrar");
+            window.location.href = "createEmployee.php";
+          </script>';
 }
 
 $conn->close();
 ?>
 
+ 
