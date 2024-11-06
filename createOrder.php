@@ -2,8 +2,14 @@
 include "includes/config/conn.php";
 $conn = connect(); 
 
+$query_employee = "select num, firstName from employee";
+$employees = mysqli_query($conn, $query_employee);
 
+
+$query_rawMaterial = "select code, name from RAW_MATERIAL";
+$materials = mysqli_query($conn, $query_rawMaterial);
 ?>
+
 
 <link rel="stylesheet" href="incldues/css/forms.css">
 <nav id="Return"><a href="index.php"> Return </a></nav>
@@ -15,14 +21,18 @@ $conn = connect();
         <label>Description </label>
         <input type="textarea" name="descrp" id="descrp" required>
         
-        <label>Employee number</label>
-        <input type="number" name="employee" id="employee" required>
+        <select name="employee" id="employee" >
+                            <?php while($employee = mysqli_fetch_assoc($employees)): ?>
+                                <option value="<?php echo $employee['code']; ?>"><?php echo $employee['name']; ?></option>
+                            <?php endwhile; ?>
+        </select>
     
-        <label>Request</label>
-        <input type="number" name="request" id="request" required>
+        <select name="rawMaterial" id="rawMaterial" >
+                            <?php while($request = mysqli_fetch_assoc($resquests)): ?>
+                                <option value="<?php echo $rawMaterial['code']; ?>"><?php echo $rawMaterial['name']; ?></option>
+                            <?php endwhile; ?>
+        </select>
 
-        <label>Code  of the raw material</label>
-        <input type="text" name="rawMaterial" id="rawMaterial" required>
 
         <div>
             <button type="submit" class="button"> CREATE </button>
