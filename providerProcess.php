@@ -10,23 +10,13 @@ $numTel = $_POST['numTel'];
 $insert = "INSERT INTO PROVIDER (num, fiscalName, email, numTel) VALUES ('$num','$fiscalName', '$email','$numTel')";
 
 if($conn->query($insert) === TRUE){
-    echo '
-        <link rel="stylesheet" href="includes/css/forms.css">
-        <script type="text/javascript">
-            document.addEventListener("DOMContentLoaded", function() {
-                document.getElementById("customModal").style.display = "block";
-            });
-        </script>
-        
-        <!-- Modal HTML -->
-        <div id="customModal" class="modal">
-            <div class="modal-content">
-                <p>Registro Exitoso. ¿Desea registrar de nuevo?</p>
-                <button onclick="window.location.href=\'createProvider.php\'" class="modal-button">Sí</button>
-                <button onclick="window.location.href=\'index.php\'" class="modal-button">No</button>
-            </div>
-        </div>
-    ';
+    echo '<script type="text/javascript">
+            if (confirm("Registro Exitoso. ¿Desea registrar de nuevo?")) {
+                window.location.href = "createProvider.php"; // Redirige a la página de registro
+            } else {
+                window.location.href = "index.php"; // Redirige al menú principal
+            }
+          </script>';
 } else {
     echo '<script type="text/javascript">
             alert("Error al registrar");
