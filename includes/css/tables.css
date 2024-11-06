@@ -2,46 +2,56 @@
   font-family: 'ubuntu';
   src: url('fonts/Ubuntu-Bold.ttf');
 }
-
 table {
   margin: 10rem auto; /* Centrar la tabla horizontalmente */
   width: 80%;
-  border-collapse: collapse;
-  border-radius: 2rem;
-  border-color: rgba(0, 0, 0, 0);
+  border-collapse: separate; /* Cambia a 'separate' para que funcione el border-radius */
+  border-spacing: 0; /* Elimina el espacio entre celdas */
+  border-radius: 1.5rem;
+  border-color: transparent;
   font-family: 'ubuntu';
   text-align: center;
-  color: rgb(231, 231, 231);
-  padding: 0;
-  table-layout: fixed;
-  background-color: rgb(46, 46, 46);
-  box-shadow: 0 0.4rem 2rem rgba(255, 255, 255, 0.5);
+  color: #333333; /* Color de texto oscuro */
+  background-color: #e0f7fa; /* Fondo azul claro */
+  box-shadow: 0 0.4rem 1.5rem rgba(0, 0, 0, 0.3);
 }
 
 table caption {
   font-size: 1.5em;
   margin: .5em 0 .75em;
+  color: #0277bd; /* Azul oscuro para el título */
 }
 
 table tr {
   padding: .35em;
-  border-color: rgba(0, 0, 0, 0);
+  border-color: transparent;
 }
 
 table th {
   font-size: 2.3rem;
-  border-color: rgba(0, 0, 0, 0);
-  background-color: rgb(19, 19, 19);
+  background-color: #0288d1; /* Azul oscuro para los encabezados */
+  color: #ffffff;
+  padding: 1rem;
+}
+
+/* Aplica el borde redondeado solo a las esquinas superiores de los primeros encabezados */
+table tr:first-child th:first-child {
+  border-top-left-radius: 1.5rem;
+}
+
+table tr:first-child th:last-child {
+  border-top-right-radius: 1.5rem;
 }
 
 td:hover {
-  background-color: rgba(56, 156, 160, 0.548);
-  border-radius: 20rem;
+  background-color: rgba(3, 169, 244, 0.5); /* Azul claro translúcido al pasar el mouse */
+  border-radius: 0.5rem;
 }
 
 table td {
   padding: 1rem;
-  border-color: rgba(0, 0, 0, 0);
+  color: #01579b; /* Azul oscuro para el texto de las celdas */
+  border-color: transparent;
 }
 
 table td .anchoColumna {
@@ -49,11 +59,19 @@ table td .anchoColumna {
 }
 
 .btn {
-  color: white;
+  color: #ffffff;
   margin: 1rem auto;
-  background-color: rgb(32, 139, 158);
-  border-radius: 3rem;
-  border-color: rgba(0, 0, 0, 0);
-  font-size: 2rem;
+  background-color: #0288d1; /* Azul oscuro para los botones */
+  border-radius: 2rem;
+  border: none;
+  font-size: 1.8rem;
   width: 14rem;
+  text-align: center;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+  background-color: #0277bd; /* Azul ligeramente más oscuro al pasar el mouse */
 }

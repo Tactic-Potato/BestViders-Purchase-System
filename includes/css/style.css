@@ -62,7 +62,7 @@ footer a {
 
 #home {
     text-align: center;
-    background-color: var(--secondary4);
+    background-color:rgba(0, 111, 202, 0.493);
     width: fit-content;
     margin: 0 auto;
     margin-top: 1.6rem;

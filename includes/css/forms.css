@@ -1,0 +1,168 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #e6f1f8; /* Fondo similar al azul claro de la interfaz */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+h2 {
+    text-align: center;
+    font-size: 24px;
+    color: #003366; /* Azul oscuro */
+    margin-bottom: 20px;
+}
+
+#Return {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+}
+
+#Return a {
+    color: #003366;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+#Return a:hover {
+    text-decoration: underline;
+}
+
+/* Form Container */
+#formCont {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+#formCard {
+    background-color: #99c2e8; /* Azul claro de la interfaz */
+    padding: 20px 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+legend {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #003366;
+}
+
+label {
+    font-size: 14px;
+    color: #333;
+    display: block;
+    margin-top: 15px;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="email"] {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    border: 1px solid #004c99; /* Azul intermedio */
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 14px;
+}
+
+input[readonly] {
+    background-color: #d9ecf8; /* Azul muy claro */
+    color: #666;
+}
+
+/* Button Styles */
+.button {
+    background-color: #007acc; /* Azul similar al botón de navegación */
+    color: #ffffff;
+    border: none;
+    padding: 12px 20px;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.button:hover {
+    background-color: #005f99; /* Azul más oscuro en hover */
+}
+
+/* Fondo de la ventana modal */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+/* Fondo de la ventana modal */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+/* Contenedor de contenido de la ventana modal */
+.modal-content {
+    background-color: #f5faff;
+    width: 320px;
+    padding: 20px;
+    text-align: center;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    font-family: Arial, sans-serif;
+    color: #0277bd;
+}
+
+/* Texto del mensaje */
+.modal-content p {
+    font-size: 18px;
+    font-weight: bold;
+    color: #0277bd;
+    margin-bottom: 20px;
+}
+
+/* Botones de la ventana modal */
+.modal-button {
+    background-color: #0288d1;
+    color: #ffffff;
+    border: none;
+    padding: 10px 24px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    margin: 0 10px;
+    transition: background-color 0.3s ease;
+}
+
+.modal-button:hover {
+    background-color: #0277bd;
+}
