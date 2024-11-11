@@ -1,6 +1,6 @@
 <?php
 require '../includes/config/conn.php';
-
+ 
 $db = connect();
 
 // Consulta de empleados para asignación

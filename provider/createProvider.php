@@ -1,6 +1,9 @@
-<?php
+<?php 
 require '../includes/config/conn.php';
-
+if (!isset($_SESSION['num'])) {
+    header("Location: ../login.php");
+    exit();
+}
 $db = connect();
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {

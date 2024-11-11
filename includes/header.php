@@ -14,7 +14,7 @@ if (!isset($_SESSION['num'])) {
     <title>Index</title>
 </head>
     <section id="header">
-        <input id="btnlogout"type="button" value="Log out">    
+        <a href="logout.php" id="btnlogout">Log out</a> 
         <h1>BestViders</h1>
             <?php
         switch ($_SESSION['role']) {
