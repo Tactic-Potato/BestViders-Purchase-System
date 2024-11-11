@@ -4,19 +4,18 @@
     <title>Store</title>
 </head>
 <body>
-    <section id="header"> 
-        <h1>BestViders</h1> 
+    <section id="header">
         <div id="menu">
         <ul>
             <li><a href="Stindex.php">Home</a></li>
             <li><a>Reports</a>
                 <ul>
-                    <li><a href="providers.php">Generate Raw-Material Report</a></li>
+                    <li><a href="../receptions/createReception.php">Generate Raw-Material Report</a></li>
                 </ul>
             </li>
             <li><a>History</a>
                 <ul>
-                    <li><a href="providers.php">Reports History</a></li>
+                    <li><a href="../receptions/Wreception.php">Reports History</a></li>
                 </ul>
             </li>
         </ul>
