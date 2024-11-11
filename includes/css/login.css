@@ -12,7 +12,7 @@ body {
     background-image: url('/includes/images/fondo.jpg');
     background-size: cover;
     background-position: center;
-    background-repeat: no-repeat; 
+    background-repeat: no-repeat;
     background-attachment: fixed;
     backdrop-filter: blur(8px);
     overflow: hidden;
@@ -28,12 +28,12 @@ body {
 
 #login-card {
     background-color: white;
-    padding: 1.5rem;
+    padding: 2rem;
     border-radius: 1.5rem;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     text-align: center;
-    width: 80%;
-    max-width: 350px;
+    width: 90%; /* Adjusted width */
+    max-width: 400px; /* Increased max-width */
 }
 
 #h2 {
@@ -52,27 +52,29 @@ body {
 
 #formLogin {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
     gap: 1rem;
 }
 
 #columns {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    width: 45%;
+    align-items: flex-start; /* Align labels and inputs to the left */
+    width: 100%; /* Full width */
+    max-width: 300px; /* Limit the width */
 }
 
 #columns label {
-    font-size: 0.9rem;
+    font-size: 1rem;
     color: #666;
     margin-bottom: 0.3rem;
 }
 
 #columns input {
     width: 100%;
-    padding: 0.5rem;
-    font-size: 0.9rem;
+    padding: 0.7rem;
+    font-size: 1rem;
     border: 1px solid #ccc;
     border-radius: 1rem;
     text-align: center;

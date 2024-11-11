@@ -1,0 +1,101 @@
+:root {
+  --primary: #ffffff;
+  --secondary1: #00171F;
+  --secondary2: #003459;
+  --secondary3: #007EA7;
+  --secondary4: #00A8E8;
+  --black: #000000;
+  --input-bg: #f3f3f3;
+  --input-border: #d1d1d1;
+}
+
+/* Estilos generales */
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-image: url('/includes/images/fondo.jpg'); /* Asegúrate de que la imagen esté en la ruta correcta */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  backdrop-filter: blur(8px);
+  overflow: hidden;
+}
+
+#Return {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 1;
+}
+
+#Return a {
+  font-size: 1.4rem;
+  padding: 0.8rem 1.5rem;
+  color: var(--primary);
+  background-color: var(--secondary4);
+  text-decoration: none;
+  border-radius: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+#Return a:hover {
+  background-color: var(--secondary3);
+  color: var(--primary);
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Estructura de la tabla */
+#tableContainer {
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+  width: 90%;
+}
+
+#tableCard {
+  background-color: var(--secondary1);
+  border-radius: 1.5rem;
+  padding: 2rem;
+  width: 100%;
+  max-width: 1200px;
+  color: var(--primary);
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+h2 {
+  text-align: center;
+  color: var(--secondary4);
+  margin-bottom: 1.5rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  color: #333;
+  text-align: center;
+  font-family: 'Ubuntu', sans-serif;
+  background-color: #e0f7fa;
+}
+
+table th, table td {
+  padding: 1.2rem;
+  font-size: 1rem;
+}
+
+table th {
+  background-color: #0288d1;
+  color: #ffffff;
+  font-weight: bold;
+}
+
+table tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+table tr:hover {
+  background-color: rgba(3, 169, 244, 0.5);
+}

@@ -1,5 +1,4 @@
 <?php
-include "includes/loginh.php";
 require 'includes/config/conn.php';
 session_start();
 
@@ -10,8 +9,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     $query = "
         SELECT E.num, E.firstName, E.lastName, E.area, U.password 
-        FROM EMPLOYEE AS E
-        JOIN USER AS U ON E.num = U.num
+        FROM employee AS E
+        JOIN user AS U ON E.num = U.num
         WHERE E.email = '$email' AND U.password = '$password'
     ";
 
@@ -21,25 +20,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $user = mysqli_fetch_assoc($result);
         $_SESSION['user_name'] = $user['firstName'] . ' ' . $user['lastName'];
         $_SESSION['num'] = $user['num'];
+        $_SESSION['role'] = $user['area'];  // Guardar el rol en la sesión
         
         if ($password === "1234567890") {
             header("Location: changepassword.php");
             exit();
         }
-        switch ($user['area']) {
-            case 'A001':
-                header("Location: index.php");
-                break;
-            case 'A002':
-                header("Location: purchasingindex.php");
-                break;
-            case 'A003':
-                header("Location: supervisorindex.php");
-                break;
-            case 'A004':
-                header("Location: storeindex.php");
-                break;
-        }
+
+        // Redirigir a un solo archivo index.php
+        header("Location: index.php");
         exit();
     } else {
         $error = "Incorrect email or password.";
@@ -49,6 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 
 <section id="login-cont">
+    <link rel="stylesheet" href="includes/css/login.css">
     <div id="login-card">
         <h2 id="h2">BESTVIDERS</h2>
         <div id="imglogin"> 

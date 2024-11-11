@@ -14,7 +14,7 @@ body {
     background-position: center;
     background-repeat: no-repeat;
     background-attachment: fixed;
-    backdrop-filter: blur(0.8rem);
+    backdrop-filter: blur(8px);
     overflow: hidden;
 }
 
@@ -30,10 +30,10 @@ body {
     background-color: white;
     padding: 1.5rem;
     border-radius: 1.5rem;
-    box-shadow: 0 0.4rem 1rem rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     text-align: center;
     width: 80%;
-    max-width: 35rem;
+    max-width: 350px;
 }
 
 #logo-text {
@@ -44,8 +44,8 @@ body {
 }
 
 .loginimg {
-    height: 6rem;
-    width: 6rem;
+    height: 60px;
+    width: 60px;
     border-radius: 50%;
     margin-bottom: 1rem;
 }
@@ -74,7 +74,7 @@ body {
     width: 80%;
     padding: 0.5rem;
     font-size: 0.9rem;
-    border: 0.1rem solid #ccc;
+    border: 1px solid #ccc;
     border-radius: 1rem;
     text-align: center;
 }

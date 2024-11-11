@@ -3,132 +3,91 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.1rem;
-    padding-left: 1rem;
-    padding-right: 1rem;
-    background-color: rgb(180, 205, 226); 
-    border-radius: 0.3rem;
-    flex-wrap: wrap; 
+    padding: 0rem;
+    padding-left: 3rem;
+    background-color: rgb(19, 19, 19);
+	border-radius: 0.3rem;
 }
 
 #menu {
     margin-left: auto;
-    width: fit-content;
-    font-family: 'Ubuntu';
+    width: 45%;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
 /* Menú principal */
 #menu ul {	
-    list-style: none;
-    position: relative;
-    display: flex;
-    margin: 0;
-    padding: 0;
-    background-color: rgb(60, 178, 194);
-    border-radius: 1.5rem;
+	list-style: none;
+	position: relative;
+	display: flex; /* Cambiado para que los elementos estén en una fila */
+	margin: 0;
+	padding: 0;
+	background-color: rgb(60, 178, 194);
+	border-radius: 1.5rem;
+    border-top-right-radius: 0rem;
+    border-bottom-right-radius: 0rem;
 }
 
 /* Estilos de los enlaces del menú */
 #menu ul a {
-    display: block;
-    text-decoration: none;
-    font-size: 2rem;
-    line-height: 0.5rem;
-    padding: 1rem;
-    color: var(--white);
-    transition: color 0.3s ease;
-}
-
-#menu ul a:hover {
-    color: rgba(255, 255, 255, 0.8); /* Efecto de desvanecimiento al pasar el ratón */
+	display: block;
+	text-decoration: none;
+	font-size: 2rem;
+	line-height: 0.5rem;
+	padding: 1rem;
+	color: var(--white);
 }
 
 /* Elementos principales del menú */
 #menu ul li {
-    position: relative;
-    margin: 0;
-    padding: 2rem 0;
-    z-index: 1;
-    flex: 1;
+	position: relative;
+	margin: 0;
+	padding: 2rem 0;
+	z-index:1;
+    flex:1;
     text-align: center;
-    transition: background-color 0.3s ease; /* Transición en el cambio de color de fondo */
 }
 
 /* Cambio de fondo al hacer hover en los elementos principales */
 #menu ul li:hover {
-    background: rgb(68, 202, 219);
+	background: rgb(68, 202, 219);
     border-radius: 1.5rem;
+    /* border-bottom-left-radius: 0rem;
+    border-bottom-right-radius: 0rem; */
 }
 
-/* Submenús ocultos inicialmente con animación */
+/* Submenús ocultos inicialmente */
 #menu ul ul {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    background: rgb(68, 202, 219);
-    padding: 0;
+	display: none;
+	position: absolute;
+	top: 100%;
+	left: 0;
+	background: rgb(68, 202, 219);
+	padding: 0;
     border-top-left-radius: 0rem;
     border-top-right-radius: 0rem;
-    width: fit-content; /* Ajuste al contenido para evitar columnas */
-    opacity: 0; /* Inicialmente invisible */
-    transform: translateY(-2rem); /* Mover más hacia arriba para una transición suave */
-    transition: opacity 0.5s ease, transform 0.5s ease; /* Mayor duración en la transición */
-    z-index: 10;
-    flex-direction: column; /* Alineación vertical de los submenús */
+    width: 100%;
 }
-
 /* Elementos dentro de los submenús */
 #menu ul ul li {
-    white-space: normal;
-    float: none;
-    border-radius: 0.5rem;
-    text-align: center;
+	float: none;
+    border-top-left-radius: 0rem;
+    border-top-right-radius: 0rem;
+    border-radius: 2rem;
 }
 
-/* Estilos de los enlaces en submenús */
 #menu ul ul a {
-    padding: 0rem;
-    font-size: 2rem;
-    width: 10rem;
+	padding: 1rem;
+	font-size: 1.6rem;
+}
+
+/* Submenús de tercer nivel */
+#menu ul ul ul {
+	top: 0;
+	left: 100%;
 }
 
 /* Mostrar submenús al hacer hover en el elemento principal */
 #menu ul li:hover > ul {
-    display: flex;
-    opacity: 1; /* Hace visible el submenú */
-    transform: translateY(0); /* Devuelve el submenú a su posición original */
-}
-
-/* Media queries para pantallas más pequeñas */
-@media (max-width: 768px) {
-    #header {
-        flex-direction: column;
-        align-items: flex-start;
-        padding: 1rem;
-    }
-
-    #menu {
-        width: 100%;
-    }
-
-    #menu ul {
-        flex-direction: column; /* Cambia el menú a columna en pantallas pequeñas */
-        width: 100%;
-    }
-
-    #menu ul li {
-        padding: 0.1rem 0; /* Ajusta el padding para pantallas pequeñas */
-    }
-
-    #menu ul a {
-        font-size: 1.8rem; /* Reduce el tamaño de fuente para que encaje mejor en pantallas pequeñas */
-    }
-}
-
-@media (max-width: 480px) {
-    #menu ul a {
-        font-size: 1.6rem;
-        padding: 0.8rem; /* Reduce aún más el padding en pantallas muy pequeñas */
-    }
+	display:flex;
 }

@@ -1,5 +1,4 @@
 <?php
-include "includes/changecss.php";
 require 'includes/config/conn.php';
 session_start();
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -8,26 +7,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $confirmPassword = $_POST['confirmPassword'];
     $num = $_SESSION['num'];
     if ($newPassword === $confirmPassword) {
-        $query = "UPDATE USER SET password = '$newPassword' WHERE num = '$num'";
+        $query = "UPDATE user SET password = '$newPassword' WHERE num = '$num'";
         $result = mysqli_query($db, $query);
         if ($result) {
-            $query = "SELECT area FROM EMPLOYEE WHERE num = '$num'";
-            $areaResult = mysqli_query($db, $query);
-            $user = mysqli_fetch_assoc($areaResult);
-            switch ($user['area']) {
-                case 'A001':
-                    header("Location: rhindex.php");
-                    break;
-                case 'A002':
-                    header("Location: purchasingindex.php");
-                    break;
-                case 'A003':
-                    header("Location: supervisorindex.php");
-                    break;
-                case 'A004':
-                    header("Location: storeindex.php");
-                    break;
-            }
+            echo "<script>
+                    alert('Cambio de contraseña exitoso. Favor de volver a iniciar sesión.');
+                    window.location.href = 'login.php';
+                  </script>";
+            header("Location: login.php");
             exit();
         } else {
             $error = "There was an error changing the password. Please try again.";
@@ -39,16 +26,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 <section id="login-cont">
+    <link rel="stylesheet" href="includes/css/change.css">
     <div id="login-card">
         <h2 id="logo-text">BESTVIDERS</h2>
-        <div id="imglogin">
+        <div id="imglogin"> 
             <img class="loginimg" src="includes/images/logo.jpeg" alt="User icon"/>
         </div>
-
         <?php if (isset($error)) : ?>
             <p class="error-message"><?= $error ?></p>
         <?php endif; ?>
-
         <form method="POST" action="">
             <div id="formLogin">
                 <div class="input-group">

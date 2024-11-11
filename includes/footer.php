@@ -1,10 +1,8 @@
-    </body>
-        <footer>
-            <nav>
-                <a href="providers.php">Providers</a>
-                <a href="materials.php">Raw Materials</a>
-                <a href="order.php">Orders</a>
-            </nav>
-            <p>All rights reserved to the development team: BestViders</p>
-        </footer>
+</body>
+<footer>
+    <div class="footer-content">
+        <p>&copy; 2023 All Rights Reserved By: <span class="footer-brand">BitLab Development</span></p>
+        <p>Contact us: <a href="mailto:support@bestviders.com">support@bestviders.com</a></p>
+    </div>
+</footer>
 </html>
