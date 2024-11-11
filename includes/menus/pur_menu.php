@@ -15,7 +15,7 @@
             <li><a>Request</a>
                 <ul>
                     <li><a href="../request/createRequest.php">Generate Request</a></li> 
-                    <li><a href="WRequest.php">Request History</a></li>
+                    <li><a href="../request/WRequest.php">Request History</a></li>
                 </ul>
             </li>
             <li><a>Providers</a>

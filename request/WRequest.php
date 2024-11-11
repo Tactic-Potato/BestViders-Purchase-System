@@ -11,7 +11,7 @@
             <th>Employee</th>
             <th>Provider</th>
             <th>Materials Requested</th>
-        </tr>
+        </tr> 
         <?php 
             include "../includes/config/conn.php";
             $db = connect();

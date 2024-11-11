@@ -5,18 +5,20 @@
         <div id="infRequests">
             <table>
                 <tr>
-                    <th>Request Number</th>
-                    <th>Request Date</th>
+                    <th>Reception Number</th>
                     <th>Status</th>
+                    <th>Reception Date</th>
+                    <th>Observations</th>
+                    <th></th>
                     <th>Employee</th>
                     <th>Provider</th>
-                    <th>Materials Requested</th>
+                    <th>Material</th>
                 </tr>
                 <?php 
                     include "../includes/config/conn.php";
                     $db = connect();
                     $query = mysqli_query($db, "
-                        SELECT r.num AS requestNum, r.requestDate, r.status,
+                        SELECT r.num AS recepNum, r.status, r.datereception, r.missing
                             e.firstName AS employeeFirstName, e.lastName AS employeeLastName, 
                             p.fiscalName AS providerName,
                             GROUP_CONCAT(CONCAT(m.name, ' (Qty: ', rm.cant, ')') SEPARATOR ', ') AS materials
