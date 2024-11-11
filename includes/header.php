@@ -14,7 +14,8 @@ if (!isset($_SESSION['num'])) {
     <title>Index</title>
 </head>
     <section id="header">
-            <h1>BestViders</h1>
+        <input id="btnlogout"type="button" value="Log out">    
+        <h1>BestViders</h1>
             <?php
         switch ($_SESSION['role']) {
             case 'RH':
