@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div id="formLogin">
                 <div class="input-group">
                     <label for="newPassword">New Password</label>
-                    <input type="password" id="newPassword" name="newPassword" placeholder="Enter your new password" required>
+                    <input type="password" id="newPassword" name="newPassword" placeholder="Enter your new password" required minlength = "10">
                 </div>
                 <div class="input-group">
                     <label for="confirmPassword">Confirm Password</label>
