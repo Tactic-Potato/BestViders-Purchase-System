@@ -67,19 +67,6 @@
         num INT PRIMARY KEY AUTO_INCREMENT,
         fiscal_name VARCHAR(100) NOT NULL,
         email VARCHAR(100) NULL,
-        phone_number VARCHAR(20) NULL,
-        status VARCHAR(10),
-        FOREIGN KEY (status) REFERENCES status_provider(code)
-    );
-
-    -- 5. Raw Material
-    CREATE TABLE raw_material (
-        code VARCHAR(10) PRIMARY KEY,
-        price DECIMAL(12, 2) NOT NULL,
-        name VARCHAR(100) NOT NULL,
-        description TEXT NULL,
-        weight DECIMAL(12, 2) NULL,
-        stock INT NULL,
         category_code VARCHAR(10),
         FOREIGN KEY (category_code) REFERENCES category(code)
     );
@@ -176,6 +163,19 @@
         FOREIGN KEY (request_num) REFERENCES request(num),
         FOREIGN KEY (status_code) REFERENCES status_reception(code)
     );
+        phone_number VARCHAR(20) NULL,
+        status VARCHAR(10),
+        FOREIGN KEY (status) REFERENCES status_provider(code)
+    );
+
+    -- 5. Raw Material
+    CREATE TABLE raw_material (
+        code VARCHAR(10) PRIMARY KEY,
+        price DECIMAL(12, 2) NOT NULL,
+        name VARCHAR(100) NOT NULL,
+        description TEXT NULL,
+        weight DECIMAL(12, 2) NULL,
+        stock INT NULL,
 
     DELIMITER $$
     CREATE TRIGGER CreateUser
@@ -287,3 +287,67 @@
         user AS U 
     ON 
         E.num = U.num;
+
+/* ******NUEVOS INSERTS****** */
+-- Status Request
+INSERT INTO status_request (code, name) VALUES
+('PEND', 'Pending'),
+('APRV', 'Approved'),
+('REJT', 'Rejected');
+
+-- Status Order
+INSERT INTO status_order (code, name, motive) VALUES
+('CRTD', 'Created', NULL),
+('PROC', 'In Process', NULL),
+('RCVD', 'Received', 'Received successfully.'),
+('REJT', 'Rejected', NULL);
+
+-- Status Reception
+INSERT INTO status_reception (code, name) VALUES
+('PEND', 'Pending'),
+('CMPL', 'Completed');
+
+-- Status Provider
+INSERT INTO status_provider (code, name, motive) VALUES
+('ACTV', 'Active', NULL),
+('INAC', 'Inactive', 'No recent activity.');
+
+-- Category
+INSERT INTO category (code, name, description) VALUES
+('CAP', 'Capacitors', 'Components used for storing electrical energy.'),
+('CON', 'Connectors', 'Various connectors for PCBs and circuits.'),
+('IC', 'Integrated Circuits', 'Semiconductor chips for various functionalities.'),
+('PCB', 'Printed Circuit Boards', 'Base material for creating circuit boards.'),
+('RES', 'Resistors', 'Components used to limit the flow of current.');
+
+-- Area
+INSERT INTO area (code, name, manager_num)
+VALUES
+    ('RH', 'Human Resources', NULL),
+    ('PR', 'Purchasing Area', NULL),
+    ('ST', 'Store', NULL);
+
+-- Charge
+INSERT INTO charge (code, name) VALUES
+('MNGR', 'Manager'),
+('WRKR', 'Worker');
+
+-- Employee
+INSERT INTO employee (first_name, last_name, surname, status, phone_number, email, charge_code, area_code) VALUES
+('Carlos', 'Gómez', 'Pérez', TRUE, '5551234567', 'carlos.gomez@bestviders.com', 'MNGR', 'RH'),
+('Ana', 'Martínez', NULL, TRUE, '5552345678', 'ana.martinez@bestviders.com', 'WRKR', 'ST'),
+('Luis', 'Fernández', 'López', TRUE, '5553456789', 'luis.fernandez@bestviders.com', 'WRKR', 'PR');
+
+-- Provider
+INSERT INTO provider (fiscal_name, email, category_code) VALUES
+('Supplier A', 'supplier.a@example.com', 'CAP'),
+('Supplier B', 'supplier.b@example.com', 'CON');
+
+-- Raw Material
+INSERT INTO raw_material (code, price, name, description, weight, stock, category_code) VALUES
+('CAP003', 0.10, 'Ceramic Capacitor 10uF', 'General purpose capacitor for filtering', 0.00, 1000, 'CAP'),
+('CON005', 0.50, 'USB Connector', 'Standard USB connector type-A', 0.01, 300, 'CON'),
+('IC0002', 3.00, 'Microcontroller', '8-bit Microcontroller for embedded applications', 0.01, 200, 'IC'),
+('PCB001', 1.50, 'PCB 2-layer', 'Standard 2-layer PCB for general applications', 0.05, 500, 'PCB'),
+('RES004', 0.05, 'Resistor 100 Ohm', 'General purpose resistor 100 Ohm 1/4W', 0.00, 1500, 'RES');
+
