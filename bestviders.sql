@@ -200,6 +200,7 @@
     END $$
 
     DELIMITER $$
+    DROP TRIGGER UpdateOrderStatus
     CREATE TRIGGER UpdateOrderStatus
     AFTER INSERT ON request
     FOR EACH ROW
@@ -212,6 +213,7 @@
     END $$
 
     DELIMITER $$
+    DROP TRIGGER UpdateRequestStatus
     CREATE TRIGGER UpdateRequestStatus
     BEFORE INSERT ON request
     FOR EACH ROW
@@ -220,6 +222,7 @@
     END $$
 
     DELIMITER $$
+    DROP TRIGGER AutoRequest
     CREATE TRIGGER AutoRequest
     BEFORE INSERT ON request
     FOR EACH ROW
@@ -240,6 +243,7 @@
 
 
     DELIMITER $$
+    DROP TRIGGER UpdateRequestSubtotal
     CREATE TRIGGER UpdateRequestSubtotal
     AFTER INSERT ON request_material
     FOR EACH ROW
@@ -351,3 +355,43 @@ INSERT INTO raw_material (code, price, name, description, weight, stock, categor
 ('PCB001', 1.50, 'PCB 2-layer', 'Standard 2-layer PCB for general applications', 0.05, 500, 'PCB'),
 ('RES004', 0.05, 'Resistor 100 Ohm', 'General purpose resistor 100 Ohm 1/4W', 0.00, 1500, 'RES');
 
+-- Order
+INSERT INTO orders (description, employee_num, raw_material_code, status_code) VALUES 
+('Order for 100 Ceramic Capacitors', 1, 'CAP003', 'CRTD'), 
+('Order for 50 USB Connectors', 5, 'CON005', 'PROC'),
+('Order for 200 Microcontrollers', 6, 'IC0002', 'RCVD');
+
+-- Request
+INSERT INTO request (subtotal, request_date, employee_num, provider_num, order_num, status_code) VALUES 
+(50.00, '2024-11-15 10:00:00', 1, 1, 1, 'PEND'),
+(100.00, '2024-11-16 11:00:00', 5, 2, 2, 'APRV'),
+(150.00, '2024-11-17 12:00:00', 6, 1, 3, 'REJT');
+/* pendiente */
+
+-- Request_material
+INSERT INTO request_material (request_num, product_code, quantity, amount) VALUES
+(1, 'CAP003', 100, 10.00),
+(2, 'CON005', 50, 25.00),
+(3, 'IC0002', 200, 600.00);
+
+-- Invoice
+INSERT INTO invoice (folio, amount, pay_date, subtotal, request_num, provider_num) VALUES
+('INV001', 55.00, '2024-11-18 14:00:00', 50.00, 1, 1),
+('INV002', 125.00, '2024-11-19 15:00:00', 100.00, 2, 2);
+
+-- Budget
+INSERT INTO budget (code, initial_amount, remaining_budget, budget_date, area_code) VALUES
+('BUD001', 5000.00, 4500.00, '2024-11-01', 'RH'),
+('BUD002', 3000.00, 2500.00, '2024-11-01', 'PR'),
+('BUD003', 2000.00, 1500.00, '2024-11-01', 'ST');
+
+-- Area Order
+INSERT INTO area_order (area_code, order_num, quantity) VALUES
+('RH', 1, 100),
+('PR', 2, 50),
+('ST', 3, 200);
+
+-- Reception
+INSERT INTO reception (reception_date, observations, reception_number, missing_quantity, employee_num, request_num, status_code)  VALUES
+('2024-11-18 10:30:00', 'All items received successfully.', 1, 0, 1, 1, 'CMPL'),
+('2024-11-19 11:00:00', 'Missing 10 connectors.', 2, 10, 5, 2, 'PEND');
