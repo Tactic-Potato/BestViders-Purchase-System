@@ -22,10 +22,10 @@ if (!$infoProvider) {
             <input type="number" name="num" id="num" value="<?=$infoProvider['num']?>" readonly>
             <input type="text" name="fiscalName" id="fiscalName" value="<?=$infoProvider['fiscalName']?>" readonly>
             <label>Phone Number</label>
-            <input type="text" name="numTel" id="numTel" value="<?=$infoProvider['numTel']?>">
+            <input type="text" name="numTel" id="numTel" placeholder="<?=$infoProvider['numTel']?>">
 
             <label>Email</label>
-            <input type="email" name="email" id="email" value="<?=$infoProvider['email']?>">
+            <input type="email" name="email" id="email" placeholder ="<?=$infoProvider['email']?>">
 
             <div>
                 <button type="submit" class="button">MODIFY</button>
