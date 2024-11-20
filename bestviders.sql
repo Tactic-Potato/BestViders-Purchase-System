@@ -224,10 +224,10 @@
     BEFORE INSERT ON request
     FOR EACH ROW
     BEGIN
+        DECLARE total DECIMAL(10, 2) DEFAULT 0.0;
+
         SET NEW.status_code = 'In Progress';
         SET NEW.request_date = CURDATE();
-
-        DECLARE total DECIMAL(10, 2) DEFAULT 0.0;
 
         SELECT SUM(RM.quantity * M.price) INTO total
         FROM request_material RM
@@ -236,6 +236,8 @@
 
         SET NEW.subtotal = total;
     END $$
+    DELIMITER ;
+
 
     DELIMITER $$
     CREATE TRIGGER UpdateRequestSubtotal
