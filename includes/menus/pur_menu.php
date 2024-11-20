@@ -1,28 +1,38 @@
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Purchasing Department</title>
-</head>
-<body>
-    <section id="header">
-        <div id="menu">
-        <ul> 
-            <li><a>Reports</a>
-                <ul>
-                    <li><a href="../order/WOrder.php">Raw-Material Orders</a></li>
+<div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+    <ul class="navbar-nav">
+        <!-- Dropdown Orders -->
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="reportsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Reports
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="reportsDropdown">
+                <li><a class="dropdown-item" href="order/WOrder.php">Raw-Material Reports</a></li>
+            </ul>
+        </li>
+        <!-- Dropdown Providers -->
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="requestDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Request
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="requestDropdown">
+            <li><a class="dropdown-item" href="request/createRequest.php">Generate Request</a></li>
+            <li><a class="dropdown-item" href="request/WRequest.php">Request History</a></li>
+            </ul>
+        </li>
+        <!-- Dropdown Employees -->
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="providersDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Providers
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="providersDropdown">
+                <li><a class="dropdown-item" href="provider/WProvider.php">View Providers</a></li>
                 </ul>
-            </li>
-            <li><a>Request</a>
-                <ul>
-                    <li><a href="../request/createRequest.php">Generate Request</a></li> 
-                    <li><a href="../request/WRequest.php">Request History</a></li>
-                </ul>
-            </li>
-            <li><a>Providers</a>
-                <ul>
-                <li><a href="../provider/WProvider.php">Check Providers</a></li>
-                </ul>
-            </li>
-        </ul>
-    </div>
-</section>
+        </li>
+                <!-- Logout Button -->
+                <li class="nav-item">
+            <a class="nav-link btn btn-outline-danger ms-3" href="logout.php" role="button">
+                Logout
+            </a>
+        </li>
+    </ul>
+</div>

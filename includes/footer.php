@@ -1,8 +1,10 @@
+<footer class="bg-dark text-white py-3 mt-auto">
+        <div class="container text-center">
+            <p class="mb-0">&copy; 2023 All Rights Reserved By: <span class="fw-bold">BitLab Development</span></p>
+            <p class="mb-0">Contact us: <a href="mailto:support@bestviders.com" class="text-white">support@bestviders.com</a></p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-<footer>
-    <div class="footer-content">
-        <p>&copy; 2023 All Rights Reserved By: <span class="footer-brand">BitLab Development</span></p>
-        <p>Contact us: <a href="mailto:support@bestviders.com">support@bestviders.com</a></p>
-    </div>
-</footer>
 </html>

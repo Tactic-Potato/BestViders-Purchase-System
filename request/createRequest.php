@@ -1,6 +1,6 @@
 <?php
 require '../includes/config/conn.php';
- 
+
 $db = connect();
 
 // Consulta de empleados para asignación
@@ -27,8 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // Insertar la solicitud en la tabla REQUEST
     $insert_query = "INSERT INTO request (status, employee, provider, `order`, requestDate)
-                 VALUES ('In Progress', '$employee', '$provider', NULLIF('$order', ''), CURDATE())";
-
+                     VALUES ('In Progress', '$employee', '$provider', NULLIF('$order', ''), CURDATE())";
 
     if (mysqli_query($db, $insert_query)) {
         $request_id = mysqli_insert_id($db);

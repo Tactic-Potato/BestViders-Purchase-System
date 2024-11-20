@@ -1,21 +1,9 @@
-:root {
-  --primary: #ffffff;
-  --secondary1: #00171F;
-  --secondary2: #003459;
-  --secondary3: #007EA7;
-  --secondary4: #00A8E8;
-  --black: #000000;
-  --input-bg: #f3f3f3;
-  --input-border: #d1d1d1;
-}
-
-/* Estilos generales */
 body {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-image: url('/includes/images/fondo.jpg'); /* Asegúrate de que la imagen esté en la ruta correcta */
+  background-image: url('includes\images\fondo.jpg'); /* Asegúrate de que la imagen esté en la ruta correcta */
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -71,31 +59,58 @@ h2 {
   margin-bottom: 1.5rem;
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 1rem;
-  color: #333;
-  text-align: center;
-  font-family: 'Ubuntu', sans-serif;
-  background-color: #e0f7fa;
+.hover-effect {
+  transition: transform 0.2s ease;
 }
-
-table th, table td {
-  padding: 1.2rem;
-  font-size: 1rem;
+.hover-effect:hover {
+  transform: translateY(-2px);
 }
-
-table th {
-  background-color: #0288d1;
-  color: #ffffff;
-  font-weight: bold;
+.custom-table-container {
+  max-width: 1000px; /* Adjust based on red lines in image */
+  margin: 0 auto;
+  background: white;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.1);
 }
-
-table tr:nth-child(even) {
-  background-color: #f2f2f2;
+.table {
+  margin-bottom: 0;
 }
-
-table tr:hover {
-  background-color: rgba(3, 169, 244, 0.5);
+.table thead th {
+  background-color: #212529;
+  color: white;
+  border: none;
+  padding: 1rem;
+}
+.table tbody tr:nth-child(even) {
+  background-color: #f8f9fa;
+}
+.table tbody tr:nth-child(odd) {
+  background-color: #ffffff;
+}
+.table tbody td {
+  padding: 1rem;
+  vertical-align: middle;
+}
+.dataTables_wrapper .dataTables_length select,
+.dataTables_wrapper .dataTables_filter input {
+  border: 1px solid #dee2e6;
+  border-radius: 5px;
+  padding: 0.375rem 0.75rem;
+}
+.dataTables_wrapper .dataTables_length select:focus,
+.dataTables_wrapper .dataTables_filter input:focus {
+  border-color: #86b7fe;
+  outline: 0;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+  background: #212529 !important;
+  color: white !important;
+  border: none;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+  background: #343a40 !important;
+  color: white !important;
+  border: none;
 }

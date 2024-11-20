@@ -221,17 +221,6 @@ footer a:hover {
     position: relative;
 }
 
-#btnlogout{
-    border-radius: 2rem;
-    background-color: var(--secondary4);
-    color: white;
-    border: none;
-    padding: 1rem;
-    font-family: 'Tiny5-Regular';
-    font-size: large;
-    margin-right: 2rem;
-}
-
 /* Responsivo */
 @media (max-width: 768px) {
     h2 {

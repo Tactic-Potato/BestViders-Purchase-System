@@ -176,3 +176,112 @@ CREATE TABLE reception (
     FOREIGN KEY (request_num) REFERENCES request(num),
     FOREIGN KEY (status_code) REFERENCES status_reception(code)
 );
+
+DELIMITER $$
+CREATE TRIGGER CreateUser
+AFTER INSERT ON employee
+FOR EACH ROW
+BEGIN
+    DECLARE Username VARCHAR(100);
+    SET Username = CONCAT(NEW.first_name, ' ', NEW.last_name, ' ', IFNULL(NEW.surname, ''));
+
+    INSERT INTO user (num, username, password)
+    VALUES (NEW.num, Username, '1234567890');
+END $$
+
+DELIMITER $$
+CREATE TRIGGER StatusAuto
+BEFORE INSERT ON employee
+FOR EACH ROW
+BEGIN
+    IF NEW.status IS NULL THEN
+        SET NEW.status = TRUE; -- TRUE o FALSE se usa para BOOLEAN en MySQL
+    END IF;
+END $$
+
+DELIMITER $$
+CREATE TRIGGER UpdateOrderStatus
+AFTER INSERT ON request
+FOR EACH ROW
+BEGIN
+    IF NEW.order_num IS NOT NULL THEN
+        UPDATE orders
+        SET status_code = 'Received'
+        WHERE num = NEW.order_num;
+    END IF;
+END $$
+
+DELIMITER $$
+CREATE TRIGGER UpdateRequestStatus
+BEFORE INSERT ON request
+FOR EACH ROW
+BEGIN
+    SET NEW.status_code = 'In Progress';
+END $$
+
+DELIMITER $$
+CREATE TRIGGER AutoRequest
+BEFORE INSERT ON request
+FOR EACH ROW
+BEGIN
+    SET NEW.status_code = 'In Progress';
+    SET NEW.request_date = CURDATE();
+
+    DECLARE total DECIMAL(10, 2) DEFAULT 0.0;
+
+    SELECT SUM(RM.quantity * M.price) INTO total
+    FROM request_material RM
+    JOIN raw_material M ON RM.product_code = M.code
+    WHERE RM.request_num = NEW.num;
+
+    SET NEW.subtotal = total;
+END $$
+
+DELIMITER $$
+CREATE TRIGGER UpdateRequestSubtotal
+AFTER INSERT ON request_material
+FOR EACH ROW
+BEGIN
+    DECLARE total DECIMAL(10, 2);
+
+    SELECT SUM(RM.quantity * M.price)
+    INTO total
+    FROM request_material RM
+    JOIN raw_material M ON RM.product_code = M.code
+    WHERE RM.request_num = NEW.request_num;
+
+    UPDATE request
+    SET subtotal = total
+    WHERE num = NEW.request_num;
+END $$
+
+INSERT INTO area (code, name, manager_num)
+VALUES
+    ('RH', 'Human Resources', NULL),
+    ('PR', 'Purchasing Area', NULL),
+    ('ST', 'Store', NULL);
+
+INSERT INTO charge (code, name)
+VALUES
+    ('MAN', 'Manager')
+
+-- 2. Insertar datos en la tabla `employee`
+INSERT INTO employee (first_name, last_name, surname, status, phone_number, email, charge_code, area_code)
+VALUES
+    ('Carlos', 'Gómez', 'Pérez', TRUE, '5551234567', 'carlos.gomez@bestviders.com', 'MAN', 'RH')
+
+
+CREATE VIEW employee_user_view AS
+SELECT 
+    E.num,
+    E.first_name AS firstName,
+    E.last_name AS lastName,
+    E.area_code AS area,
+    E.email,
+    U.password
+FROM 
+    employee AS E
+JOIN 
+    user AS U 
+ON 
+    E.num = U.num;
