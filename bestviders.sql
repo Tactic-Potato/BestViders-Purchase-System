@@ -317,6 +317,8 @@ INSERT INTO status_order (code, name) VALUES
 -- Status Reception
 INSERT INTO status_reception (code, name) VALUES
 ('PEND', 'Pending'),
+('MISS', 'Missing'),
+('LOST', 'Lost'),
 ('CMPL', 'Completed');
 
 -- Status Provider
