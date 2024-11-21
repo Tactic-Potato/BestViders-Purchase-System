@@ -1,6 +1,6 @@
-DROP DATABASE IF EXISTS BestViders;
-CREATE DATABASE BestViders;
-USE BestViders;
+DROP DATABASE IF EXISTS bestviders;
+CREATE DATABASE bestviders;
+USE bestviders;
 
 -- 1. Status Tables
 CREATE TABLE status_request (
@@ -53,11 +53,10 @@ CREATE TABLE employee (
     numTel VARCHAR(20) NULL,
     email VARCHAR(100) NULL,
     charge VARCHAR(10),
-    area VARCHAR(10)
+    area VARCHAR(10),
+    FOREIGN KEY (charge) REFERENCES charge(code),
+    FOREIGN KEY (area) REFERENCES area(code) ON DELETE SET NULL
 );
-
-ALTER TABLE employee
-ADD FOREIGN KEY (area_code) REFERENCES area(code) ON DELETE SET NULL;
 
 ALTER TABLE area
 ADD FOREIGN KEY (manager_num) REFERENCES employee(num) ON DELETE SET NULL;
@@ -181,9 +180,10 @@ CREATE TABLE raw_provider (
     provider INT,
     material VARCHAR(10),
     PRIMARY KEY (provider, material),
-    FOREIGN KEY (request) REFERENCES request(num),
+    FOREIGN KEY (provider) REFERENCES provider(num),
     FOREIGN KEY (material) REFERENCES raw_material(code)
 );
+
 
     DELIMITER $$
     CREATE TRIGGER CreateUser
