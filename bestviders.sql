@@ -46,14 +46,14 @@ CREATE TABLE charge (
 
 CREATE TABLE employee (
     num INT PRIMARY KEY AUTO_INCREMENT,
-    first_name VARCHAR(100) NOT NULL,
-    last_name VARCHAR(100) NOT NULL,
+    firstName VARCHAR(100) NOT NULL,
+    lastName VARCHAR(100) NOT NULL,
     surname VARCHAR(100) NULL,
     status BOOLEAN,
-    phone_number VARCHAR(20) NULL,
+    numTel VARCHAR(20) NULL,
     email VARCHAR(100) NULL,
-    charge_code VARCHAR(10),
-    area_code VARCHAR(10)
+    charge VARCHAR(10),
+    area VARCHAR(10)
 );
 
 ALTER TABLE employee
@@ -67,7 +67,7 @@ CREATE TABLE provider (
     num INT PRIMARY KEY AUTO_INCREMENT,
     fiscal_name VARCHAR(100) NOT NULL,
     email VARCHAR(100) NULL,
-    phone_number VARCHAR(20) NULL,
+    numTel VARCHAR(20) NULL,
     status VARCHAR(10),
     FOREIGN KEY (status) REFERENCES status_provider(code)
 );
@@ -80,20 +80,20 @@ CREATE TABLE raw_material (
     description TEXT NULL,
     weight DECIMAL(12, 2) NULL,
     stock INT NULL,
-    category_code VARCHAR(10),
-    FOREIGN KEY (category_code) REFERENCES category(code)
+    category VARCHAR(10),
+    FOREIGN KEY (category) REFERENCES category(code)
 );
 
 -- 6. Orders
 CREATE TABLE orders (
     num INT PRIMARY KEY AUTO_INCREMENT,
     description TEXT NULL,
-    employee_num INT,
-    raw_material_code VARCHAR(10),
-    status_code VARCHAR(10),
-    FOREIGN KEY (employee_num) REFERENCES employee(num),
-    FOREIGN KEY (raw_material_code) REFERENCES raw_material(code),
-    FOREIGN KEY (status_code) REFERENCES status_order(code)
+    employee INT,
+    raw_material VARCHAR(10),
+    status VARCHAR(10),
+    FOREIGN KEY (employee) REFERENCES employee(num),
+    FOREIGN KEY (raw_material) REFERENCES raw_material(code),
+    FOREIGN KEY (status) REFERENCES status_order(code)
 );
 
 -- 7. Request
@@ -101,47 +101,47 @@ CREATE TABLE request (
     num INT PRIMARY KEY AUTO_INCREMENT,
     subtotal DECIMAL(12, 2),
     request_date DATETIME,
-    employee_num INT,
-    provider_num INT,
-    order_num INT,
-    status_code VARCHAR(10),
-    FOREIGN KEY (employee_num) REFERENCES employee(num),
-    FOREIGN KEY (provider_num) REFERENCES provider(num),
-    FOREIGN KEY (order_num) REFERENCES orders(num),
-    FOREIGN KEY (status_code) REFERENCES status_request(code)
+    employee INT,
+    provider INT,
+    order INT,
+    status VARCHAR(10),
+    FOREIGN KEY (employee) REFERENCES employee(num),
+    FOREIGN KEY (provider) REFERENCES provider(num),
+    FOREIGN KEY (order) REFERENCES orders(num),
+    FOREIGN KEY (status) REFERENCES status_request(code)
 );
 
 -- 8. Request Material
 CREATE TABLE request_material (
-    request_num INT,
-    product_code VARCHAR(10),
+    request INT,
+    material VARCHAR(10),
     quantity INT,
     amount DECIMAL(12, 2),
-    PRIMARY KEY (request_num, product_code),
-    FOREIGN KEY (request_num) REFERENCES request(num),
-    FOREIGN KEY (product_code) REFERENCES raw_material(code)
+    PRIMARY KEY (request, material),
+    FOREIGN KEY (request) REFERENCES request(num),
+    FOREIGN KEY (material) REFERENCES raw_material(code)
 );
 
 -- 9. Invoice
 CREATE TABLE invoice (
     folio VARCHAR(10) PRIMARY KEY,
     amount DECIMAL(12, 2),
-    pay_date DATETIME NULL,
+    payDate DATETIME NULL,
     subtotal DECIMAL(12, 2),
-    request_num INT,
-    provider_num INT,
-    FOREIGN KEY (request_num) REFERENCES request(num),
-    FOREIGN KEY (provider_num) REFERENCES provider(num)
+    request INT,
+    provider INT,
+    FOREIGN KEY (request) REFERENCES request(num),
+    FOREIGN KEY (provider) REFERENCES provider(num)
 );
 
 -- 10. Budget
 CREATE TABLE budget (
     code VARCHAR(10) PRIMARY KEY,
-    initial_amount DECIMAL(12, 2),
-    remaining_budget DECIMAL(12, 2),
-    budget_date DATETIME,
-    area_code VARCHAR(10),
-    FOREIGN KEY (area_code) REFERENCES area(code)
+    initialAmount DECIMAL(12, 2),
+    budgetRemain DECIMAL(12, 2),
+    dateBudget DATETIME,
+    area VARCHAR(10),
+    FOREIGN KEY (area) REFERENCES area(code)
 );
 
 -- 11. User
@@ -154,27 +154,35 @@ CREATE TABLE user (
 
 -- 12. Area Order
 CREATE TABLE area_order (
-    area_code VARCHAR(10),
-    order_num INT,
+    area VARCHAR(10),
+    order INT,
     quantity INT,
-    PRIMARY KEY (area_code, order_num),
-    FOREIGN KEY (area_code) REFERENCES area(code),
-    FOREIGN KEY (order_num) REFERENCES orders(num)
+    PRIMARY KEY (area, order),
+    FOREIGN KEY (area) REFERENCES area(code),
+    FOREIGN KEY (order) REFERENCES orders(num)
 );
 
 -- 13. Reception
 CREATE TABLE reception (
     num INT PRIMARY KEY AUTO_INCREMENT,
-    reception_date DATETIME NULL,
+    receptionDate DATETIME NULL,
     observations TEXT NULL,
-    reception_number INT NULL,
-    missing_quantity INT NULL,
-    employee_num INT,
-    request_num INT,
-    status_code VARCHAR(10),
-    FOREIGN KEY (employee_num) REFERENCES employee(num),
-    FOREIGN KEY (request_num) REFERENCES request(num),
-    FOREIGN KEY (status_code) REFERENCES status_reception(code)
+    numReception INT NULL,
+    missing INT NULL,
+    employee INT,
+    request INT,
+    status VARCHAR(10),
+    FOREIGN KEY (employee) REFERENCES employee(num),
+    FOREIGN KEY (request) REFERENCES request(num),
+    FOREIGN KEY (status) REFERENCES status_reception(code)
+);
+
+CREATE TABLE raw_provider (
+    provider INT,
+    material VARCHAR(10),
+    PRIMARY KEY (provider, material),
+    FOREIGN KEY (request) REFERENCES request(num),
+    FOREIGN KEY (material) REFERENCES raw_material(code)
 );
 
     DELIMITER $$
