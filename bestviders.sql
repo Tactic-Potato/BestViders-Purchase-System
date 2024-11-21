@@ -49,7 +49,7 @@ CREATE TABLE employee (
     user int,
     area VARCHAR(10),
     FOREIGN KEY (charge) REFERENCES charge(code),
-    FOREIGN KEY (num) REFERENCES user(num), --Aqui quedo la revision
+    FOREIGN KEY (num) REFERENCES user(num),
     FOREIGN KEY (area) REFERENCES area(code) ON DELETE SET NULL
 );
 
@@ -149,7 +149,7 @@ CREATE TABLE user (
 -- 12. Area Order
 CREATE TABLE area_order (
     area VARCHAR(10),
-    order_num INT, -- Cambiado de "order" a "order_num"
+    order_num INT,
     quantity INT,
     PRIMARY KEY (area, order_num),
     FOREIGN KEY (area) REFERENCES area(code),
@@ -205,7 +205,7 @@ CREATE TABLE raw_request (
     FOR EACH ROW
     BEGIN
         IF NEW.status IS NULL THEN
-            SET NEW.status = TRUE; -- TRUE o FALSE se usa para BOOLEAN en MySQL
+            SET NEW.status = TRUE;
         END IF;
     END $$
 
@@ -300,113 +300,6 @@ CREATE TABLE raw_request (
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /* ******NUEVOS INSERTS****** */
 -- Status Request
 INSERT INTO status_request (code, name) VALUES
@@ -415,11 +308,11 @@ INSERT INTO status_request (code, name) VALUES
 ('REJT', 'Rejected');
 
 -- Status Order
-INSERT INTO status_order (code, name, motive) VALUES
-('CRTD', 'Created', NULL),
-('PROC', 'In Process', NULL),
-('RCVD', 'Received', 'Received successfully.'),
-('REJT', 'Rejected', NULL);
+INSERT INTO status_order (code, name) VALUES
+('CRTD', 'Created'),
+('PROC', 'In Process'),
+('RCVD', 'Received'),
+('REJT', 'Rejected');
 
 -- Status Reception
 INSERT INTO status_reception (code, name) VALUES
@@ -442,6 +335,110 @@ VALUES
     ('RH', 'Human Resources', NULL),
     ('PR', 'Purchasing Area', NULL),
     ('ST', 'Store', NULL);
+
+-- Charge
+INSERT INTO charge (code, name) VALUES
+('MNGR', 'Manager'),
+('WRKR', 'Worker');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 -- Charge
 INSERT INTO charge (code, name) VALUES
