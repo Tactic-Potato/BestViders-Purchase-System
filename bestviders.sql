@@ -321,7 +321,6 @@ INSERT INTO status_reception (code, name) VALUES
 ('LOST', 'Lost'),
 ('CMPL', 'Completed');
 
--- Status Provider
 
 -- Category
 INSERT INTO category (code, name, description) VALUES
