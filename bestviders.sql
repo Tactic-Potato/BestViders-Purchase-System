@@ -49,7 +49,7 @@ CREATE TABLE employee (
     firstName VARCHAR(100) NOT NULL,
     lastName VARCHAR(100) NOT NULL,
     surname VARCHAR(100) NULL,
-    status BOOLEAN,
+    status BOOLEAN DEFAULT TRUE,
     numTel VARCHAR(20) NULL,
     email VARCHAR(100) NULL,
     charge VARCHAR(10),
@@ -67,7 +67,7 @@ CREATE TABLE provider (
     fiscal_name VARCHAR(100) NOT NULL,
     email VARCHAR(100) NULL,
     numTel VARCHAR(20) NULL,
-    status VARCHAR(10),
+    status VARCHAR(10) DEFAULT 'ACTV',
     FOREIGN KEY (status) REFERENCES status_provider(code)
 );
 
@@ -89,7 +89,8 @@ CREATE TABLE orders (
     description TEXT NULL,
     employee INT,
     raw_material VARCHAR(10),
-    status VARCHAR(10),
+    status VARCHAR(10) DEFAULT 'CRTD',
+    creationDate DATE NOT NULL DEFAULT CURRENT_DATE,
     FOREIGN KEY (employee) REFERENCES employee(num),
     FOREIGN KEY (raw_material) REFERENCES raw_material(code),
     FOREIGN KEY (status) REFERENCES status_order(code)
@@ -99,11 +100,11 @@ CREATE TABLE orders (
 CREATE TABLE request (
     num INT PRIMARY KEY AUTO_INCREMENT,
     subtotal DECIMAL(12, 2),
-    request_date DATETIME,
+    request_date DATE DEFAULT CURRENT_DATE,
     employee INT,
     provider INT,
-    order_num INT, -- Cambiado de "order" a "order_num"
-    status VARCHAR(10),
+    order_num INT,
+    status VARCHAR(10) DEFAULT 'PEND',
     FOREIGN KEY (employee) REFERENCES employee(num),
     FOREIGN KEY (provider) REFERENCES provider(num),
     FOREIGN KEY (order_num) REFERENCES orders(num),
@@ -125,7 +126,7 @@ CREATE TABLE request_material (
 CREATE TABLE invoice (
     folio VARCHAR(10) PRIMARY KEY,
     amount DECIMAL(12, 2),
-    payDate DATETIME NULL,
+    payDate DATE DEFAULT CURRENT_DATE,
     subtotal DECIMAL(12, 2),
     request INT,
     provider INT,
@@ -164,13 +165,13 @@ CREATE TABLE area_order (
 -- 13. Reception
 CREATE TABLE reception (
     num INT PRIMARY KEY AUTO_INCREMENT,
-    receptionDate DATETIME NULL,
+    receptionDate DATE DEFAULT CURRENT_DATE,
     observations TEXT NULL,
     numReception INT NULL,
     missing INT NULL,
     employee INT,
     request INT,
-    status VARCHAR(10),
+    status VARCHAR(10) DEFAULT 'PEND',
     FOREIGN KEY (employee) REFERENCES employee(num),
     FOREIGN KEY (request) REFERENCES request(num),
     FOREIGN KEY (status) REFERENCES status_reception(code)
@@ -184,26 +185,6 @@ CREATE TABLE raw_provider (
     FOREIGN KEY (provider) REFERENCES provider(num),
     FOREIGN KEY (material) REFERENCES raw_material(code)
 );
-
--- 7. Request (Default Status: 'PEND')
-ALTER TABLE request
-MODIFY COLUMN status VARCHAR(10) DEFAULT 'PEND',
-ADD CONSTRAINT fk_request_status FOREIGN KEY (status) REFERENCES status_request(code);
-
--- 6. Orders (Default Status: 'CRTD')
-ALTER TABLE orders
-MODIFY COLUMN status VARCHAR(10) DEFAULT 'CRTD',
-ADD CONSTRAINT fk_orders_status FOREIGN KEY (status) REFERENCES status_order(code);
-
--- 13. Reception (Default Status: 'PEND')
-ALTER TABLE reception
-MODIFY COLUMN status VARCHAR(10) DEFAULT 'PEND',
-ADD CONSTRAINT fk_reception_status FOREIGN KEY (status) REFERENCES status_reception(code);
-
--- 4. Provider (Default Status: 'ACTV')
-ALTER TABLE provider
-MODIFY COLUMN status VARCHAR(10) DEFAULT 'ACTV',
-ADD CONSTRAINT fk_provider_status FOREIGN KEY (status) REFERENCES status_provider(code);
 
 
 ---- TRIGGERS ----
