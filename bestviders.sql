@@ -185,16 +185,35 @@ CREATE TABLE raw_provider (
     FOREIGN KEY (material) REFERENCES raw_material(code)
 );
 
+-- 7. Request (Default Status: 'PEND')
+ALTER TABLE request
+MODIFY COLUMN status VARCHAR(10) DEFAULT 'PEND',
+ADD CONSTRAINT fk_request_status FOREIGN KEY (status) REFERENCES status_request(code);
+
+-- 6. Orders (Default Status: 'CRTD')
+ALTER TABLE orders
+MODIFY COLUMN status VARCHAR(10) DEFAULT 'CRTD',
+ADD CONSTRAINT fk_orders_status FOREIGN KEY (status) REFERENCES status_order(code);
+
+-- 13. Reception (Default Status: 'PEND')
+ALTER TABLE reception
+MODIFY COLUMN status VARCHAR(10) DEFAULT 'PEND',
+ADD CONSTRAINT fk_reception_status FOREIGN KEY (status) REFERENCES status_reception(code);
+
+-- 4. Provider (Default Status: 'ACTV')
+ALTER TABLE provider
+MODIFY COLUMN status VARCHAR(10) DEFAULT 'ACTV',
+ADD CONSTRAINT fk_provider_status FOREIGN KEY (status) REFERENCES status_provider(code);
 
 
+---- TRIGGERS ----
     DELIMITER $$
     CREATE TRIGGER CreateUser
     AFTER INSERT ON employee
     FOR EACH ROW
     BEGIN
         DECLARE Username VARCHAR(100);
-        SET Username = CONCAT(NEW.first_name, ' ', NEW.last_name, ' ', IFNULL(NEW.surname, ''));
-
+        SET Username = CONCAT(NEW.firstName, ' ', NEW.lastName, ' ', IFNULL(NEW.surname, ''));
         INSERT INTO user (num, username, password)
         VALUES (NEW.num, Username, '1234567890');
     END $$
@@ -210,7 +229,6 @@ CREATE TABLE raw_provider (
     END $$
 
     DELIMITER $$
-    DROP TRIGGER UpdateOrderStatus
     CREATE TRIGGER UpdateOrderStatus
     AFTER INSERT ON request
     FOR EACH ROW
@@ -223,23 +241,20 @@ CREATE TABLE raw_provider (
     END $$
 
     DELIMITER $$
-    DROP TRIGGER UpdateRequestStatus
     CREATE TRIGGER UpdateRequestStatus
     BEFORE INSERT ON request
     FOR EACH ROW
     BEGIN
-        SET NEW.status_code = 'In Progress';
+        SET NEW.status = 'In Progress';
     END $$
 
     DELIMITER $$
-    DROP TRIGGER AutoRequest
     CREATE TRIGGER AutoRequest
     BEFORE INSERT ON request
     FOR EACH ROW
     BEGIN
         DECLARE total DECIMAL(10, 2) DEFAULT 0.0;
-
-        SET NEW.status_code = 'In Progress';
+        SET NEW.status = 'In Progress';
         SET NEW.request_date = CURDATE();
 
         SELECT SUM(RM.quantity * M.price) INTO total
@@ -301,6 +316,115 @@ CREATE TABLE raw_provider (
         user AS U 
     ON 
         E.num = U.num;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /* ******NUEVOS INSERTS****** */
 -- Status Request
