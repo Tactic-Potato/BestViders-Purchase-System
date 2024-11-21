@@ -1,190 +1,188 @@
-DROP DATABASE IF EXISTS bestviders;
-CREATE DATABASE bestviders;
-USE bestviders;
+    DROP DATABASE IF EXISTS bestviders;
+    CREATE DATABASE bestviders;
+    USE bestviders;
 
--- 1. Status Tables
-CREATE TABLE status_request (
-    code VARCHAR(10) PRIMARY KEY,
-    name VARCHAR(50) NOT NULL
-);
+    -- 1. Status Tables
+    CREATE TABLE status_request (
+        code VARCHAR(10) PRIMARY KEY,
+        name VARCHAR(50) NOT NULL
+    );
 
-CREATE TABLE status_order (
-    code VARCHAR(10) PRIMARY KEY,
-    name VARCHAR(50) NOT NULL,
-    motive TEXT 
-);
+    CREATE TABLE status_order (
+        code VARCHAR(10) PRIMARY KEY,
+        name VARCHAR(50) NOT NULL,
+        motive TEXT 
+    );
 
-CREATE TABLE status_reception (
-    code VARCHAR(10) PRIMARY KEY,
-    name VARCHAR(50) NOT NULL
-);
+    CREATE TABLE status_reception (
+        code VARCHAR(10) PRIMARY KEY,
+        name VARCHAR(50) NOT NULL
+    );
 
-CREATE TABLE status_provider (
-    code VARCHAR(10) PRIMARY KEY,
-    name VARCHAR(50) NOT NULL,
-    motive TEXT 
-);
+    CREATE TABLE status_provider (
+        code VARCHAR(10) PRIMARY KEY,
+        name VARCHAR(50) NOT NULL,
+        motive TEXT 
+    );
 
--- 2. Category and Area
-CREATE TABLE category (
-    code VARCHAR(10) PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    description TEXT NULL
-);
+    -- 2. Category and Area
+    CREATE TABLE category (
+        code VARCHAR(10) PRIMARY KEY,
+        name VARCHAR(100) NOT NULL,
+        description TEXT NULL
+    );
 
-CREATE TABLE area (
-    code VARCHAR(10) PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    manager_num INT NULL
-);
+    CREATE TABLE area (
+        code VARCHAR(10) PRIMARY KEY,
+        name VARCHAR(100) NOT NULL,
+        manager_num INT NULL
+    );
 
--- 3. Charge and Employee
-CREATE TABLE charge (
-    code VARCHAR(10) PRIMARY KEY,
-    name VARCHAR(100) NOT NULL
-);
+    -- 3. Charge and Employee
+    CREATE TABLE charge (
+        code VARCHAR(10) PRIMARY KEY,
+        name VARCHAR(100) NOT NULL
+    );
 
-CREATE TABLE employee (
-    num INT PRIMARY KEY AUTO_INCREMENT,
-    firstName VARCHAR(100) NOT NULL,
-    lastName VARCHAR(100) NOT NULL,
-    surname VARCHAR(100) NULL,
-    status BOOLEAN,
-    numTel VARCHAR(20) NULL,
-    email VARCHAR(100) NULL,
-    charge VARCHAR(10),
-    area VARCHAR(10),
-    FOREIGN KEY (charge) REFERENCES charge(code),
-    FOREIGN KEY (area) REFERENCES area(code) ON DELETE SET NULL
-);
+    CREATE TABLE employee (
+        num INT PRIMARY KEY AUTO_INCREMENT,
+        firstName VARCHAR(100) NOT NULL,
+        lastName VARCHAR(100) NOT NULL,
+        surname VARCHAR(100) NULL,
+        status BOOLEAN,
+        numTel VARCHAR(20) NULL,
+        email VARCHAR(100) NULL,
+        charge VARCHAR(10),
+        area VARCHAR(10),
+        FOREIGN KEY (charge) REFERENCES charge(code),
+        FOREIGN KEY (area) REFERENCES area(code) ON DELETE SET NULL
+    );
 
-ALTER TABLE area
-ADD FOREIGN KEY (manager_num) REFERENCES employee(num) ON DELETE SET NULL;
+    ALTER TABLE area
+    ADD FOREIGN KEY (manager_num) REFERENCES employee(num) ON DELETE SET NULL;
 
--- 4. Provider
-CREATE TABLE provider (
-    num INT PRIMARY KEY AUTO_INCREMENT,
-    fiscal_name VARCHAR(100) NOT NULL,
-    email VARCHAR(100) NULL,
-    numTel VARCHAR(20) NULL,
-    status VARCHAR(10),
-    FOREIGN KEY (status) REFERENCES status_provider(code)
-);
+    -- 4. Provider
+    CREATE TABLE provider (
+        num INT PRIMARY KEY AUTO_INCREMENT,
+        fiscal_name VARCHAR(100) NOT NULL,
+        email VARCHAR(100) NULL,
+        numTel VARCHAR(20) NULL,
+        status VARCHAR(10),
+        FOREIGN KEY (status) REFERENCES status_provider(code)
+    );
 
--- 5. Raw Material
-CREATE TABLE raw_material (
-    code VARCHAR(10) PRIMARY KEY,
-    price DECIMAL(12, 2) NOT NULL,
-    name VARCHAR(100) NOT NULL,
-    description TEXT NULL,
-    weight DECIMAL(12, 2) NULL,
-    stock INT NULL,
-    category VARCHAR(10),
-    FOREIGN KEY (category) REFERENCES category(code)
-);
+    -- 5. Raw Material
+    CREATE TABLE raw_material (
+        code VARCHAR(10) PRIMARY KEY,
+        price DECIMAL(12, 2) NOT NULL,
+        name VARCHAR(100) NOT NULL,
+        description TEXT NULL,
+        weight DECIMAL(12, 2) NULL,
+        stock INT NULL,
+        category VARCHAR(10),
+        FOREIGN KEY (category) REFERENCES category(code)
+    );
 
--- 6. Orders
-CREATE TABLE orders (
-    num INT PRIMARY KEY AUTO_INCREMENT,
-    description TEXT NULL,
-    employee INT,
-    raw_material VARCHAR(10),
-    status VARCHAR(10),
-    FOREIGN KEY (employee) REFERENCES employee(num),
-    FOREIGN KEY (raw_material) REFERENCES raw_material(code),
-    FOREIGN KEY (status) REFERENCES status_order(code)
-);
+    -- 6. Orders
+    CREATE TABLE orders (
+        num INT PRIMARY KEY AUTO_INCREMENT,
+        description TEXT NULL,
+        employee INT,
+        raw_material VARCHAR(10),
+        status VARCHAR(10),
+        FOREIGN KEY (employee) REFERENCES employee(num),
+        FOREIGN KEY (raw_material) REFERENCES raw_material(code),
+        FOREIGN KEY (status) REFERENCES status_order(code)
+    );
 
--- 7. Request
-CREATE TABLE request (
-    num INT PRIMARY KEY AUTO_INCREMENT,
-    subtotal DECIMAL(12, 2),
-    request_date DATETIME,
-    employee INT,
-    provider INT,
-    order_num INT, -- Cambiado de "order" a "order_num"
-    status VARCHAR(10),
-    FOREIGN KEY (employee) REFERENCES employee(num),
-    FOREIGN KEY (provider) REFERENCES provider(num),
-    FOREIGN KEY (order_num) REFERENCES orders(num),
-    FOREIGN KEY (status) REFERENCES status_request(code)
-);
+    -- 7. Request
+    CREATE TABLE request (
+        num INT PRIMARY KEY AUTO_INCREMENT,
+        subtotal DECIMAL(12, 2),
+        request_date DATETIME,
+        employee INT,
+        provider INT,
+        order INT,
+        status VARCHAR(10),
+        FOREIGN KEY (employee) REFERENCES employee(num),
+        FOREIGN KEY (provider) REFERENCES provider(num),
+        FOREIGN KEY (order) REFERENCES orders(num),
+        FOREIGN KEY (status) REFERENCES status_request(code)
+    );
 
--- 8. Request Material
-CREATE TABLE request_material (
-    request INT,
-    material VARCHAR(10),
-    quantity INT,
-    amount DECIMAL(12, 2),
-    PRIMARY KEY (request, material),
-    FOREIGN KEY (request) REFERENCES request(num),
-    FOREIGN KEY (material) REFERENCES raw_material(code)
-);
+    -- 8. Request Material
+    CREATE TABLE request_material (
+        request INT,
+        material VARCHAR(10),
+        quantity INT,
+        amount DECIMAL(12, 2),
+        PRIMARY KEY (request, material),
+        FOREIGN KEY (request) REFERENCES request(num),
+        FOREIGN KEY (material) REFERENCES raw_material(code)
+    );
 
--- 9. Invoice
-CREATE TABLE invoice (
-    folio VARCHAR(10) PRIMARY KEY,
-    amount DECIMAL(12, 2),
-    payDate DATETIME NULL,
-    subtotal DECIMAL(12, 2),
-    request INT,
-    provider INT,
-    FOREIGN KEY (request) REFERENCES request(num),
-    FOREIGN KEY (provider) REFERENCES provider(num)
-);
+    -- 9. Invoice
+    CREATE TABLE invoice (
+        folio VARCHAR(10) PRIMARY KEY,
+        amount DECIMAL(12, 2),
+        payDate DATETIME NULL,
+        subtotal DECIMAL(12, 2),
+        request INT,
+        provider INT,
+        FOREIGN KEY (request) REFERENCES request(num),
+        FOREIGN KEY (provider) REFERENCES provider(num)
+    );
 
--- 10. Budget
-CREATE TABLE budget (
-    code VARCHAR(10) PRIMARY KEY,
-    initialAmount DECIMAL(12, 2),
-    budgetRemain DECIMAL(12, 2),
-    dateBudget DATETIME,
-    area VARCHAR(10),
-    FOREIGN KEY (area) REFERENCES area(code)
-);
+    -- 10. Budget
+    CREATE TABLE budget (
+        code VARCHAR(10) PRIMARY KEY,
+        initialAmount DECIMAL(12, 2),
+        budgetRemain DECIMAL(12, 2),
+        dateBudget DATETIME,
+        area VARCHAR(10),
+        FOREIGN KEY (area) REFERENCES area(code)
+    );
 
--- 11. User
-CREATE TABLE user (
-    num INT PRIMARY KEY,
-    username VARCHAR(100) NOT NULL UNIQUE,
-    password VARCHAR(100) DEFAULT '1234567890',
-    FOREIGN KEY (num) REFERENCES employee(num)
-);
+    -- 11. User
+    CREATE TABLE user (
+        num INT PRIMARY KEY,
+        username VARCHAR(100) NOT NULL UNIQUE,
+        password VARCHAR(100) DEFAULT '1234567890',
+        FOREIGN KEY (num) REFERENCES employee(num)
+    );
 
--- 12. Area Order
-CREATE TABLE area_order (
-    area VARCHAR(10),
-    order_num INT, -- Cambiado de "order" a "order_num"
-    quantity INT,
-    PRIMARY KEY (area, order_num),
-    FOREIGN KEY (area) REFERENCES area(code),
-    FOREIGN KEY (order_num) REFERENCES orders(num)
-);
+    -- 12. Area Order
+    CREATE TABLE area_order (
+        area VARCHAR(10),
+        order INT,
+        quantity INT,
+        PRIMARY KEY (area, order),
+        FOREIGN KEY (area) REFERENCES area(code),
+        FOREIGN KEY (order) REFERENCES orders(num)
+    );
 
--- 13. Reception
-CREATE TABLE reception (
-    num INT PRIMARY KEY AUTO_INCREMENT,
-    receptionDate DATETIME NULL,
-    observations TEXT NULL,
-    numReception INT NULL,
-    missing INT NULL,
-    employee INT,
-    request INT,
-    status VARCHAR(10),
-    FOREIGN KEY (employee) REFERENCES employee(num),
-    FOREIGN KEY (request) REFERENCES request(num),
-    FOREIGN KEY (status) REFERENCES status_reception(code)
-);
+    -- 13. Reception
+    CREATE TABLE reception (
+        num INT PRIMARY KEY AUTO_INCREMENT,
+        receptionDate DATETIME NULL,
+        observations TEXT NULL,
+        numReception INT NULL,
+        missing INT NULL,
+        employee INT,
+        request INT,
+        status VARCHAR(10),
+        FOREIGN KEY (employee) REFERENCES employee(num),
+        FOREIGN KEY (request) REFERENCES request(num),
+        FOREIGN KEY (status) REFERENCES status_reception(code)
+    );
 
--- 14. Raw Provider
-CREATE TABLE raw_provider (
-    provider INT,
-    material VARCHAR(10),
-    PRIMARY KEY (provider, material),
-    FOREIGN KEY (provider) REFERENCES provider(num),
-    FOREIGN KEY (material) REFERENCES raw_material(code)
-);
-
+    CREATE TABLE raw_provider (
+        provider INT,
+        material VARCHAR(10),
+        PRIMARY KEY (provider, material),
+        FOREIGN KEY (provider) REFERENCES provider(num),
+        FOREIGN KEY (material) REFERENCES raw_material(code)
+    );
 
 
     DELIMITER $$
