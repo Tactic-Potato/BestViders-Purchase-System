@@ -3,17 +3,17 @@ require '../includes/config/conn.php';
 
 $db = connect();
 
-$query_category = "SELECT code, name FROM category";
-$categorys = mysqli_query($db, $query_category);
+$query_material = "SELECT code, name FROM raw_material";
+$materials = mysqli_query($db, $query_material);
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Escapamos las variables para evitar inyecciones SQL
     $fiscalName = mysqli_real_escape_string($db, $_POST['fiscal_name']);
     $email = mysqli_real_escape_string($db, $_POST['email']);
-    $category_code = mysqli_real_escape_string($db, $_POST['category_code']);
+    $materialCode = mysqli_real_escape_string($db, $_POST['materialCode']);
 
     // Insertar nuevo proveedor en la tabla PROVIDER
-    $insert_query = "INSERT INTO provider (fiscal_name, email, category_code) VALUES ('$fiscalName', '$email', '$category_code')";
+    $insert_query = "INSERT INTO provider (fiscal_name, email, materialCode) VALUES ('$fiscalName', '$email', '$materialCode')";
 
     if (mysqli_query($db, $insert_query)) {
         echo "<script>
@@ -57,12 +57,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </div>
 
             <div class="form-group">
-                    <label>Category</label>
-                    <select name="category_code" id="category_code" required>
-                        <option value="" disabled selected>Select Category</option>
-                        <?php while($category = mysqli_fetch_assoc($categorys)): ?>
-                            <option value="<?php echo $category['code']; ?>">
-                                <?php echo $category['name']; ?>
+                    <labe>Material</label>
+                    <select name="materialCode" id="materialCode" required>
+                        <option value="" disabled selected>Select Material</option>
+                        <?php while($material = mysqli_fetch_assoc($materials)): ?>
+                            <option value="<?php echo $material['code']; ?>">
+                                <?php echo $material['name']; ?>
                             </option>
                         <?php endwhile; ?>
                     </select>
