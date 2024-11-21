@@ -102,7 +102,7 @@ CREATE TABLE request (
     request_date DATETIME,
     employee INT,
     provider INT,
-    order INT,
+    order_num INT, -- Cambiado de "order" a "order_num"
     status VARCHAR(10),
     FOREIGN KEY (employee) REFERENCES employee(num),
     FOREIGN KEY (provider) REFERENCES provider(num),
@@ -154,11 +154,11 @@ CREATE TABLE user (
 -- 12. Area Order
 CREATE TABLE area_order (
     area VARCHAR(10),
-    order INT,
+    order_num INT, -- Cambiado de "order" a "order_num"
     quantity INT,
-    PRIMARY KEY (area, order),
+    PRIMARY KEY (area, order_num),
     FOREIGN KEY (area) REFERENCES area(code),
-    FOREIGN KEY (order) REFERENCES orders(num)
+    FOREIGN KEY (order_num) REFERENCES orders(num)
 );
 
 -- 13. Reception
@@ -176,6 +176,7 @@ CREATE TABLE reception (
     FOREIGN KEY (status) REFERENCES status_reception(code)
 );
 
+-- 14. Raw Provider
 CREATE TABLE raw_provider (
     provider INT,
     material VARCHAR(10),
@@ -183,6 +184,7 @@ CREATE TABLE raw_provider (
     FOREIGN KEY (provider) REFERENCES provider(num),
     FOREIGN KEY (material) REFERENCES raw_material(code)
 );
+
 
 
     DELIMITER $$
