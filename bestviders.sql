@@ -187,6 +187,14 @@ CREATE TABLE raw_request (
     FOREIGN KEY (material) REFERENCES raw_material(code)
 );
 
+CREATE TABLE trouble_hist(
+    num INT PRIMARY KEY AUTO_INCREMENT,
+    troubleDate DATE DEFAULT CURRENT_DATE,
+    description TEXT,
+    request int,
+    FOREIGN KEY (request) REFERENCES request(num)
+);
+
 ---- TRIGGERS ----
     DELIMITER $$
     CREATE TRIGGER CreateUser
