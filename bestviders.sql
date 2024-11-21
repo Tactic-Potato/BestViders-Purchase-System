@@ -195,6 +195,47 @@ CREATE TABLE trouble_hist(
     FOREIGN KEY (request) REFERENCES request(num)
 );
 
+/* ******INSERTS ON STATUS TABLES ****** */
+-- Status Request
+INSERT INTO status_request (code, name) VALUES
+('PEND', 'Pending'),
+('APRV', 'Approved'),
+('REJT', 'Rejected');
+
+-- Status Order
+INSERT INTO status_order (code, name) VALUES
+('CRTD', 'Created'),
+('PROC', 'In Process'),
+('RCVD', 'Received'),
+('REJT', 'Rejected');
+
+-- Status Reception
+INSERT INTO status_reception (code, name) VALUES
+('PEND', 'Pending'),
+('MISS', 'Missing'),
+('DMGE', 'Damage'),
+('CMPL', 'Completed');
+
+-- Category
+INSERT INTO category (code, name, description) VALUES
+('CAP', 'Capacitors', 'Components used for storing electrical energy.'),
+('CON', 'Connectors', 'Various connectors for PCBs and circuits.'),
+('IC', 'Integrated Circuits', 'Semiconductor chips for various functionalities.'),
+('PCB', 'Printed Circuit Boards', 'Base material for creating circuit boards.'),
+('RES', 'Resistors', 'Components used to limit the flow of current.');
+
+-- Area
+INSERT INTO area (code, name, manager_num)
+VALUES
+    ('RH', 'Human Resources', NULL),
+    ('PR', 'Purchasing Area', NULL),
+    ('ST', 'Store', NULL);
+
+-- Charge
+INSERT INTO charge (code, name) VALUES
+('MNGR', 'Manager'),
+('WRKR', 'Worker');
+
 ---- TRIGGERS ----
     DELIMITER $$
     CREATE TRIGGER CreateUser
@@ -275,23 +316,9 @@ CREATE TABLE trouble_hist(
         WHERE num = NEW.request_num;
     END $$
 
-    INSERT INTO area (code, name, manager_num)
-    VALUES
-        ('RH', 'Human Resources', NULL),
-        ('PR', 'Purchasing Area', NULL),
-        ('ST', 'Store', NULL);
+---- VIEWS ----
 
-    INSERT INTO charge (code, name)
-    VALUES
-        ('MAN', 'Manager')
-
-    -- 2. Insertar datos en la tabla `employee`
-    INSERT INTO employee (first_name, last_name, surname, status, phone_number, email, charge_code, area_code)
-    VALUES
-        ('Carlos', 'Gómez', 'Pérez', TRUE, '5551234567', 'carlos.gomez@bestviders.com', 'MAN', 'RH')
-
-
-    CREATE VIEW employee_user_view AS
+        CREATE VIEW employee_user_view AS
     SELECT 
         E.num,
         E.first_name AS firstName,
@@ -308,47 +335,12 @@ CREATE TABLE trouble_hist(
 
 
 
-/* ******NUEVOS INSERTS****** */
--- Status Request
-INSERT INTO status_request (code, name) VALUES
-('PEND', 'Pending'),
-('APRV', 'Approved'),
-('REJT', 'Rejected');
 
--- Status Order
-INSERT INTO status_order (code, name) VALUES
-('CRTD', 'Created'),
-('PROC', 'In Process'),
-('RCVD', 'Received'),
-('REJT', 'Rejected');
 
--- Status Reception
-INSERT INTO status_reception (code, name) VALUES
-('PEND', 'Pending'),
-('MISS', 'Missing'),
-('DMGE', 'Damage'),
-('CMPL', 'Completed');
 
 
--- Category
-INSERT INTO category (code, name, description) VALUES
-('CAP', 'Capacitors', 'Components used for storing electrical energy.'),
-('CON', 'Connectors', 'Various connectors for PCBs and circuits.'),
-('IC', 'Integrated Circuits', 'Semiconductor chips for various functionalities.'),
-('PCB', 'Printed Circuit Boards', 'Base material for creating circuit boards.'),
-('RES', 'Resistors', 'Components used to limit the flow of current.');
 
--- Area
-INSERT INTO area (code, name, manager_num)
-VALUES
-    ('RH', 'Human Resources', NULL),
-    ('PR', 'Purchasing Area', NULL),
-    ('ST', 'Store', NULL);
 
--- Charge
-INSERT INTO charge (code, name) VALUES
-('MNGR', 'Manager'),
-('WRKR', 'Worker');
 
 
 
@@ -435,19 +427,7 @@ INSERT INTO charge (code, name) VALUES
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+/* INSERTS FEOS */
 
 -- Charge
 INSERT INTO charge (code, name) VALUES
