@@ -194,7 +194,7 @@ CREATE TABLE trouble_hist(
     request int,
     FOREIGN KEY (request) REFERENCES request(num)
 );
-
+ñ
 /* ******INSERTS ON STATUS TABLES ****** */
 -- Status Request
 INSERT INTO status_request (code, name) VALUES
