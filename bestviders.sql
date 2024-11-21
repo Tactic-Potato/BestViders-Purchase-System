@@ -106,7 +106,7 @@ CREATE TABLE request (
     status VARCHAR(10),
     FOREIGN KEY (employee) REFERENCES employee(num),
     FOREIGN KEY (provider) REFERENCES provider(num),
-    FOREIGN KEY (order) REFERENCES orders(num),
+    FOREIGN KEY (order_num) REFERENCES orders(num),
     FOREIGN KEY (status) REFERENCES status_request(code)
 );
 
