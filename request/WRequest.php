@@ -16,23 +16,23 @@
             include "../includes/config/conn.php";
             $db = connect();
             $query = mysqli_query($db, "
-                SELECT r.num AS requestNum, r.requestDate, r.status,
-                    e.firstName AS employeeFirstName, e.lastName AS employeeLastName, 
-                    p.fiscalName AS providerName,
-                    GROUP_CONCAT(CONCAT(m.name, ' (Qty: ', rm.cant, ')') SEPARATOR ', ') AS materials
+                SELECT r.num AS requestNum, r.request_date, r.status_code,
+                    e.first_name AS employeeFirstName, e.last_name AS employeeLastName, 
+                    p.fiscal_name AS providerName,
+                    GROUP_CONCAT(CONCAT(m.name, ' (Qty: ', rm.quantity, ')') SEPARATOR ', ') AS materials
                 FROM request r
-                LEFT JOIN employee e ON r.employee = e.num
-                LEFT JOIN provider p ON r.provider = p.num
-                LEFT JOIN request_material rm ON r.num = rm.request
-                LEFT JOIN raw_material m ON rm.product = m.code
+                LEFT JOIN employee e ON r.employee_num = e.num
+                LEFT JOIN provider p ON r.provider_num = p.num
+                LEFT JOIN request_material rm ON r.num = rm.request_num
+                LEFT JOIN raw_material m ON rm.product_code = m.code
                 GROUP BY r.num
             ");
 
             while ($result = mysqli_fetch_array($query)) { ?>
                 <tr>
                     <td><?= $result['requestNum'] ?></td>
-                    <td><?= $result['requestDate'] ?></td>
-                    <td><?= $result['status'] ?></td>
+                    <td><?= $result['request_date'] ?></td>
+                    <td><?= $result['status_code'] ?></td>
                     <td><?= $result['employeeFirstName'] . " " . $result['employeeLastName'] ?></td>
                     <td><?= $result['providerName'] ?></td>
                     <td><?= $result['materials'] ?></td>
