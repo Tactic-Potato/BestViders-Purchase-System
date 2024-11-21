@@ -10,7 +10,7 @@ body {
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
-    padding: 2rem;
+    padding: 2rem; 
 }
 
 .content-wrapper {
@@ -115,18 +115,18 @@ body {
                 <?php 
                 include "../includes/config/conn.php";
                 $db = connect();
-                $query = mysqli_query($db, "SELECT o.num, o.descrp, o.status,
-                                        e.firstName AS employeeFirstName, e.lastName AS employeeLastName, 
+                $query = mysqli_query($db, "SELECT o.num, o.description, o.status_code,
+                                        e.first_name AS employeeFirstName, e.last_name AS employeeLastName, 
                                         rm.name AS rawMaterialName
-                                    FROM `order` o
-                                    LEFT JOIN employee e ON o.employee = e.num
-                                    LEFT JOIN raw_material rm ON o.rawMaterial = rm.code");
+                                    FROM orders o
+                                    LEFT JOIN employee e ON o.employee_num = e.num
+                                    LEFT JOIN raw_material rm ON o.raw_material_code = rm.code");
 
                 while ($result = mysqli_fetch_array($query)) { ?>
                     <tr>
                         <td><?= htmlspecialchars($result['num']) ?></td>
-                        <td><?= htmlspecialchars($result['descrp']) ?></td>
-                        <td><?= htmlspecialchars($result['status']) ?></td>
+                        <td><?= htmlspecialchars($result['description']) ?></td>
+                        <td><?= htmlspecialchars($result['status_code']) ?></td>
                         <td><?= htmlspecialchars($result['employeeFirstName'] . " " . $result['employeeLastName']) ?></td>
                         <td><?= htmlspecialchars($result['rawMaterialName']) ?></td>
                     </tr>

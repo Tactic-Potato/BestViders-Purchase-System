@@ -3,18 +3,18 @@ require '../includes/config/conn.php';
 
 $db = connect();
 
-$query_employee = "SELECT num, firstName FROM employee";
+$query_employee = "SELECT num, first_name FROM employee";
 $employees = mysqli_query($db, $query_employee);
 
 $query_rawMaterial = "SELECT code, name FROM raw_material";
 $materials = mysqli_query($db, $query_rawMaterial);
-
+ 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $descrp = $_POST['descrp'];
     $employee = $_POST['employee'];
     $rawMaterial = $_POST['rawMaterial'];
 
-    $insert_query = "INSERT INTO `order` (descrp, employee, rawMaterial) 
+    $insert_query = "INSERT INTO orders (description, employee_num, raw_material_code) 
                     VALUES ('$descrp', '$employee', '$rawMaterial')";
 
     if (mysqli_query($db, $insert_query)) {
@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <option value="" disabled selected>Select employee</option>
                         <?php while($employee = mysqli_fetch_assoc($employees)): ?>
                             <option value="<?php echo $employee['num']; ?>">
-                                <?php echo $employee['firstName']; ?>
+                                <?php echo $employee['first_name']; ?>
                             </option>
                         <?php endwhile; ?>
                     </select>

@@ -117,7 +117,8 @@ body {
                     <th>Provider Number</th>
                     <th>Fiscal Name</th>
                     <th>Email</th>
-                    <th>Phone Number</th>
+                    <th>Status</th>
+                    <th>Category</th>
                 </tr>
             </thead>
             <tbody>
@@ -128,9 +129,10 @@ body {
                 while ($result = mysqli_fetch_array($query)){ ?>
                     <tr>
                         <td><?= htmlspecialchars($result['num']) ?></td>
-                        <td><?= htmlspecialchars($result['fiscalName']) ?></td>
+                        <td><?= htmlspecialchars($result['fiscal_name']) ?></td>
                         <td><?= htmlspecialchars($result['email']) ?></td>
-                        <td><?= htmlspecialchars($result['numTel']) ?></td>
+                        <td><?= htmlspecialchars($result['status']) ?></td>
+                        <td><?= htmlspecialchars($result['category_code']) ?></td>
                     </tr>
                 <?php } mysqli_close($db); ?>
             </tbody>
