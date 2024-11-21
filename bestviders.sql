@@ -10,19 +10,12 @@ CREATE TABLE status_request (
 
 CREATE TABLE status_order (
     code VARCHAR(10) PRIMARY KEY,
-    name VARCHAR(50) NOT NULL,
-    motive TEXT 
+    name VARCHAR(50) NOT NULL
 );
 
 CREATE TABLE status_reception (
     code VARCHAR(10) PRIMARY KEY,
     name VARCHAR(50) NOT NULL
-);
-
-CREATE TABLE status_provider (
-    code VARCHAR(10) PRIMARY KEY,
-    name VARCHAR(50) NOT NULL,
-    motive TEXT 
 );
 
 -- 2. Category and Area
@@ -35,7 +28,7 @@ CREATE TABLE category (
 CREATE TABLE area (
     code VARCHAR(10) PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    manager_num INT NULL
+    manager INT NULL
 );
 
 -- 3. Charge and Employee
@@ -53,8 +46,10 @@ CREATE TABLE employee (
     numTel VARCHAR(20) NULL,
     email VARCHAR(100) NULL,
     charge VARCHAR(10),
+    user int,
     area VARCHAR(10),
     FOREIGN KEY (charge) REFERENCES charge(code),
+    FOREIGN KEY (num) REFERENCES user(num), --Aqui quedo la revision
     FOREIGN KEY (area) REFERENCES area(code) ON DELETE SET NULL
 );
 
@@ -149,7 +144,6 @@ CREATE TABLE user (
     num INT PRIMARY KEY,
     username VARCHAR(100) NOT NULL UNIQUE,
     password VARCHAR(100) DEFAULT '1234567890',
-    FOREIGN KEY (num) REFERENCES employee(num)
 );
 
 -- 12. Area Order
