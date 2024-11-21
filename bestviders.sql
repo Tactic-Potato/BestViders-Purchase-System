@@ -62,8 +62,7 @@ CREATE TABLE provider (
     fiscal_name VARCHAR(100) NOT NULL,
     email VARCHAR(100) NULL,
     numTel VARCHAR(20) NULL,
-    status VARCHAR(10) DEFAULT 'ACTV',
-    FOREIGN KEY (status) REFERENCES status_provider(code)
+    status BOOLEAN DEFAULT TRUE
 );
 
 -- 5. Raw Material
@@ -71,7 +70,7 @@ CREATE TABLE raw_material (
     code VARCHAR(10) PRIMARY KEY,
     price DECIMAL(12, 2) NOT NULL,
     name VARCHAR(100) NOT NULL,
-    description TEXT NULL,
+    descrp TEXT NULL,
     weight DECIMAL(12, 2) NULL,
     stock INT NULL,
     category VARCHAR(10),
@@ -144,6 +143,7 @@ CREATE TABLE user (
     num INT PRIMARY KEY,
     username VARCHAR(100) NOT NULL UNIQUE,
     password VARCHAR(100) DEFAULT '1234567890',
+    FOREIGN KEY (num) REFERENCES employee(num)
 );
 
 -- 12. Area Order
@@ -162,7 +162,6 @@ CREATE TABLE reception (
     receptionDate DATE DEFAULT CURRENT_DATE,
     observations TEXT NULL,
     numReception INT NULL,
-    missing INT NULL,
     employee INT,
     request INT,
     status VARCHAR(10) DEFAULT 'PEND',
@@ -180,6 +179,13 @@ CREATE TABLE raw_provider (
     FOREIGN KEY (material) REFERENCES raw_material(code)
 );
 
+CREATE TABLE raw_request (
+    request INT,
+    material VARCHAR(10),
+    PRIMARY KEY (request, material),
+    FOREIGN KEY (request) REFERENCES request(num),
+    FOREIGN KEY (material) REFERENCES raw_material(code)
+);
 
 ---- TRIGGERS ----
     DELIMITER $$
@@ -421,9 +427,6 @@ INSERT INTO status_reception (code, name) VALUES
 ('CMPL', 'Completed');
 
 -- Status Provider
-INSERT INTO status_provider (code, name, motive) VALUES
-('ACTV', 'Active', NULL),
-('INAC', 'Inactive', 'No recent activity.');
 
 -- Category
 INSERT INTO category (code, name, description) VALUES
