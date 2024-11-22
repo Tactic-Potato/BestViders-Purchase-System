@@ -117,7 +117,7 @@ body {
                     <th>Provider Number</th>
                     <th>Fiscal Name</th>
                     <th>Email</th>
-                    <th>Status</th>
+                    <th>Phone Number<th>
                     <th colspan="2" >Actions</th>
                 </tr>
             </thead>
@@ -131,7 +131,7 @@ body {
                         <td><?= htmlspecialchars($result['num']) ?></td>
                         <td><?= htmlspecialchars($result['fiscal_name']) ?></td>
                         <td><?= htmlspecialchars($result['email']) ?></td>
-                        <td><?= htmlspecialchars($result['status']) ?></td>
+                        <td><?= htmlspecialchars($result['numTel'])?></td>
                         <td><a href="updateProvider.php?num=<?=$result['num']?>">Modify</td>
                         <td><a href="removeProvider.php?num=<?=$result['num']?>">Remove</td>
                     </tr>
