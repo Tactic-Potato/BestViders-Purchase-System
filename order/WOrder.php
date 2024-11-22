@@ -126,7 +126,7 @@ body {
                     <tr>
                         <td><?= htmlspecialchars($result['num']) ?></td>
                         <td><?= htmlspecialchars($result['description']) ?></td>
-                        <td><?= htmlspecialchars($result['status_code']) ?></td>
+                        <td><?= htmlspecialchars($result['status']) ?></td>
                         <td><?= htmlspecialchars($result['employeeFirstName'] . " " . $result['employeeLastName']) ?></td>
                         <td><?= htmlspecialchars($result['rawMaterialName']) ?></td>
                     </tr>
