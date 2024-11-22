@@ -191,8 +191,8 @@ CREATE TABLE trouble_hist (
     num INT PRIMARY KEY AUTO_INCREMENT,
     troubleDate DATE DEFAULT (CURRENT_DATE),
     description TEXT,
-    request INT,
-    FOREIGN KEY (request) REFERENCES request(num)
+    reception INT,
+    FOREIGN KEY (reception) REFERENCES reception(num)
 );
 
 
@@ -291,7 +291,7 @@ DROP TRIGGER UpdateRequestSubtotal
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
     CREATE VIEW vw_provider AS 
     SELECT
-        p.num as numero,
+        p.num as num,
         p.fiscal_name as fiscalName,
         p.email as email,
         p.numTel as numTel,
