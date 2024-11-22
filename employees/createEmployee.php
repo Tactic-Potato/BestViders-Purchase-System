@@ -2,7 +2,7 @@
 require '../includes/config/conn.php';
 
 $db = connect();
-$manager_query = "SELECT num, firstName FROM employee WHERE manager IS NULL"; // Filtrar solo managers potenciales
+$manager_query = "SELECT num, firstName FROM employee WHERE charge = 'MNGR'"; // Filtrar solo managers potenciales
 $managers = mysqli_query($db, $manager_query);
 
 $charge_query = "SELECT code, name FROM charge";

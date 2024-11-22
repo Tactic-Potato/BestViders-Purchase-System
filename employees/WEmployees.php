@@ -31,6 +31,3 @@
             </table>
     </div>
 </section>
-
-<!-- <td><?= $result['managerFirstName'] . " " . $result['managerLastName'] ?></td>
-<td><?= $result['chargeName'] ?></td> -->
