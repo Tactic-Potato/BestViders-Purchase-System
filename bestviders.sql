@@ -141,7 +141,7 @@ CREATE TABLE budget (
 CREATE TABLE user (
     num INT PRIMARY KEY,
     username VARCHAR(100) NOT NULL UNIQUE,
-    password VARCHAR(100) DEFAULT '1234567890',
+    password VARCHAR(100),
     FOREIGN KEY (num) REFERENCES employee(num)
 );
 
