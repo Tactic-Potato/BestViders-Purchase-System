@@ -30,6 +30,15 @@
                 <li><a class="dropdown-item" href="employees/createEmployee.php">Add Employee</a></li>
             </ul>
         </li>
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="requestsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Resquest
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="requestsDropdown">
+                <li><a class="dropdown-item" href="request/WRequest.php">Check Requests</a></li>
+                <li><a class="dropdown-item" href="request/createRequest.php">Create Request</a></li>
+            </ul>
+        </li>
         <!-- Logout Button -->
         <li class="nav-item">
             <a class="nav-link btn btn-outline-danger ms-3" href="logout.php" role="button">

@@ -1,7 +1,7 @@
 <?php
-include "includes/config/conn.php";
-include "includes/config/functions.php";
-$query_provider = "select num, fiscalName from provider";
+include "../includes/config/conn.php";
+include "../includes/config/functions.php";
+$query_provider = "select num, fiscal_name from provider";
 $conn = connect(); 
 
 $num = $_REQUEST['num'];

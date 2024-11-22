@@ -14,17 +14,17 @@
         </tr>
         <?php 
             include "../includes/config/conn.php";
-            $db = connect();
+            $db = connect();    
             $query = mysqli_query($db, "
-                SELECT r.num AS requestNum, r.request_date, r.status_code,
-                    e.first_name AS employeeFirstName, e.last_name AS employeeLastName, 
+                SELECT r.num AS requestNum, r.request_date, r.status,
+                    e.firstName AS employeeFirstName, e.lastName AS employeeLastName, 
                     p.fiscal_name AS providerName,
                     GROUP_CONCAT(CONCAT(m.name, ' (Qty: ', rm.quantity, ')') SEPARATOR ', ') AS materials
                 FROM request r
-                LEFT JOIN employee e ON r.employee_num = e.num
-                LEFT JOIN provider p ON r.provider_num = p.num
-                LEFT JOIN request_material rm ON r.num = rm.request_num
-                LEFT JOIN raw_material m ON rm.product_code = m.code
+                LEFT JOIN employee e ON r.employee = e.num
+                LEFT JOIN provider p ON r.provider = p.num
+                LEFT JOIN request_material rm ON r.num = rm.request
+                LEFT JOIN raw_material m ON rm.request = m.code
                 GROUP BY r.num
             ");
 

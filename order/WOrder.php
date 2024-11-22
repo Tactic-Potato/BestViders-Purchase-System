@@ -115,12 +115,12 @@ body {
                 <?php 
                 include "../includes/config/conn.php";
                 $db = connect();
-                $query = mysqli_query($db, "SELECT o.num, o.description, o.status_code,
-                                        e.first_name AS employeeFirstName, e.last_name AS employeeLastName, 
+                $query = mysqli_query($db, "SELECT o.num, o.description, o.status,
+                                        e.firstName AS employeeFirstName, e.lastName AS employeeLastName, 
                                         rm.name AS rawMaterialName
                                     FROM orders o
-                                    LEFT JOIN employee e ON o.employee_num = e.num
-                                    LEFT JOIN raw_material rm ON o.raw_material_code = rm.code");
+                                    LEFT JOIN employee e ON o.employee = e.num
+                                    LEFT JOIN raw_material rm ON o.raw_material = rm.code");
 
                 while ($result = mysqli_fetch_array($query)) { ?>
                     <tr>

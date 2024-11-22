@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $password = $_POST['password'];
 
         $query = "SELECT num, firstName, lastName, area, password 
-                    FROM employee_user_view 
+                    FROM vw_employee_user
                     WHERE email = ?";
 
         $stmt = mysqli_prepare($db, $query);

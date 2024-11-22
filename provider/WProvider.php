@@ -118,7 +118,7 @@ body {
                     <th>Fiscal Name</th>
                     <th>Email</th>
                     <th>Status</th>
-                    <th>Category</th>
+                    <th colspan="2" >Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -132,7 +132,8 @@ body {
                         <td><?= htmlspecialchars($result['fiscal_name']) ?></td>
                         <td><?= htmlspecialchars($result['email']) ?></td>
                         <td><?= htmlspecialchars($result['status']) ?></td>
-                        <td><?= htmlspecialchars($result['category_code']) ?></td>
+                        <td><a href="updateProvider.php?num=<?=$result['num']?>">Modify</td>
+                        <td><a href="removeProvider.php?num=<?=$result['num']?>">Remove</td>
                     </tr>
                 <?php } mysqli_close($db); ?>
             </tbody>

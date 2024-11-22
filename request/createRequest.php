@@ -8,11 +8,11 @@ $employee_query = "SELECT num, firstName FROM employee";
 $employees = mysqli_query($db, $employee_query);
 
 // Consulta de proveedores
-$provider_query = "SELECT num, fiscalName FROM provider";
+$provider_query = "SELECT num, fiscal_name FROM provider";
 $providers = mysqli_query($db, $provider_query);
 
 // Consulta de órdenes
-$order_query = "SELECT num, descrp FROM `order`";
+$order_query = "SELECT num, description FROM orders";
 $orders = mysqli_query($db, $order_query);
 
 // Consulta de materiales
