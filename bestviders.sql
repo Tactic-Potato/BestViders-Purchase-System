@@ -351,24 +351,24 @@ INSERT INTO charge (code, name) VALUES
         so.name as status,
         o.creationDate as creationDate
     FROM orders as o 
-    INNER JOIN emplyoyee as e ON o.employee = e.num
+    INNER JOIN employee as e ON o.employee = e.num
     INNER JOIN raw_material as rw ON o.raw_material = rw.code
     INNER JOIN status_order as so ON o.status = so.code;
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-    CREATE VIEW vw_request AS 
+    CREATE VIEW vw_request AS
     SELECT
         r.num as num,
         r.subtotal as subtotal,
         r.request_date as requestDate,
         CONCAT(e.firstName, ' ', e.lastName) as employee,
         p.fiscal_name as fiscalName,
-        o.num as num,
+        o.num as numOrder,
         sr.name as status
     FROM request as r
     INNER JOIN employee as e ON r.employee = e.num
     INNER JOIN provider as p ON r.provider = p.num
     INNER JOIN orders as o ON r.order_num = o.num
-    INNER JOIN status_request as sr ON r.status = sr.code
+    INNER JOIN status_request as sr ON r.status = sr.code;
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
 
