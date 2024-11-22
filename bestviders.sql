@@ -274,6 +274,20 @@ CREATE TABLE trouble_hist (
     FROM employee AS e
     INNER JOIN user AS u ON e.num = u.num;
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+    CREATE VIEW vw_employee AS
+    SELECT 
+        e.num as num,
+        CONCAT_WS(" ", e.firstName, e.lastName, e.surname) AS name,
+        e.status AS status,
+        e.numTel AS numTel,
+        e.email AS email,
+        c.name AS charge,
+        a.name AS area
+    FROM employee AS e
+    INNER JOIN area AS a ON e.area = a.code
+    INNER JOIN charge AS c ON e.charge = c.code
+    GROUP BY e.num;
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
     CREATE VIEW vw_provider AS 
     SELECT
         p.num as num,
