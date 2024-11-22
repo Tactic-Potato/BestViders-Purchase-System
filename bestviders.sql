@@ -192,8 +192,8 @@ CREATE TABLE trouble_hist (
     num INT PRIMARY KEY AUTO_INCREMENT,
     troubleDate DATE DEFAULT (CURRENT_DATE),
     description TEXT,
-    request INT,
-    FOREIGN KEY (request) REFERENCES request(num)
+    reception INT,
+    FOREIGN KEY (reception) REFERENCES reception(num)
 );
 
 
@@ -280,7 +280,7 @@ CREATE TABLE trouble_hist (
 /* * * * * * * * * * * * * VIEWS * * * * * * * * * * * * */
     CREATE VIEW vw_employee_user AS
     SELECT 
-        e.num as numero,
+        e.num as num,
         e.firstName AS firstName,
         e.lastName AS lastName,
         e.area AS area,
@@ -292,7 +292,7 @@ CREATE TABLE trouble_hist (
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
     CREATE VIEW vw_provider AS 
     SELECT
-        p.num as numero,
+        p.num as num,
         p.fiscal_name as fiscalName,
         p.email as email,
         p.numTel as numTel,
