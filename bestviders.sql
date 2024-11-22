@@ -46,15 +46,14 @@ CREATE TABLE employee (
     numTel VARCHAR(20) NULL,
     email VARCHAR(100) NULL,
     charge VARCHAR(10),
-    user int,
+    user INT,
     area VARCHAR(10),
     FOREIGN KEY (charge) REFERENCES charge(code),
-    FOREIGN KEY (num) REFERENCES user(num),
     FOREIGN KEY (area) REFERENCES area(code) ON DELETE SET NULL
 );
 
 ALTER TABLE area
-ADD FOREIGN KEY (manager_num) REFERENCES employee(num) ON DELETE SET NULL;
+ADD FOREIGN KEY (manager) REFERENCES employee(num) ON DELETE SET NULL;
 
 -- 4. Provider
 CREATE TABLE provider (
@@ -84,7 +83,7 @@ CREATE TABLE orders (
     employee INT,
     raw_material VARCHAR(10),
     status VARCHAR(10) DEFAULT 'CRTD',
-    creationDate DATE NOT NULL DEFAULT CURRENT_DATE,
+    creationDate DATE NOT NULL DEFAULT (CURRENT_DATE),
     FOREIGN KEY (employee) REFERENCES employee(num),
     FOREIGN KEY (raw_material) REFERENCES raw_material(code),
     FOREIGN KEY (status) REFERENCES status_order(code)
@@ -94,7 +93,7 @@ CREATE TABLE orders (
 CREATE TABLE request (
     num INT PRIMARY KEY AUTO_INCREMENT,
     subtotal DECIMAL(12, 2),
-    request_date DATE DEFAULT CURRENT_DATE,
+    request_date DATE DEFAULT (CURRENT_DATE),
     employee INT,
     provider INT,
     order_num INT,
@@ -120,7 +119,7 @@ CREATE TABLE request_material (
 CREATE TABLE invoice (
     folio VARCHAR(10) PRIMARY KEY,
     amount DECIMAL(12, 2),
-    payDate DATE DEFAULT CURRENT_DATE,
+    payDate DATE DEFAULT (CURRENT_DATE),
     subtotal DECIMAL(12, 2),
     request INT,
     provider INT,
@@ -159,7 +158,7 @@ CREATE TABLE area_order (
 -- 13. Reception
 CREATE TABLE reception (
     num INT PRIMARY KEY AUTO_INCREMENT,
-    receptionDate DATE DEFAULT CURRENT_DATE,
+    receptionDate DATE DEFAULT (CURRENT_DATE),
     observations TEXT NULL,
     numReception INT NULL,
     employee INT,
@@ -179,6 +178,7 @@ CREATE TABLE raw_provider (
     FOREIGN KEY (material) REFERENCES raw_material(code)
 );
 
+-- 15. Raw Request
 CREATE TABLE raw_request (
     request INT,
     material VARCHAR(10),
@@ -187,14 +187,16 @@ CREATE TABLE raw_request (
     FOREIGN KEY (material) REFERENCES raw_material(code)
 );
 
-CREATE TABLE trouble_hist(
+-- 16. Trouble History
+CREATE TABLE trouble_hist (
     num INT PRIMARY KEY AUTO_INCREMENT,
-    troubleDate DATE DEFAULT CURRENT_DATE,
+    troubleDate DATE DEFAULT (CURRENT_DATE),
     description TEXT,
-    request int,
+    request INT,
     FOREIGN KEY (request) REFERENCES request(num)
 );
-ñ
+
+
 /* ******INSERTS ON STATUS TABLES ****** */
 -- Status Request
 INSERT INTO status_request (code, name) VALUES
@@ -317,25 +319,57 @@ INSERT INTO charge (code, name) VALUES
     END $$
 
 ---- VIEWS ----
-
-        CREATE VIEW employee_user_view AS
+    CREATE VIEW vw_employee_user AS
     SELECT 
-        E.num,
-        E.first_name AS firstName,
-        E.last_name AS lastName,
-        E.area_code AS area,
-        E.email,
-        U.password
-    FROM 
-        employee AS E
-    JOIN 
-        user AS U 
-    ON 
-        E.num = U.num;
-
-
-
-
+        e.num as numero,
+        e.firstName AS firstName,
+        e.lastName AS lastName,
+        e.area AS area,
+        e.email AS email,
+        e.numTel AS numTel,
+        u.password
+    FROM employee AS e
+    INNER JOIN user AS u ON e.num = u.num;
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+    CREATE VIEW vw_provider AS 
+    SELECT
+        p.num as numero,
+        p.fiscal_name as fiscalName,
+        p.email as email,
+        p.numTel as numTel,
+        p.status as Status,
+        rp.material as material
+    FROM provider as p
+    INNER JOIN raw_provider as rp ON rp.provider = p.num;
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+    CREATE VIEW  vw_order AS
+    SELECT
+        o.num as num,
+        o.description as description,
+        CONCAT(e.firstName, ' ', e.lastName) as employee,
+        rw.name as rawMaterial,
+        so.name as status,
+        o.creationDate as creationDate
+    FROM orders as o 
+    INNER JOIN emplyoyee as e ON o.employee = e.num
+    INNER JOIN raw_material as rw ON o.raw_material = rw.code
+    INNER JOIN status_order as so ON o.status = so.code;
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+    CREATE VIEW vw_request AS 
+    SELECT
+        r.num as num,
+        r.subtotal as subtotal,
+        r.request_date as requestDate,
+        CONCAT(e.firstName, ' ', e.lastName) as employee,
+        p.fiscal_name as fiscalName,
+        o.num as num,
+        sr.name as status
+    FROM request as r
+    INNER JOIN employee as e ON r.employee = e.num
+    INNER JOIN provider as p ON r.provider = p.num
+    INNER JOIN orders as o ON r.order_num = o.num
+    INNER JOIN status_request as sr ON r.status = sr.code
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
 
 
