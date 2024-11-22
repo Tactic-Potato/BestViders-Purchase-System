@@ -197,48 +197,7 @@ CREATE TABLE trouble_hist (
 );
 
 
-/* ******INSERTS ON STATUS TABLES ****** */
--- Status Request
-INSERT INTO status_request (code, name) VALUES
-('PEND', 'Pending'),
-('APRV', 'Approved'),
-('REJT', 'Rejected');
-
--- Status Order
-INSERT INTO status_order (code, name) VALUES
-('CRTD', 'Created'),
-('PROC', 'In Process'),
-('RCVD', 'Received'),
-('REJT', 'Rejected');
-
--- Status Reception
-INSERT INTO status_reception (code, name) VALUES
-('PEND', 'Pending'),
-('MISS', 'Missing'),
-('DMGE', 'Damage'),
-('CMPL', 'Completed');
-
--- Category
-INSERT INTO category (code, name, description) VALUES
-('CAP', 'Capacitors', 'Components used for storing electrical energy.'),
-('CON', 'Connectors', 'Various connectors for PCBs and circuits.'),
-('IC', 'Integrated Circuits', 'Semiconductor chips for various functionalities.'),
-('PCB', 'Printed Circuit Boards', 'Base material for creating circuit boards.'),
-('RES', 'Resistors', 'Components used to limit the flow of current.');
-
--- Area
-INSERT INTO area (code, name, manager)
-VALUES
-    ('RH', 'Human Resources', NULL),
-    ('PR', 'Purchasing Area', NULL),
-    ('ST', 'Store', NULL);
-
--- Charge
-INSERT INTO charge (code, name) VALUES
-('MNGR', 'Manager'),
-('WRKR', 'Worker');
-
----- TRIGGERS ----
+/* * * * * * * * * * * * * TRIGGERS * * * * * * * * * * * * */
     DELIMITER $$
     CREATE TRIGGER CreateUser
     AFTER INSERT ON employee
@@ -318,7 +277,7 @@ INSERT INTO charge (code, name) VALUES
         WHERE num = NEW.request_num;
     END $$
 
----- VIEWS ----
+/* * * * * * * * * * * * * VIEWS * * * * * * * * * * * * */
     CREATE VIEW vw_employee_user AS
     SELECT 
         e.num as numero,
@@ -371,97 +330,42 @@ INSERT INTO charge (code, name) VALUES
     INNER JOIN status_request as sr ON r.status = sr.code;
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* INSERTS FEOS */
+/* * * * * * * * * * * * * INSERTS * * * * * * * * * * * * */
+
+-- Status Request
+INSERT INTO status_request (code, name) VALUES
+('PEND', 'Pending'),
+('APRV', 'Approved'),
+('REJT', 'Rejected');
+
+-- Status Order
+INSERT INTO status_order (code, name) VALUES
+('CRTD', 'Created'),
+('PROC', 'In Process'),
+('RCVD', 'Received'),
+('REJT', 'Rejected');
+
+-- Status Reception
+INSERT INTO status_reception (code, name) VALUES
+('PEND', 'Pending'),
+('MISS', 'Missing'),
+('DMGE', 'Damage'),
+('CMPL', 'Completed');
+
+-- Category
+INSERT INTO category (code, name, description) VALUES
+('CAP', 'Capacitors', 'Components used for storing electrical energy.'),
+('CON', 'Connectors', 'Various connectors for PCBs and circuits.'),
+('IC', 'Integrated Circuits', 'Semiconductor chips for various functionalities.'),
+('PCB', 'Printed Circuit Boards', 'Base material for creating circuit boards.'),
+('RES', 'Resistors', 'Components used to limit the flow of current.');
+
+-- Area
+INSERT INTO area (code, name, manager)
+VALUES
+    ('RH', 'Human Resources', NULL),
+    ('PR', 'Purchasing Area', NULL),
+    ('ST', 'Store', NULL);
 
 -- Charge
 INSERT INTO charge (code, name) VALUES
@@ -469,18 +373,20 @@ INSERT INTO charge (code, name) VALUES
 ('WRKR', 'Worker');
 
 -- Employee
-INSERT INTO employee (first_name, last_name, surname, status, phone_number, email, charge_code, area_code) VALUES
+INSERT INTO employee (firstName, lastName, surname, status, numTel, email, charge, area) VALUES
 ('Carlos', 'Gómez', 'Pérez', TRUE, '5551234567', 'carlos.gomez@bestviders.com', 'MNGR', 'RH'),
 ('Ana', 'Martínez', NULL, TRUE, '5552345678', 'ana.martinez@bestviders.com', 'WRKR', 'ST'),
 ('Luis', 'Fernández', 'López', TRUE, '5553456789', 'luis.fernandez@bestviders.com', 'WRKR', 'PR');
 
 -- Provider
-INSERT INTO provider (fiscal_name, email, category_code) VALUES
-('Supplier A', 'supplier.a@example.com', 'CAP'),
-('Supplier B', 'supplier.b@example.com', 'CON');
+INSERT INTO provider (fiscal_name, email, numTel) VALUES
+('Supplier A', 'supplier.a@example.com', '6642359124'),
+('Supplier B', 'supplier.b@example.com', '6642589743'),
+('Supplier C', 'supplier.c@example.com', '6644598178'),
+('Supplier D', 'supplier.d@example.com', '6645633214');
 
 -- Raw Material
-INSERT INTO raw_material (code, price, name, description, weight, stock, category_code) VALUES
+INSERT INTO raw_material (code, price, name, descrp, weight, stock, category) VALUES
 ('CAP003', 0.10, 'Ceramic Capacitor 10uF', 'General purpose capacitor for filtering', 0.00, 1000, 'CAP'),
 ('CON005', 0.50, 'USB Connector', 'Standard USB connector type-A', 0.01, 300, 'CON'),
 ('IC0002', 3.00, 'Microcontroller', '8-bit Microcontroller for embedded applications', 0.01, 200, 'IC'),
@@ -488,20 +394,19 @@ INSERT INTO raw_material (code, price, name, description, weight, stock, categor
 ('RES004', 0.05, 'Resistor 100 Ohm', 'General purpose resistor 100 Ohm 1/4W', 0.00, 1500, 'RES');
 
 -- Order
-INSERT INTO orders (description, employee_num, raw_material_code, status_code) VALUES 
+INSERT INTO orders (description, employee, raw_material, status) VALUES 
 ('Order for 100 Ceramic Capacitors', 1, 'CAP003', 'CRTD'), 
 ('Order for 50 USB Connectors', 5, 'CON005', 'PROC'),
 ('Order for 200 Microcontrollers', 6, 'IC0002', 'RCVD');
 
 -- Request
-INSERT INTO request (subtotal, request_date, employee_num, provider_num, order_num, status_code) VALUES 
+INSERT INTO request (subtotal, request_date, employee, provider, order_num, status) VALUES 
 (50.00, '2024-11-15 10:00:00', 1, 1, 1, 'PEND'),
 (100.00, '2024-11-16 11:00:00', 5, 2, 2, 'APRV'),
 (150.00, '2024-11-17 12:00:00', 6, 1, 3, 'REJT');
-/* pendiente */
 
 -- Request_material
-INSERT INTO request_material (request_num, product_code, quantity, amount) VALUES
+INSERT INTO request_material (request, material, quantity, amount) VALUES
 (1, 'CAP003', 100, 10.00),
 (2, 'CON005', 50, 25.00),
 (3, 'IC0002', 200, 600.00);
@@ -512,18 +417,18 @@ INSERT INTO invoice (folio, amount, pay_date, subtotal, request_num, provider_nu
 ('INV002', 125.00, '2024-11-19 15:00:00', 100.00, 2, 2);
 
 -- Budget
-INSERT INTO budget (code, initial_amount, remaining_budget, budget_date, area_code) VALUES
+INSERT INTO budget (code, initialAmount, budgetRemain, dateBudget, area) VALUES
 ('BUD001', 5000.00, 4500.00, '2024-11-01', 'RH'),
 ('BUD002', 3000.00, 2500.00, '2024-11-01', 'PR'),
 ('BUD003', 2000.00, 1500.00, '2024-11-01', 'ST');
 
 -- Area Order
-INSERT INTO area_order (area_code, order_num, quantity) VALUES
+INSERT INTO area_order (area, order_num, quantity) VALUES
 ('RH', 1, 100),
 ('PR', 2, 50),
 ('ST', 3, 200);
 
 -- Reception
-INSERT INTO reception (reception_date, observations, reception_number, missing_quantity, employee_num, request_num, status_code)  VALUES
-('2024-11-18 10:30:00', 'All items received successfully.', 1, 0, 1, 1, 'CMPL'),
-('2024-11-19 11:00:00', 'Missing 10 connectors.', 2, 10, 5, 2, 'PEND');
+INSERT INTO reception (receptionDate, observations, numReception, employee, request, status)  VALUES
+('2024-11-18 10:30:00', 'All items received successfully.', 1, 1, 1, 'CMPL'),
+('2024-11-19 11:00:00', 'Missing 10 connectors.', 2, 5, 2, 'PEND');
