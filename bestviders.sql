@@ -46,7 +46,6 @@ CREATE TABLE employee (
     numTel VARCHAR(20) NULL,
     email VARCHAR(100) NULL,
     charge VARCHAR(10),
-    user INT,
     area VARCHAR(10),
     FOREIGN KEY (charge) REFERENCES charge(code),
     FOREIGN KEY (area) REFERENCES area(code) ON DELETE SET NULL
