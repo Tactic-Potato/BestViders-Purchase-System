@@ -117,8 +117,9 @@ body {
                     <th>Provider Number</th>
                     <th>Fiscal Name</th>
                     <th>Email</th>
-                    <th>Phone Number<th>
-                    <th colspan="2" >Actions</th>
+                    <th>Phone Number</th> <!-- Aquí se cierra correctamente el <th> -->
+                    <th></th> <!-- Se elimina colspan para evitar desajustes -->
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -131,9 +132,9 @@ body {
                         <td><?= htmlspecialchars($result['num']) ?></td>
                         <td><?= htmlspecialchars($result['fiscal_name']) ?></td>
                         <td><?= htmlspecialchars($result['email']) ?></td>
-                        <td><?= htmlspecialchars($result['numTel'])?></td>
-                        <td><a href="updateProvider.php?num=<?=$result['num']?>">Modify</td>
-                        <td><a href="removeProvider.php?num=<?=$result['num']?>">Remove</td>
+                        <td><?= htmlspecialchars($result['numTel']) ?></td>
+                        <td><a href="updateProvider.php?num=<?=$result['num']?>">Modify</a></td>
+                        <td><a href="removeProvider.php?num=<?=$result['num']?>">Remove</a></td>
                     </tr>
                 <?php } mysqli_close($db); ?>
             </tbody>

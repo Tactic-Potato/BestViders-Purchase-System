@@ -213,10 +213,10 @@ CREATE TABLE trouble_hist (
     AFTER INSERT ON request
     FOR EACH ROW
     BEGIN
-        IF NEW.order IS NOT NULL THEN
+        IF NEW.order_num IS NOT NULL THEN
             UPDATE orders
-            SET status_code = 'Received'
-            WHERE num = NEW.order;
+            SET status = 'RCVD'
+            WHERE num = NEW.order_num;
         END IF;
     END $$
 
@@ -225,7 +225,7 @@ CREATE TABLE trouble_hist (
     BEFORE INSERT ON request
     FOR EACH ROW
     BEGIN
-        SET NEW.status = 'In Progress';
+        SET NEW.status = 'PROC';
     END $$
 
     DELIMITER $$
@@ -234,21 +234,16 @@ CREATE TABLE trouble_hist (
     FOR EACH ROW
     BEGIN
         DECLARE total DECIMAL(10, 2) DEFAULT 0.0;
-        SET NEW.status = 'In Progress';
-        SET NEW.request_date = CURDATE();
-
         SELECT SUM(RM.quantity * M.price) INTO total
         FROM request_material RM
-        JOIN raw_material M ON RM.product_code = M.code
+        JOIN raw_material M ON RM.material = M.code
         WHERE RM.request_num = NEW.num;
 
         SET NEW.subtotal = total;
     END $$
     DELIMITER ;
 
-DROP TRIGGER UpdateRequestSubtotal
-    DELIMITER $$
-    
+    DELIMITER $$    
     CREATE TRIGGER UpdateRequestSubtotal
     AFTER INSERT ON request_material
     FOR EACH ROW
