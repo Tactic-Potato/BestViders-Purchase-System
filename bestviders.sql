@@ -227,7 +227,7 @@ INSERT INTO category (code, name, description) VALUES
 ('RES', 'Resistors', 'Components used to limit the flow of current.');
 
 -- Area
-INSERT INTO area (code, name, manager_num)
+INSERT INTO area (code, name, manager)
 VALUES
     ('RH', 'Human Resources', NULL),
     ('PR', 'Purchasing Area', NULL),
