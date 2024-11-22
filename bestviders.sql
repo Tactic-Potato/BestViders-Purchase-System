@@ -209,16 +209,6 @@ CREATE TABLE trouble_hist (
     END $$
 
     DELIMITER $$
-    CREATE TRIGGER StatusAuto
-    BEFORE INSERT ON employee
-    FOR EACH ROW
-    BEGIN
-        IF NEW.status IS NULL THEN
-            SET NEW.status = TRUE;
-        END IF;
-    END $$
-
-    DELIMITER $$
     CREATE TRIGGER UpdateOrderStatus
     AFTER INSERT ON request
     FOR EACH ROW
@@ -277,7 +267,7 @@ DROP TRIGGER UpdateRequestSubtotal
     END $$
 
 /* * * * * * * * * * * * * VIEWS * * * * * * * * * * * * */
-    alter VIEW vw_employee_user AS
+    CREATE VIEW vw_employee_user AS
     SELECT 
         e.num as num,
         e.firstName AS firstName,
@@ -392,42 +382,9 @@ INSERT INTO raw_material (code, price, name, descrp, weight, stock, category) VA
 ('PCB001', 1.50, 'PCB 2-layer', 'Standard 2-layer PCB for general applications', 0.05, 500, 'PCB'),
 ('RES004', 0.05, 'Resistor 100 Ohm', 'General purpose resistor 100 Ohm 1/4W', 0.00, 1500, 'RES');
 
--- Order
-INSERT INTO orders (description, employee, raw_material, status) VALUES 
-('Order for 100 Ceramic Capacitors', 1, 'CAP003', 'CRTD'), 
-('Order for 50 USB Connectors', 2, 'CON005', 'PROC'),
-('Order for 200 Microcontrollers', 3, 'IC0002', 'RCVD');
-
--- Request
-INSERT INTO request (subtotal, request_date, employee, provider, order_num, status) VALUES 
-(50.00, '2024-11-15 10:00:00', 1, 1, 7, 'PEND'),
-(100.00, '2024-11-16 11:00:00', 2, 2, 8, 'APRV'),
-(150.00, '2024-11-17 12:00:00', 3, 1, 9, 'REJT');
-
--- Request_material
-INSERT INTO request_material (request, material, quantity, amount) VALUES
-(4, 'CAP003', 100, 10.00),
-(5, 'CON005', 50, 25.00),
-(6, 'IC0002', 200, 600.00);
-
--- Invoice
-INSERT INTO invoice (folio, amount, payDate, subtotal, request, provider) VALUES
-('INV001', 55.00, '2024-11-18 14:00:00', 50.00, 4, 1),
-('INV002', 125.00, '2024-11-19 15:00:00', 100.00, 5, 2);
-
 -- Budget
 INSERT INTO budget (code, initialAmount, budgetRemain, dateBudget, area) VALUES
 ('BUD001', 5000.00, 4500.00, '2024-11-01', 'RH'),
 ('BUD002', 3000.00, 2500.00, '2024-11-01', 'PR'),
 ('BUD003', 2000.00, 1500.00, '2024-11-01', 'ST');
 
--- Area Order
-INSERT INTO area_order (area, order_num, quantity) VALUES
-('RH', 7, 100),
-('PR', 8, 50),
-('ST', 9, 200);
-
--- Reception
-INSERT INTO reception (receptionDate, observations, numReception, employee, request, status)  VALUES
-('2024-11-18 10:30:00', 'All items received successfully.', 1, 1, 4, 'CMPL'),
-('2024-11-19 11:00:00', 'Missing 10 connectors.', 2, 2, 5, 'PEND');
