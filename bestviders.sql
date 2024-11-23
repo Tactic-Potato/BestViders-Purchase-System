@@ -237,11 +237,11 @@ CREATE TABLE trouble_hist (
         SELECT SUM(RM.quantity * M.price) INTO total
         FROM request_material RM
         JOIN raw_material M ON RM.material = M.code
-        WHERE RM.request_num = NEW.num;
+        WHERE RM.request = NEW.num;
 
         SET NEW.subtotal = total;
     END $$
-    DELIMITER ;
+    DELIMITER;
 
     DELIMITER $$    
     CREATE TRIGGER UpdateRequestSubtotal
@@ -254,11 +254,11 @@ CREATE TABLE trouble_hist (
         INTO total
         FROM request_material RM
         JOIN raw_material M ON RM.product_code = M.code
-        WHERE RM.request_num = NEW.request_num;
+        WHERE RM.request = NEW.request;
 
         UPDATE request
         SET subtotal = total
-        WHERE num = NEW.request_num;
+        WHERE num = NEW.request;
     END $$
 
 /* * * * * * * * * * * * * VIEWS * * * * * * * * * * * * */
@@ -361,11 +361,14 @@ INSERT INTO category (code, name, description) VALUES
 ('RES', 'Resistors', 'Components used to limit the flow of current.');
 
 -- Area
-INSERT INTO area (code, name, manager)
-VALUES
-    ('RH', 'Human Resources', NULL),
-    ('PR', 'Purchasing Area', NULL),
-    ('ST', 'Store', NULL);
+INSERT INTO area (code, name, manager) VALUES
+('RH', 'Human Resources', NULL),
+('PR', 'Purchasing Area', NULL),
+('ST', 'Store', NULL),
+('ENG', 'Engineering', NULL),
+('FIN', 'Finance', NULL),
+('IT', 'Information Technology', NULL),
+('QC', 'Quality Control', NULL);
 
 -- Charge
 INSERT INTO charge (code, name) VALUES
@@ -398,4 +401,60 @@ INSERT INTO budget (code, initialAmount, budgetRemain, dateBudget, area) VALUES
 ('BUD001', 5000.00, 4500.00, '2024-11-01', 'RH'),
 ('BUD002', 3000.00, 2500.00, '2024-11-01', 'PR'),
 ('BUD003', 2000.00, 1500.00, '2024-11-01', 'ST');
+
+-- Orders
+INSERT INTO orders (description, employee, raw_material, status, creationDate) VALUES
+('Order for capacitors for the assembly line', 2, 'CAP003', 'CRTD', '2024-11-10'),
+('Order for USB connectors for stock replenishment', 3, 'CON005', 'PROC', '2024-11-15'),
+('Order for microcontrollers for a new project', 2, 'IC0002', 'RCVD', '2024-11-12');
+
+-- Request
+INSERT INTO request (subtotal, request_date, employee, provider, order_num) VALUES
+(100.00, '2024-11-11', 3, 1, 1),
+(150.00, '2024-11-15', 2, 2, 2),
+(300.00, '2024-11-18', 2, 3, 3);
+
+-- Request material
+INSERT INTO request_material (request, material, quantity, amount) VALUES
+(1, 'CAP003', 1000, 100.00),
+(2, 'CON005', 300, 150.00),
+(3, 'IC0002', 100, 300.00);
+
+-- Invoice
+INSERT INTO invoice (folio, amount, payDate, subtotal, request, provider) VALUES
+('INV001', 100.00, '2024-11-12', 100.00, 1, 1),
+('INV002', 150.00, '2024-11-16', 150.00, 2, 2),
+('INV003', 300.00, '2024-11-19', 300.00, 3, 3);
+
+-- Area_order
+INSERT INTO area_order (area, order_num, quantity) VALUES
+('ENG', 1, 1000),
+('IT', 2, 300),
+('QC', 3, 100);
+
+-- Reception
+INSERT INTO reception (receptionDate, observations, numReception, employee, request, status) VALUES
+('2024-11-13', 'No issues reported', 1, 3, 1, 'CMPL'),
+('2024-11-17', 'Minor scratches on some items', 2, 2, 2, 'CMPL'),
+('2024-11-20', 'All items received in good condition', 3, 2, 3, 'CMPL');
+
+-- Raw_provider
+INSERT INTO raw_provider (provider, material) VALUES
+(1, 'CAP003'),
+(2, 'CON005'),
+(3, 'IC0002'),
+(4, 'RES004');
+
+-- Raw request
+INSERT INTO raw_request (request, material) VALUES
+(1, 'CAP003'),
+(2, 'CON005'),
+(3, 'IC0002');
+
+-- Trouble_hist
+INSERT INTO trouble_hist (troubleDate, description, reception) VALUES
+('2024-11-18', 'Reported minor scratches on connectors', 2),
+('2024-11-21', 'Incorrect quantity reported on invoice', 3);
+
+
 
