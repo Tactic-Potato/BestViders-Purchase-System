@@ -3,17 +3,16 @@ include "includes/config/conn.php";
 $conn = connect();
 
 $num = $_POST['num'];
-$numTel = $_POST['numTel'];
-$email = $_POST['email'];
+$status = $_POST['status'];
 
 
 
-$update = "update provider SET numTel = '$numTel', email = '$email' where num = $num";
+$remove = "update provider SET status = '0' where num = $num";
 
-if($conn->query($update) === TRUE){
-    echo '<script type="text/javascript"> alert("Registro Exitoso"); window.location.href="createOrder.php" </script>';
+if($conn->query($remove) === TRUE){
+    echo '<script type="text/javascript"> alert("Removed succesfully"); window.location.href="WProvider.php" </script>';
 }else{
-    echo '<script type="text/javascript"> alert("Error al registrar"); window.location.href="createOrder.php" </script>';
+    echo '<script type="text/javascript"> alert("Error removing that provider"); window.location.href="WProvider.php" </script>';
 }
 
 

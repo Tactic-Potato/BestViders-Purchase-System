@@ -11,9 +11,9 @@ $email = $_POST['email'];
 $update = "update provider SET numTel = '$numTel', email = '$email' where num = $num";
 
 if($conn->query($update) === TRUE){
-    echo '<script type="text/javascript"> alert("Actualizacion Exitosa"); window.location.href="createOrder.php" </script>';
+    echo '<script type="text/javascript"> alert("Updated Succesfully"); window.location.href="WProvider.php" </script>';
 }else{
-    echo '<script type="text/javascript"> alert("Error al Actualizar"); window.location.href="createOrder.php" </script>';
+    echo '<script type="text/javascript"> alert("Error Updating the provider"); window.location.href="WProvider.php" </script>';
 }
 
 

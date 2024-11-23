@@ -60,9 +60,11 @@ CREATE TABLE provider (
     fiscal_name VARCHAR(100) NOT NULL,
     email VARCHAR(100) NULL,
     numTel VARCHAR(20) NULL,
-    status BOOLEAN DEFAULT TRUE
+    status BOOLEAN DEFAULT TRUE,
+    motive varchar (255) default null
 );
 
+ 
 -- 5. Raw Material
 CREATE TABLE raw_material (
     code VARCHAR(10) PRIMARY KEY,
@@ -288,7 +290,7 @@ CREATE TABLE trouble_hist (
     INNER JOIN charge AS c ON e.charge = c.code
     GROUP BY e.num;
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-    ALTER VIEW vw_provider AS 
+    create VIEW vw_provider AS 
     SELECT
         p.num AS num,
         p.fiscal_name AS fiscalName,
@@ -314,20 +316,20 @@ CREATE TABLE trouble_hist (
     INNER JOIN raw_material as rw ON o.raw_material = rw.code
     INNER JOIN status_order as so ON o.status = so.code;
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-    CREATE VIEW vw_request AS
-    SELECT
-        r.num as num,
-        r.subtotal as subtotal,
-        r.request_date as requestDate,
-        CONCAT(e.firstName, ' ', e.lastName) as employee,
-        p.fiscal_name as fiscalName,
-        o.num as numOrder,
-        sr.name as status
-    FROM request as r
-    INNER JOIN employee as e ON r.employee = e.num
-    INNER JOIN provider as p ON r.provider = p.num
-    INNER JOIN orders as o ON r.order_num = o.num
-    INNER JOIN status_request as sr ON r.status = sr.code;
+        CREATE VIEW vw_request AS
+        SELECT
+            r.num as num,
+            r.subtotal as subtotal,
+            r.request_date as requestDate,
+            CONCAT(e.firstName, ' ', e.lastName) as employee,
+            p.fiscal_name as fiscalName,
+            o.num as numOrder,
+            sr.name as status
+        FROM request as r
+        INNER JOIN employee as e ON r.employee = e.num
+        INNER JOIN provider as p ON r.provider = p.num
+        INNER JOIN orders as o ON r.order_num = o.num
+        INNER JOIN status_request as sr ON r.status = sr.code;
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
 /* * * * * * * * * * * * * INSERTS * * * * * * * * * * * * */

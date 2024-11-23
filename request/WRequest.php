@@ -32,7 +32,7 @@
                 <tr>
                     <td><?= $result['requestNum'] ?></td>
                     <td><?= $result['request_date'] ?></td>
-                    <td><?= $result['status_code'] ?></td>
+                    <td><?= $result['status'] ?></td>
                     <td><?= $result['employeeFirstName'] . " " . $result['employeeLastName'] ?></td>
                     <td><?= $result['providerName'] ?></td>
                     <td><?= $result['materials'] ?></td>
