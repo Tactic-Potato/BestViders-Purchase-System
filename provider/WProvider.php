@@ -117,7 +117,9 @@ body {
                     <th>Provider Number</th>
                     <th>Fiscal Name</th>
                     <th>Email</th>
-                    <th>Phone Number</th> <!-- Aquí se cierra correctamente el <th> -->
+                    <th>Phone Number</th>
+                    <th>Status</th>
+                    <th>Materials</th>
                     <th></th> <!-- Se elimina colspan para evitar desajustes -->
                     <th></th>
                 </tr>
@@ -126,20 +128,22 @@ body {
                 <?php 
                 include "../includes/config/conn.php";
                 $db = connect();
-                $query = mysqli_query($db, "SELECT * FROM provider");
+                $query = mysqli_query($db, "SELECT * FROM vw_provider");
                 while ($result = mysqli_fetch_array($query)){ ?>
                     <tr>
                         <td><?= htmlspecialchars($result['num']) ?></td>
-                        <td><?= htmlspecialchars($result['fiscal_name']) ?></td>
+                        <td><?= htmlspecialchars($result['fiscalName']) ?></td>
                         <td><?= htmlspecialchars($result['email']) ?></td>
                         <td><?= htmlspecialchars($result['numTel']) ?></td>
+                        <td><?= htmlspecialchars($result['status']) == 1 ? 'Afiliado' : 'No afiliado'?></td>
+                        <td><?= htmlspecialchars($result['materials']) ?></td>
                         <td><a href="updateProvider.php?num=<?=$result['num']?>">Modify</a></td>
                         <td><a href="removeProvider.php?num=<?=$result['num']?>">Remove</a></td>
                     </tr>
                 <?php } mysqli_close($db); ?>
             </tbody>
         </table>
-    </div>
+    </div> 
 </div>
 
 <!-- Add Bootstrap JS -->

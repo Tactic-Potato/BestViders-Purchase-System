@@ -288,16 +288,18 @@ CREATE TABLE trouble_hist (
     INNER JOIN charge AS c ON e.charge = c.code
     GROUP BY e.num;
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-    CREATE VIEW vw_provider AS 
+    ALTER VIEW vw_provider AS 
     SELECT
-        p.num as num,
-        p.fiscal_name as fiscalName,
-        p.email as email,
-        p.numTel as numTel,
-        p.status as Status,
-        rp.material as material
-    FROM provider as p
-    INNER JOIN raw_provider as rp ON rp.provider = p.num;
+        p.num AS num,
+        p.fiscal_name AS fiscalName,
+        p.email AS email,
+        p.numTel AS numTel,
+        p.status AS status,
+        GROUP_CONCAT(rm.name SEPARATOR ' | ') AS materials
+    FROM provider AS p
+    INNER JOIN raw_provider AS rp ON rp.provider = p.num
+    INNER JOIN raw_material AS rm ON rp.material = rm.code
+    GROUP BY p.num, p.fiscal_name, p.email, p.numTel, p.status;
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
     CREATE VIEW  vw_order AS
     SELECT
