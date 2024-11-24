@@ -473,5 +473,31 @@ INSERT INTO trouble_hist (troubleDate, description, reception) VALUES
 ('2024-11-18', 'Reported minor scratches on connectors', 2),
 ('2024-11-21', 'Incorrect quantity reported on invoice', 3);
 
+/********************** PROCEDURES ***********************/
 
+DELIMITER $$
+
+CREATE PROCEDURE Sp_RegistrarEmpleado(
+    IN firstName VARCHAR(100),
+    IN lastName VARCHAR(100),
+    IN surName VARCHAR(100),
+    IN numTel VARCHAR(20),
+    IN email VARCHAR(100),
+    IN charge VARCHAR(10),
+    IN area VARCHAR(10)
+)
+BEGIN
+    INSERT INTO employee (firstName, lastName, surname, numTel, email, charge, area)
+    VALUES (
+        firstName, 
+        lastName, 
+        surName, 
+        numTel, 
+        email, 
+        charge, 
+        area
+    );
+END$$
+
+DELIMITER ;
 
