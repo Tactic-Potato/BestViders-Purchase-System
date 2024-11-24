@@ -255,7 +255,7 @@ CREATE TABLE trouble_hist (
         SELECT SUM(RM.quantity * M.price)
         INTO total
         FROM request_material RM
-        JOIN raw_material M ON RM.product_code = M.code
+        JOIN raw_material M ON RM.material = M.code
         WHERE RM.request = NEW.request;
 
         UPDATE request
