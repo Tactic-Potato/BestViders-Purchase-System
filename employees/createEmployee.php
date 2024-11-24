@@ -18,25 +18,35 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $surName = $_POST['surName'];
     $numTel = $_POST['numTel'];
     $email = $_POST['email'];
-    $manager = $_POST['manager'] ?? NULL; // Permitir nulo en el manager
     $charge = $_POST['charge'];
     $area = $_POST['area'];
-    
-    $insert_query = "INSERT INTO employee (firstName, lastName, surname, numTel, email, manager, charge, area)
-                    VALUES ('$firstName', '$lastName', '$surName', '$numTel', '$email', NULLIF('$manager', ''), '$charge', '$area')";
 
-    if (mysqli_query($db, $insert_query)) {
+    // Usar el procedimiento almacenado
+    $stmt = mysqli_prepare($db, "CALL Sp_RegistrarEmpleado(?, ?, ?, ?, ?, ?, ?)");
+    
+    if (!$stmt) {
+        die('Error preparando la consulta: ' . mysqli_error($db));
+    }
+
+    // Vincular parámetros al procedimiento
+    mysqli_stmt_bind_param($stmt, 'sssssss', $firstName, $lastName, $surName, $numTel, $email, $charge, $area);
+
+    // Ejecutar el procedimiento
+    if (mysqli_stmt_execute($stmt)) {
         echo "<script>
                 alert('Registro exitoso');
                 if (confirm('¿Deseas realizar otro registro?')) {
                     document.getElementById('employeeForm').reset();
                 } else {
-                    window.location.href = 'rhindex.php';
+                    window.location.href = '../index.php';
                 }
             </script>";
     } else {
-        echo "Error: " . mysqli_error($db);
+        echo "Error: " . mysqli_stmt_error($stmt);
     }
+
+    // Cerrar el statement
+    mysqli_stmt_close($stmt);
 }
 ?>
 <head>
@@ -79,17 +89,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <h2>Work Information</h2>
             <div class="row">
                 <div class="form-group">
-                    <label>Manager</label>
-                    <select name="manager" id="manager">
-                        <option value="">Make Manager</option> <!-- Esta opción insertará un valor NULL en el campo 'manager' -->
-                        <?php while($manager = mysqli_fetch_assoc($managers)): ?>
-                            <option value="<?php echo $manager['num']; ?>">
-                                <?php echo $manager['num'] . " " . $manager['firstName']; ?>
-                            </option>
-                        <?php endwhile; ?>
-                    </select>
-                </div>
-                <div class="form-group">
                     <label>Charge</label>
                     <select name="charge" id="charge" required>
                         <option value="" disabled selected>Select charge</option>
@@ -115,3 +114,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </form>
     </div>
 </section>
+
+<!-- 
+<div class="form-group">
+                    <label>Manager</label>
+                    <select name="manager" id="manager">
+                        <option value="">Make Manager</option> <!-- Esta opción insertará un valor NULL en el campo 'manager' -->
+                        <!-- <?php while($manager = mysqli_fetch_assoc($managers)): ?> -->
+                            <!-- <option value="<?php echo $manager['num']; ?>"> -->
+                                <!-- <?php echo $manager['num'] . " " . $manager['firstName']; ?> -->
+                            <!-- </option> -->
+                        <!-- <?php endwhile; ?> -->
+                    <!-- </select> -->
+                <!-- </div> -->
+
+-->
