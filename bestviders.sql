@@ -331,6 +331,21 @@ CREATE TABLE trouble_hist (
         INNER JOIN orders as o ON r.order_num = o.num
         INNER JOIN status_request as sr ON r.status = sr.code;
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+create VIEW vw_provider_removed AS 
+SELECT
+    p.num AS num,
+    p.fiscal_name AS fiscalName,
+    p.email AS email,
+    p.numTel AS numTel,
+    p.status AS status,
+    GROUP_CONCAT(rm.name SEPARATOR ' | ') AS materials
+FROM provider AS p
+INNER JOIN raw_provider AS rp ON rp.provider = p.num
+INNER JOIN raw_material AS rm ON rp.material = rm.code
+WHERE p.status = 0 
+GROUP BY p.num, p.fiscal_name, p.email, p.numTel, p.status;
+
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
 /* * * * * * * * * * * * * INSERTS * * * * * * * * * * * * */
 

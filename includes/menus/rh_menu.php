@@ -16,8 +16,10 @@
                 Providers
             </a>
             <ul class="dropdown-menu" aria-labelledby="providersDropdown">
-                <li><a class="dropdown-item" href="provider/WProvider.php">Check Providers</a></li>
                 <li><a class="dropdown-item" href="provider/createProvider.php">Add Provider</a></li>
+                <li><a class="dropdown-item" href="provider/WProvider.php">Check All Providers</a></li>
+                <li><a class="dropdown-item" href="provider/WProviderRM.php">Check Removed Providers</a></li>
+                
             </ul>
         </li>
         <!-- Dropdown Employees -->
