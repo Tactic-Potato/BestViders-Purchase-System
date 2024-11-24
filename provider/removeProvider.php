@@ -15,13 +15,14 @@ if (!$infoProvider) {
 
 
 <link rel="stylesheet" href="includes/css/forms.css">
-<nav id="Return"><a href="index.php">Return</a></nav>
+<nav id="Return"><a href="WProvider.php">Return</a></nav>
 <section id="formCont">
     <div id="formCard">
         <form id = "removeProviderForm" method="POST">
             <input type="number" name="num" id="num" value="<?=$infoProvider['num']?>" readonly>
             <input type="text" name="fiscalName" id="fiscalName" value="<?=$infoProvider['fiscalName']?>" readonly>
             <textarea name="reason" id="reason" placeholder="Write the reason to remove the provider" required></textarea>
+            <input type="hidden" name="status" value="0">
 
             <div>
                 <button type="button" class="button" data-bs-toggle="modal" data-bs-target="#removeProviderModal">REMOVE</button>
@@ -41,6 +42,7 @@ if (!$infoProvider) {
             </div>
             <div class="modal-body">
                 Are you sure you want to remove the provider?<br>
+                <input type="num" name="num" id="num" value="<?=$infoProvider['num']?>" readonly>
                 <input type="text" name="fiscalName" id="fiscalName" value="<?=$infoProvider['fiscalName']?>" readonly>
             </div>
             <div class="modal-footer">
@@ -61,6 +63,13 @@ document.getElementById('confirmRemove').addEventListener('click', function () {
     // Crea un objeto FormData con los datos del formulario
     const formData = new FormData(form);
 
+    // Verificar si reason está vacío antes de enviar los datos
+    const reason = document.getElementById('reason').value;
+    if (reason.trim() === '') {
+        alert('Please provide a reason for removal.');
+        return; // No continúa si el campo "reason" está vacío
+    }
+
     // Enviar el formulario mediante fetch
     fetch('providerRMProcess.php', {
         method: 'POST',
@@ -70,7 +79,7 @@ document.getElementById('confirmRemove').addEventListener('click', function () {
     .then(data => {
         alert('Provider removed successfully!');
         // Opcional: Redirige o actualiza la página
-        window.location.href = 'index.php';
+        window.location.href = 'WProvider.php';
     })
     .catch(error => {
         console.error('Error:', error);
@@ -82,5 +91,25 @@ document.getElementById('confirmRemove').addEventListener('click', function () {
     modal.hide();
 });
 
-
 </script>
+<script>
+// Habilitar o deshabilitar el botón "REMOVE" basado en el contenido del campo "reason"
+document.getElementById('reason').addEventListener('input', function() {
+    const reason = document.getElementById('reason').value;
+    const removeButton = document.querySelector('.button');
+    if (reason.trim() === '') {
+        removeButton.disabled = true;  // Deshabilita el botón si el campo está vacío
+    } else {
+        removeButton.disabled = false; // Habilita el botón si el campo tiene texto
+    }
+});
+
+// Inicializa el estado del botón "REMOVE" al cargar la página
+document.addEventListener('DOMContentLoaded', function() {
+    const reason = document.getElementById('reason').value;
+    const removeButton = document.querySelector('.button');
+    if (reason.trim() === '') {
+        removeButton.disabled = true;  // Deshabilita el botón si el campo está vacío
+    }
+});
+</script> 
