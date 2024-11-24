@@ -346,6 +346,21 @@ WHERE p.status = 0
 GROUP BY p.num, p.fiscal_name, p.email, p.numTel, p.status;
 
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+create VIEW vw_provider_assoc AS 
+SELECT
+    p.num AS num,
+    p.fiscal_name AS fiscalName,
+    p.email AS email,
+    p.numTel AS numTel,
+    p.status AS status,
+    GROUP_CONCAT(rm.name SEPARATOR ' | ') AS materials
+FROM provider AS p
+INNER JOIN raw_provider AS rp ON rp.provider = p.num
+INNER JOIN raw_material AS rm ON rp.material = rm.code
+WHERE p.status = 1
+GROUP BY p.num, p.fiscal_name, p.email, p.numTel, p.status;
+
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
 /* * * * * * * * * * * * * INSERTS * * * * * * * * * * * * */
 
@@ -501,3 +516,26 @@ END$$
 
 DELIMITER ;
 
+DELIMITER $$
+
+CREATE PROCEDURE sp_RemoveProvider(
+    IN p_num INT,
+    IN p_motive TEXT,
+    IN p_status INT
+)
+BEGIN
+    UPDATE provider
+    SET status = p_status, motive = p_motive
+    WHERE num = p_num;
+END$$
+
+DELIMITER $$
+CREATE PROCEDURE sp_RehireProvider(
+    IN p_num INT,
+    IN p_status INT
+)
+BEGIN
+    UPDATE provider
+    SET status = p_status
+    WHERE num = p_num;
+END$$

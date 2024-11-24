@@ -128,7 +128,7 @@ body {
                 <?php 
                 include "../includes/config/conn.php";
                 $db = connect();
-                $query = mysqli_query($db, "SELECT * FROM vw_provider");
+                $query = mysqli_query($db, "SELECT * FROM vw_provider_assoc");
                 while ($result = mysqli_fetch_array($query)){ ?>
                     <tr>
                         <td><?= htmlspecialchars($result['num']) ?></td>
@@ -137,20 +137,8 @@ body {
                         <td><?= htmlspecialchars($result['numTel']) ?></td>
                         <td><?= htmlspecialchars($result['status']) == 1 ? 'Associated' : 'Not Associated'?></td>
                         <td><?= htmlspecialchars($result['materials']) ?></td>
-                        <td>
-                            <?php if ($result['status'] == 1): ?>
-                                <a href="updateProvider.php?num=<?=$result['num']?>">Modify</a>
-                            <?php else: ?>
-                                
-                            <?php endif; ?>
-                        </td>
-                        <td>
-                            <?php if ($result['status'] == 1): ?>
-                                <a href="removeProvider.php?num=<?=$result['num']?>">Remove</a>
-                            <?php else: ?>
-                                <a href="rehireProvider.php?num=<?=$result['num']?>">Re-Hire</a>
-                            <?php endif; ?>
-                        </td>
+                        <td><a href="updateProvider.php?num=<?=$result['num']?>">Modify</a></td>
+                        <td><a href="removeProvider.php?num=<?=$result['num']?>">Remove</a></td>
                     </tr>
                 <?php } mysqli_close($db); ?>
             </tbody>

@@ -7,21 +7,23 @@ $motive = $_POST['motive'];
 $status = $_POST['status'];  
 
 
-
 if (empty($motive)) {
     echo '<script type="text/javascript"> alert("Reason is required."); window.location.href="WProvider.php" </script>';
     exit();
 }
 
-    $remove = "UPDATE provider SET status = '$status', motive = '$motive' WHERE num = $num";
+// Escapar los valores para evitar inyecciones SQL
+$num = $conn->real_escape_string($num);
+$motive = $conn->real_escape_string($motive);
+$status = $conn->real_escape_string($status);
 
+$remove = "CALL sp_RemoveProvider('$num', '$motive', '$status')";
 
-    if ($conn->query($remove) === TRUE) {
-        echo '<script type="text/javascript"> alert("Provider removed successfully"); window.location.href="WProvider.php" </script>';
-    } else {
-        echo '<script type="text/javascript"> alert("Error removing provider: ' . $conn->error . '"); window.location.href="WProvider.php" </script>';
-    }
-
+if ($conn->query($remove) === TRUE) {
+    echo '<script type="text/javascript"> alert("Provider removed successfully"); window.location.href="WProvider.php" </script>';
+} else {
+    echo '<script type="text/javascript"> alert("Error removing provider: ' . $conn->error . '"); window.location.href="WProvider.php" </script>';
+}
 
 $conn->close();
 ?>
