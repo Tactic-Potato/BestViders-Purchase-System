@@ -106,29 +106,26 @@ body {
                 <tr>
                     <th>Order Number</th>
                     <th>Description</th>
-                    <th>Status</th>
                     <th>Employee</th>
-                    <th>Raw Material</th>
+                    <th>Material</th>
+                    <th>Status</th>
+                    <th>Date</th>
                 </tr>
             </thead>
             <tbody>
                 <?php 
                 include "../includes/config/conn.php";
                 $db = connect();
-                $query = mysqli_query($db, "SELECT o.num, o.description, o.status,
-                                        e.firstName AS employeeFirstName, e.lastName AS employeeLastName, 
-                                        rm.name AS rawMaterialName
-                                    FROM orders o
-                                    LEFT JOIN employee e ON o.employee = e.num
-                                    LEFT JOIN raw_material rm ON o.raw_material = rm.code");
+                $query = mysqli_query($db, "SELECT * from vw_order");
 
                 while ($result = mysqli_fetch_array($query)) { ?>
                     <tr>
                         <td><?= htmlspecialchars($result['num']) ?></td>
                         <td><?= htmlspecialchars($result['description']) ?></td>
+                        <td><?= htmlspecialchars($result['employee']) ?></td>
+                        <td><?= htmlspecialchars($result['rawMaterial']) ?></td>
                         <td><?= htmlspecialchars($result['status']) ?></td>
-                        <td><?= htmlspecialchars($result['employeeFirstName'] . " " . $result['employeeLastName']) ?></td>
-                        <td><?= htmlspecialchars($result['rawMaterialName']) ?></td>
+                        <td><?= htmlspecialchars($result['creationDate']) ?></td>
                     </tr>
                 <?php } mysqli_close($db); ?>
             </tbody>

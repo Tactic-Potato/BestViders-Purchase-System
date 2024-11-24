@@ -515,7 +515,7 @@ BEGIN
 END$$
 
 DELIMITER ;
-
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
 DELIMITER $$
 
 CREATE PROCEDURE sp_RemoveProvider(
@@ -529,6 +529,8 @@ BEGIN
     WHERE num = p_num;
 END$$
 
+DELIMITER ;
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
 DELIMITER $$
 CREATE PROCEDURE sp_RehireProvider(
     IN p_num INT,
@@ -539,3 +541,20 @@ BEGIN
     SET status = p_status
     WHERE num = p_num;
 END$$
+
+DELIMITER ;
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+DELIMITER $$
+
+CREATE PROCEDURE Sp_CreateOrder(
+    IN p_descrp TEXT,
+    IN p_employee INT,
+    IN p_rawMaterial VARCHAR(10)
+)
+BEGIN
+    INSERT INTO orders (description, employee, raw_material)
+    VALUES (p_descrp, p_employee, p_rawMaterial);
+END$$
+
+DELIMITER ;
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
