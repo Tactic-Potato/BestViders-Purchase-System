@@ -15,7 +15,7 @@ if (!$infoProvider) {
 
 
 <link rel="stylesheet" href="includes/css/forms.css">
-<nav id="Return"><a href="index.php">Return</a></nav>
+<nav id="Return"><a href="../index.php">Return</a></nav>
 <section id="formCont">
     <div id="formCard">
         <form action="providerUProcess.php" method="POST">
