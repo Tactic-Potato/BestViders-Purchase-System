@@ -21,7 +21,7 @@ if (!$infoProvider) {
         <form id = "removeProviderForm" method="POST">
             <input type="number" name="num" id="num" value="<?=$infoProvider['num']?>" readonly>
             <input type="text" name="fiscalName" id="fiscalName" value="<?=$infoProvider['fiscalName']?>" readonly>
-            <textarea name="reason" id="reason" placeholder="Write the reason to remove the provider" required></textarea>
+            <textarea name="motive" id="motive" placeholder="Write the reason to remove the provider" required></textarea>
             <input type="hidden" name="status" value="0">
 
             <div>
@@ -63,9 +63,8 @@ document.getElementById('confirmRemove').addEventListener('click', function () {
     // Crea un objeto FormData con los datos del formulario
     const formData = new FormData(form);
 
-    // Verificar si reason está vacío antes de enviar los datos
-    const reason = document.getElementById('reason').value;
-    if (reason.trim() === '') {
+    const motive = document.getElementById('motive').value;
+    if (motive.trim() === '') {
         alert('Please provide a reason for removal.');
         return; // No continúa si el campo "reason" está vacío
     }
@@ -94,10 +93,10 @@ document.getElementById('confirmRemove').addEventListener('click', function () {
 </script>
 <script>
 // Habilitar o deshabilitar el botón "REMOVE" basado en el contenido del campo "reason"
-document.getElementById('reason').addEventListener('input', function() {
-    const reason = document.getElementById('reason').value;
+document.getElementById('motive').addEventListener('input', function() {
+    const motive = document.getElementById('motive').value;
     const removeButton = document.querySelector('.button');
-    if (reason.trim() === '') {
+    if (motive.trim() === '') {
         removeButton.disabled = true;  // Deshabilita el botón si el campo está vacío
     } else {
         removeButton.disabled = false; // Habilita el botón si el campo tiene texto
@@ -106,9 +105,9 @@ document.getElementById('reason').addEventListener('input', function() {
 
 // Inicializa el estado del botón "REMOVE" al cargar la página
 document.addEventListener('DOMContentLoaded', function() {
-    const reason = document.getElementById('reason').value;
+    const motive = document.getElementById('motive').value;
     const removeButton = document.querySelector('.button');
-    if (reason.trim() === '') {
+    if (motive.trim() === '') {
         removeButton.disabled = true;  // Deshabilita el botón si el campo está vacío
     }
 });

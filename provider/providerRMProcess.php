@@ -3,17 +3,17 @@ include "../includes/config/conn.php";
 $conn = connect();
 
 $num = $_POST['num'];  
-$reason = $_POST['reason'];  
+$motive = $_POST['motive'];  
 $status = $_POST['status'];  
 
 
 
-if (empty($reason)) {
+if (empty($motive)) {
     echo '<script type="text/javascript"> alert("Reason is required."); window.location.href="WProvider.php" </script>';
     exit();
 }
 
-    $remove = "UPDATE provider SET status = '$status', reason = '$reason' WHERE num = $num";
+    $remove = "UPDATE provider SET status = '$status', motive = '$motive' WHERE num = $num";
 
 
     if ($conn->query($remove) === TRUE) {
