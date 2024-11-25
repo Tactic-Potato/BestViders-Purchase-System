@@ -9,7 +9,7 @@
                 <div class="card h-100 shadow-sm hover-card">
                     <div class="card-body">
                         <h2 class="card-title mb-4">About Our System</h2>
-                        <p class="card-text">BestViders is a comprehensive web-based system designed to streamline the process of purchasing raw materials in our maquila (manufacturing) setting. This platform bridges the gap between the Human Resources department and the Purchasing department, ensuring efficient communication and order management.</p>
+                        <p class="card-text">BestViders is a web-based platform that supports effective collaboration between the Human Resources and Purchasing departments, enabling streamlined processes and seamless communication.</p>
                     </div>
                 </div>
             </div>
@@ -17,8 +17,8 @@
             <div class="col">
                 <div class="card h-100 shadow-sm hover-card">
                     <div class="card-body">
-                        <h2 class="card-title mb-4">Role of Human Resources</h2>
-                        <p class="card-text">As part of the Human Resources team, your role in this system is crucial. You are responsible for initiating and managing the requests for raw materials, particularly electronic components such as capacitors and resistors. Your actions here form the first step in our supply chain process.</p>
+                        <h2 class="card-title mb-4">Human Resources Role</h2>
+                        <p class="card-text">As a Human Resources user, your role involves reviewing and maintaining key relationships within the organization. This includes managing data related to providers, employees, and the budgets allocated to different areas. Your insights ensure accurate tracking and resource allocation.</p>
                     </div>
                 </div>
             </div>
@@ -28,10 +28,9 @@
                     <div class="card-body">
                         <h2 class="card-title mb-4">Key Features</h2>
                         <ul class="list-group list-group-flush">
-                            <li class="list-group-item"><strong>Order Management:</strong> Create, view, and track orders for raw materials.</li>
-                            <li class="list-group-item"><strong>Supplier Coordination:</strong> Manage information about our suppliers and their offerings.</li>
-                            <li class="list-group-item"><strong>Inventory Oversight:</strong> Keep track of current stock levels and upcoming needs.</li>
-                            <li class="list-group-item"><strong>Communication Hub:</strong> Facilitate smooth information flow between HR and Purchasing departments.</li>
+                            <li class="list-group-item"><strong>Provider Relationships:</strong> View and update information about suppliers and their roles in the supply chain.</li>
+                            <li class="list-group-item"><strong>Employee Oversight:</strong> Analyze data about employees and their responsibilities across departments.</li>
+                            <li class="list-group-item"><strong>Budget Tracking:</strong> Monitor budget allocations and spending for each area of the organization.</li>
                         </ul>
                     </div>
                 </div>
@@ -42,11 +41,10 @@
                     <div class="card-body">
                         <h2 class="card-title mb-4">How It Works</h2>
                         <ol class="list-group list-group-numbered">
-                            <li class="list-group-item">HR identifies the need for raw materials based on production forecasts.</li>
-                            <li class="list-group-item">Using this system, HR creates a detailed order request.</li>
-                            <li class="list-group-item">The request is sent to the Purchasing department through the platform.</li>
-                            <li class="list-group-item">Purchasing reviews the request, processes it, and places orders with suppliers.</li>
-                            <li class="list-group-item">HR can track the status of their requests at any time.</li>
+                            <li class="list-group-item">HR accesses provider and employee data via the platform.</li>
+                            <li class="list-group-item">Budget information is reviewed regularly to ensure proper allocations.</li>
+                            <li class="list-group-item">Reports and analytics are generated to guide decision-making.</li>
+                            <li class="list-group-item">Relevant insights are shared with other departments as needed.</li>
                         </ol>
                     </div>
                 </div>
@@ -56,7 +54,7 @@
         <div class="card mt-4 shadow-sm hover-card">
             <div class="card-body">
                 <h2 class="card-title mb-4">Getting Started</h2>
-                <p class="card-text">To begin, use the navigation menu to access different sections of the system. If you need any assistance or have questions about using the platform, please contact our IT support team.</p>
+                <p class="card-text">Use the navigation menu to access the provider, employee, and budget sections. For any questions or assistance, please contact IT support.</p>
             </div>
         </div>
     </div>

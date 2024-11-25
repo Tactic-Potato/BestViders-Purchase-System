@@ -115,21 +115,54 @@ body {
             </thead>
             <tbody>
                 <?php 
+                session_start();  // Asegúrate de que la sesión esté iniciada
+
                 include "../includes/config/conn.php";
                 $db = connect();
-                $query = mysqli_query($db, "SELECT * from vw_order");
 
-                while ($result = mysqli_fetch_array($query)) { ?>
-                    <tr>
-                        <td><?= htmlspecialchars($result['num']) ?></td>
-                        <td><?= htmlspecialchars($result['description']) ?></td>
-                        <td><?= htmlspecialchars($result['employee']) ?></td>
-                        <td><?= htmlspecialchars($result['rawMaterials']) ?></td>
-                        <td><?= htmlspecialchars($result['status']) ?></td>
-                        <td><?= htmlspecialchars($result['creationDate']) ?></td>
-                        <td><?= htmlspecialchars($result['area']) ?></td>
-                    </tr>
-                <?php } mysqli_close($db); ?>
+                // Asegúrate de que la variable de sesión 'role' esté definida (código del área)
+                if (isset($_SESSION['role'])) {
+                    $area_code = $_SESSION['role'];  // El código del área está en la sesión
+
+                    // Consultamos el nombre del área con el código del área
+                    $area_query = mysqli_query($db, "SELECT name FROM area WHERE code = '$area_code'");
+                    $area_row = mysqli_fetch_assoc($area_query);
+
+                    if ($area_row) {
+                        $area_name = $area_row['name'];  // Obtenemos el nombre del área basado en el código
+
+                        // Ahora podemos usar el nombre del área para filtrar la consulta
+                        $query = mysqli_query($db, "SELECT * FROM vw_order WHERE area = '$area_name'");
+
+                        if (mysqli_num_rows($query) > 0) {
+                            // Si hay resultados, mostramos la tabla
+                            while ($result = mysqli_fetch_array($query)) { ?>
+                                <tr>
+                                    <td><?= htmlspecialchars($result['num']) ?></td>
+                                    <td><?= htmlspecialchars($result['description']) ?></td>
+                                    <td><?= htmlspecialchars($result['employee']) ?></td>
+                                    <td><?= htmlspecialchars($result['rawMaterials']) ?></td>
+                                    <td><?= htmlspecialchars($result['status']) ?></td>
+                                    <td><?= htmlspecialchars($result['creationDate']) ?></td>
+                                    <td><?= htmlspecialchars($result['area']) ?></td>
+                                </tr>
+                            <?php } 
+                        } else {
+                            // Si no hay resultados, mostramos un mensaje de advertencia
+                            echo "<tr><td colspan='7'>No orders found for your area.</td></tr>";
+                        }
+                    } else {
+                        // Si no se encuentra el nombre del área en la base de datos
+                        echo "<tr><td colspan='7'>Error: Area not found.</td></tr>";
+                    }
+                } else {
+                    // Si no se ha encontrado el área en la sesión, mostramos un mensaje de error
+                    echo "<tr><td colspan='7'>Session error: User area not found.</td></tr>";
+                }
+
+                // Cerrar la conexión a la base de datos
+                mysqli_close($db);
+                ?>
             </tbody>
         </table>
     </div>

@@ -9,6 +9,15 @@
                 <li><a class="dropdown-item" href="order/WOrder.php">Raw-Material Reports</a></li>
             </ul>
         </li>
+
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="ordersDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Orders
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="ordersDropdown">
+                <li><a class="dropdown-item" href="order/createOrder.php">Orders</a></li>
+            </ul>
+        </li>
         <!-- Dropdown Providers -->
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="requestDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">

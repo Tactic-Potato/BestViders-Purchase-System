@@ -117,14 +117,14 @@ body {
                 <?php 
                 include "../includes/config/conn.php";
                 $db = connect();
-                $query = mysqli_query($db, "SELECT * from vw_order");
+                $query = mysqli_query($db, "SELECT * from vw_order where status = 'Pending'");
 
                 while ($result = mysqli_fetch_array($query)) { ?>
                     <tr>
                         <td><?= htmlspecialchars($result['num']) ?></td>
                         <td><?= htmlspecialchars($result['description']) ?></td>
                         <td><?= htmlspecialchars($result['employee']) ?></td>
-                        <td><?= htmlspecialchars($result['rawMaterials']) ?></td>
+                        <td><?= htmlspecialchars($result['rawMaterial']) ?></td>
                         <td><?= htmlspecialchars($result['status']) ?></td>
                         <td><?= htmlspecialchars($result['creationDate']) ?></td>
                         <td><?= htmlspecialchars($result['area']) ?></td>
