@@ -279,6 +279,25 @@ CREATE TABLE trouble (
     FROM employee AS e
     INNER JOIN user AS u ON e.num = u.num;
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+    CREATE VIEW vw_employee AS
+    SELECT
+        e.num AS num,
+        CONCAT(
+            IFNULL(e.firstName, ''), ' ',
+            IFNULL(e.lastName, ''), ' ',
+            IFNULL(e.surname, '')
+        ) AS name,
+        e.status AS status,
+        e.numTel AS numTel,
+        e.email AS email,
+        c.name AS charge,
+        a.name AS area
+    FROM employee AS e
+    INNER JOIN charge AS c ON e.charge = c.code
+    INNER JOIN area AS a ON e.area = a.code;
+
+
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
     create VIEW vw_provider AS 
     SELECT
         p.num AS num,
@@ -392,7 +411,7 @@ INSERT INTO area (code, name, manager) VALUES
 ('ST', 'Store', NULL),
 ('PA1', 'Production Area 1', NULL),
 ('PA2', 'Production Area 2', NULL),
-('PA3', 'Production Area 3', NULL)
+('PA3', 'Production Area 3', NULL);
 
 -- Charge
 INSERT INTO charge (code, name) VALUES
