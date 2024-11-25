@@ -211,8 +211,6 @@ CREATE TABLE trouble (
         VALUES (NEW.num, Username, '1234567890');
     END $$
 
-
-
     DELIMITER $$
     CREATE TRIGGER UpdateOrderStatus
     AFTER INSERT ON request
@@ -280,19 +278,6 @@ CREATE TABLE trouble (
     FROM employee AS e
     INNER JOIN user AS u ON e.num = u.num;
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-    CREATE VIEW vw_employee_user AS
-    SELECT 
-        e.num as num,
-        e.firstName AS firstName,
-        e.lastName AS lastName,
-        e.area AS area,
-        e.status AS status,
-        e.numTel AS numTel,
-        e.email AS email,
-        u.password
-    FROM employee AS e
-    INNER JOIN user AS u ON e.num = u.num;
--- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
     create VIEW vw_provider AS 
     SELECT
         p.num AS num,
@@ -306,7 +291,7 @@ CREATE TABLE trouble (
     INNER JOIN raw_material AS rm ON rp.material = rm.code
     GROUP BY p.num, p.fiscal_name, p.email, p.numTel, p.status;
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-    ALTER VIEW  vw_order AS
+    CREATE VIEW  vw_order AS
     SELECT
         o.num as num,
         o.description as description,
@@ -317,54 +302,54 @@ CREATE TABLE trouble (
         a.name as area
     FROM orders as o 
     INNER JOIN employee as e ON o.employee = e.num
-    INNER JOIN raw_material as rw ON o.raw_material = rw.code
+    INNER JOIN order_material as om ON om.order_num = o.num
+    INNER JOIN raw_material as rw ON om.material = rw.code
     INNER JOIN status_order as so ON o.status = so.code
     INNER JOIN area as a ON o.area = a.code;
 
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-        CREATE VIEW vw_request AS
-        SELECT
-            r.num as num,
-            r.subtotal as subtotal,
-            r.request_date as requestDate,
-            CONCAT(e.firstName, ' ', e.lastName) as employee,
-            p.fiscal_name as fiscalName,
-            o.num as numOrder,
-            sr.name as status
-        FROM request as r
-        INNER JOIN employee as e ON r.employee = e.num
-        INNER JOIN provider as p ON r.provider = p.num
-        INNER JOIN orders as o ON r.order_num = o.num
-        INNER JOIN status_request as sr ON r.status = sr.code;
+    CREATE VIEW vw_request AS
+    SELECT
+        r.num as num,
+        r.request_date as requestDate,
+        CONCAT(e.firstName, ' ', e.lastName) as employee,
+        p.fiscal_name as fiscalName,
+        o.num as numOrder,
+        sr.name as status
+    FROM request as r
+    INNER JOIN employee as e ON r.employee = e.num
+    INNER JOIN provider as p ON r.provider = p.num
+    INNER JOIN orders as o ON r.order_num = o.num
+    INNER JOIN status_request as sr ON r.status = sr.code;
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-create VIEW vw_provider_removed AS 
-SELECT
-    p.num AS num,
-    p.fiscal_name AS fiscalName,
-    p.email AS email,
-    p.numTel AS numTel,
-    p.status AS status,
-    GROUP_CONCAT(rm.name SEPARATOR ' | ') AS materials
-FROM provider AS p
-INNER JOIN raw_provider AS rp ON rp.provider = p.num
-INNER JOIN raw_material AS rm ON rp.material = rm.code
-WHERE p.status = 0 
-GROUP BY p.num, p.fiscal_name, p.email, p.numTel, p.status;
+    create VIEW vw_provider_removed AS 
+    SELECT
+        p.num AS num,
+        p.fiscal_name AS fiscalName,
+        p.email AS email,
+        p.numTel AS numTel,
+        p.status AS status,
+        GROUP_CONCAT(rm.name SEPARATOR ' | ') AS materials
+    FROM provider AS p
+    INNER JOIN raw_provider AS rp ON rp.provider = p.num
+    INNER JOIN raw_material AS rm ON rp.material = rm.code
+    WHERE p.status = 0 
+    GROUP BY p.num, p.fiscal_name, p.email, p.numTel, p.status;
 
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-create VIEW vw_provider_assoc AS 
-SELECT
-    p.num AS num,
-    p.fiscal_name AS fiscalName,
-    p.email AS email,
-    p.numTel AS numTel,
-    p.status AS status,
-    GROUP_CONCAT(rm.name SEPARATOR ' | ') AS materials
-FROM provider AS p
-INNER JOIN raw_provider AS rp ON rp.provider = p.num
-INNER JOIN raw_material AS rm ON rp.material = rm.code
-WHERE p.status = 1
-GROUP BY p.num, p.fiscal_name, p.email, p.numTel, p.status;
+    create VIEW vw_provider_assoc AS 
+    SELECT
+        p.num AS num,
+        p.fiscal_name AS fiscalName,
+        p.email AS email,
+        p.numTel AS numTel,
+        p.status AS status,
+        GROUP_CONCAT(rm.name SEPARATOR ' | ') AS materials
+    FROM provider AS p
+    INNER JOIN raw_provider AS rp ON rp.provider = p.num
+    INNER JOIN raw_material AS rm ON rp.material = rm.code
+    WHERE p.status = 1
+    GROUP BY p.num, p.fiscal_name, p.email, p.numTel, p.status;
 
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
@@ -378,9 +363,8 @@ INSERT INTO status_request (code, name) VALUES
 
 -- Status Order
 INSERT INTO status_order (code, name) VALUES
-('CRTD', 'Created'),
-('PROC', 'In Process'),
-('RCVD', 'Received'),
+('PEND', 'Pending'),
+('APRV', 'Approved'),
 ('REJT', 'Rejected');
 
 -- Status Reception
