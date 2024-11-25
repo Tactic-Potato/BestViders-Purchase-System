@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $email = $_POST['email'];
         $password = $_POST['password'];
 
-        $query = "SELECT num, firstName, lastName, area, password 
+        $query = "SELECT *
                     FROM vw_employee_user
                     WHERE email = ?";
 

@@ -149,8 +149,6 @@ CREATE TABLE budget (
     FOREIGN KEY (area) REFERENCES area(code)
 );
 
-
-
 -- 11. User
 CREATE TABLE user (
     num INT PRIMARY KEY,
@@ -277,6 +275,7 @@ CREATE TABLE trouble (
         e.area AS area,
         e.email AS email,
         e.numTel AS numTel,
+        e.status AS status,
         u.password
     FROM employee AS e
     INNER JOIN user AS u ON e.num = u.num;
