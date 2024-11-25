@@ -14,6 +14,10 @@ session_start();
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $descrp = $_POST['descrp'];
     $rawMaterial = $_POST['rawMaterial'];
+    
+
+    // Estas dos variables son las que toman los datos del empleado directamente de la session que este iniciada. Por si quieren tomar un dato de la session
+    // esta esta configurada en el archivo del loggin
     $employee = $_SESSION['num'];
     $area = $_SESSION['role'];
 
