@@ -303,18 +303,22 @@ CREATE TABLE trouble_hist (
     INNER JOIN raw_material AS rm ON rp.material = rm.code
     GROUP BY p.num, p.fiscal_name, p.email, p.numTel, p.status;
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-    CREATE VIEW  vw_order AS
+    ALTER VIEW  vw_order AS
     SELECT
         o.num as num,
         o.description as description,
         CONCAT(e.firstName, ' ', e.lastName) as employee,
         rw.name as rawMaterial,
         so.name as status,
-        o.creationDate as creationDate
+        o.creationDate as creationDate,
+        a.name as area
     FROM orders as o 
     INNER JOIN employee as e ON o.employee = e.num
     INNER JOIN raw_material as rw ON o.raw_material = rw.code
-    INNER JOIN status_order as so ON o.status = so.code;
+    INNER JOIN status_order as so ON o.status = so.code
+    INNER JOIN area_order as ao ON ao.order_num = o.num
+    INNER JOIN area as a ON ao.area = a.code;
+
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
         CREATE VIEW vw_request AS
         SELECT

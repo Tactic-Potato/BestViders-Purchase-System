@@ -110,6 +110,7 @@ body {
                     <th>Material</th>
                     <th>Status</th>
                     <th>Date</th>
+                    <th>Area</th>
                 </tr>
             </thead>
             <tbody>
@@ -126,6 +127,7 @@ body {
                         <td><?= htmlspecialchars($result['rawMaterial']) ?></td>
                         <td><?= htmlspecialchars($result['status']) ?></td>
                         <td><?= htmlspecialchars($result['creationDate']) ?></td>
+                        <td><?= htmlspecialchars($result['area']) ?></td>
                     </tr>
                 <?php } mysqli_close($db); ?>
             </tbody>
