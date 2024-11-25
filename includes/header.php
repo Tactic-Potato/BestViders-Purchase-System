@@ -41,11 +41,11 @@ if (!isset($_SESSION['num'])) {
                             include "menus/st_menu.php";
                             break;
                         default:
-                            include "includes/home.php";
+                            include "menus/menu.php";
                             break;
                     }
                     ?>
                 </div>
             </nav>
         </div>
-    </header>
+    </header> 
