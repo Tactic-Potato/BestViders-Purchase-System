@@ -361,21 +361,18 @@ CREATE TABLE trouble (
 -- Status Request
 INSERT INTO status_request (code, name) VALUES
 ('PEND', 'Pending'),
-('APRV', 'Approved'),
-('REJT', 'Rejected');
+('PROC', 'In Process'),
+('COMP', 'Completed');
 
--- Status Order
 INSERT INTO status_order (code, name) VALUES
 ('PEND', 'Pending'),
 ('APRV', 'Approved'),
-('REJT', 'Rejected');
+('REJD', 'Rejected');
 
--- Status Reception
 INSERT INTO status_reception (code, name) VALUES
 ('PEND', 'Pending'),
-('MISS', 'Missing'),
-('DMGE', 'Damage'),
-('CMPL', 'Completed');
+('VERF', 'Verified'),
+('ERR', 'Errors');
 
 -- Category
 INSERT INTO category (code, name, description) VALUES
@@ -383,17 +380,19 @@ INSERT INTO category (code, name, description) VALUES
 ('CON', 'Connectors', 'Various connectors for PCBs and circuits.'),
 ('IC', 'Integrated Circuits', 'Semiconductor chips for various functionalities.'),
 ('PCB', 'Printed Circuit Boards', 'Base material for creating circuit boards.'),
-('RES', 'Resistors', 'Components used to limit the flow of current.');
+('RES', 'Resistors', 'Components used to limit the flow of current.'),
+('LED', 'LEDs', 'Light Emitting Diodes for indicators and displays.'),
+('TRN', 'Transistors', 'Semiconductor devices used for switching and amplification.'),
+('DIO', 'Diodes', 'Components for rectification and switching.');
 
 -- Area
 INSERT INTO area (code, name, manager) VALUES
 ('RH', 'Human Resources', NULL),
 ('PR', 'Purchasing Area', NULL),
 ('ST', 'Store', NULL),
-('ENG', 'Engineering', NULL),
-('FIN', 'Finance', NULL),
-('IT', 'Information Technology', NULL),
-('QC', 'Quality Control', NULL);
+('PA1', 'Production Area 1', NULL),
+('PA2', 'Production Area 2', NULL),
+('PA3', 'Production Area 3', NULL)
 
 -- Charge
 INSERT INTO charge (code, name) VALUES
@@ -402,16 +401,10 @@ INSERT INTO charge (code, name) VALUES
 
 -- Employee
 INSERT INTO employee (firstName, lastName, surname, status, numTel, email, charge, area) VALUES
-('Carlos', 'Gómez', 'Pérez', TRUE, '5551234567', 'carlos.gomez@bestviders.com', 'MNGR', 'RH'),
-('Ana', 'Martínez', NULL, TRUE, '5552345678', 'ana.martinez@bestviders.com', 'WRKR', 'ST'),
-('Luis', 'Fernández', 'López', TRUE, '5553456789', 'luis.fernandez@bestviders.com', 'WRKR', 'PR');
-
--- Provider
-INSERT INTO provider (fiscal_name, email, numTel) VALUES
-('Supplier A', 'supplier.a@example.com', '6642359124'),
-('Supplier B', 'supplier.b@example.com', '6642589743'),
-('Supplier C', 'supplier.c@example.com', '6644598178'),
-('Supplier D', 'supplier.d@example.com', '6645633214');
+('Carlos', 'Gómez', 'Pérez', TRUE, '5551234567', 'carlos.gomez@gmail.com', 'MNGR', 'RH'),
+('Ana', 'Martínez', NULL, TRUE, '5552345678', 'ana.martinez@gmail.com', 'WRKR', 'PA1'),
+('Maria', 'Salem', NULL, TRUE, '5552345678', 'MariaSal@gmail.com', 'WRKR', 'PA2'),
+('Jane', 'Lopez', NULL, TRUE, '5552345678', 'JaneL@gmail.com', 'WRKR', 'PA3')
 
 -- Raw Material
 INSERT INTO raw_material (code, price, name, description, weight, stock, category) VALUES
@@ -419,67 +412,45 @@ INSERT INTO raw_material (code, price, name, description, weight, stock, categor
 ('CON005', 0.50, 'USB Connector', 'Standard USB connector type-A', 0.01, 300, 'CON'),
 ('IC0002', 3.00, 'Microcontroller', '8-bit Microcontroller for embedded applications', 0.01, 200, 'IC'),
 ('PCB001', 1.50, 'PCB 2-layer', 'Standard 2-layer PCB for general applications', 0.05, 500, 'PCB'),
-('RES004', 0.05, 'Resistor 100 Ohm', 'General purpose resistor 100 Ohm 1/4W', 0.00, 1500, 'RES');
+('RES004', 0.05, 'Resistor 100 Ohm', 'General purpose resistor 100 Ohm 1/4W', 0.00, 1500, 'RES'),
+('CAP006', 0.15, 'Ceramic Capacitor 22uF', 'High capacitance for filtering', 0.00, 800, 'CAP'),
+('CON008', 0.75, 'HDMI Connector', 'Standard HDMI connector for video/audio', 0.02, 400, 'CON'),
+('IC0030', 5.50, 'ARM Cortex-M0', '32-bit microcontroller for IoT applications', 0.01, 100, 'IC'),
+('PCB002', 2.00, 'PCB 4-layer', '4-layer PCB for advanced designs', 0.07, 300, 'PCB'),
+('RES010', 0.10, 'Resistor 1k Ohm', 'General purpose resistor 1k Ohm 1/2W', 0.00, 1200, 'RES'),
+('LED001', 0.25, 'LED 5mm Red', 'Standard red LED for indicators', 0.00, 1000, 'LED'),
+('TRN002', 0.90, 'NPN Transistor', 'General purpose NPN transistor', 0.01, 700, 'TRN'),
+('DIO003', 0.20, 'Schottky Diode', 'High-speed switching diode', 0.01, 600, 'DIO');
+
+-- Provider
+INSERT INTO provider (fiscal_name, email, numTel) VALUES
+('Electronic Parts Co.', 'electronicparts@gmail.com', '6647891234'),
+('Global Circuits Ltd.', 'globalcircuits@gmail.com', '6643216789'),
+('Resistor World', 'resistorworld@gmail.com', '6649876543'),
+('Capacitor Central', 'capacitorcentral@gmail.com', '6645674321'),
+('LED Galaxy', 'ledgalaxy@gmail.com', '6641234567'),
+('Semiconductor Solutions', 'semiconductorsolutions@gmail.com', '6644567890');
+
+-- Raw Provider
+INSERT INTO raw_provider (provider, material) VALUES
+(1, 'CAP003'),
+(1, 'CAP006'),
+(2, 'PCB001'),
+(2, 'PCB002'),
+(3, 'RES004'),
+(3, 'RES010'),
+(4, 'LED001'),
+(5, 'LED001'),
+(6, 'IC0002'),
+(6, 'IC0030'),
+(6, 'TRN002'),
+(6, 'DIO003');
 
 -- Budget
 INSERT INTO budget (code, initialAmount, budgetRemain, dateBudget, area) VALUES
-('BUD001', 5000.00, 4500.00, '2024-11-01', 'RH'),
-('BUD002', 3000.00, 2500.00, '2024-11-01', 'PR'),
-('BUD003', 2000.00, 1500.00, '2024-11-01', 'ST');
-
--- Orders
-INSERT INTO orders (description, employee, creationDate, area) VALUES
-('Order for capacitors for the assembly line', 2, '2024-11-10', 'RH'),
-('Order for USB connectors for stock replenishment',3, '2024-11-15', 'QC'),
-('Order for microcontrollers for a new project', 2, '2024-11-12', 'IT');
-
--- Request
-INSERT INTO request (subtotal, request_date, employee, provider, order_num) VALUES
-(100.00, '2024-11-11', 3, 1, 1),
-(150.00, '2024-11-15', 2, 2, 2),
-(300.00, '2024-11-18', 2, 3, 3);
-
--- Request material
-INSERT INTO request_material (request, material, quantity, amount) VALUES
-(1, 'CAP003', 1000, 100.00),
-(2, 'CON005', 300, 150.00),
-(3, 'IC0002', 100, 300.00);
-
--- Invoice
-INSERT INTO invoice (folio, amount, payDate, subtotal, request, provider) VALUES
-('INV001', 100.00, '2024-11-12', 100.00, 1, 1),
-('INV002', 150.00, '2024-11-16', 150.00, 2, 2),
-('INV003', 300.00, '2024-11-19', 300.00, 3, 3);
-
--- Area_order
-INSERT INTO area_order (area, order_num, quantity) VALUES
-('ENG', 1, 1000),
-('IT', 2, 300),
-('QC', 3, 100);
-
--- Reception
-INSERT INTO reception (receptionDate, observations, numReception, employee, request, status) VALUES
-('2024-11-13', 'No issues reported', 1, 3, 1, 'CMPL'),
-('2024-11-17', 'Minor scratches on some items', 2, 2, 2, 'CMPL'),
-('2024-11-20', 'All items received in good condition', 3, 2, 3, 'CMPL');
-
--- Raw_provider
-INSERT INTO raw_provider (provider, material) VALUES
-(1, 'CAP003'),
-(2, 'CON005'),
-(3, 'IC0002'),
-(4, 'RES004');
-
--- Raw request
-INSERT INTO raw_request (request, material) VALUES
-(1, 'CAP003'),
-(2, 'CON005'),
-(3, 'IC0002');
-
--- Trouble_hist
-INSERT INTO trouble_hist (troubleDate, description, reception) VALUES
-('2024-11-18', 'Reported minor scratches on connectors', 2),
-('2024-11-21', 'Incorrect quantity reported on invoice', 3);
+('BPA1-1', 250000.00, 250000.00, CURRENT_DATE, 'PA1'),
+('BPA2-1', 250000.00, 250000.00, CURRENT_DATE, 'PA2'),
+('BPA3-1', 250000.00, 250000.00, CURRENT_DATE, 'PA3');
 
 /********************** PROCEDURES ***********************/
 
