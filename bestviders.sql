@@ -5,24 +5,24 @@ USE bestviders;
 -- 1. Status Tables
 CREATE TABLE status_request (
     code VARCHAR(10) PRIMARY KEY,
-    name VARCHAR(50) NOT NULL
+    name VARCHAR(20) NOT NULL
 );
 
 CREATE TABLE status_order (
     code VARCHAR(10) PRIMARY KEY,
-    name VARCHAR(50) NOT NULL
+    name VARCHAR(20) NOT NULL
 );
 
 CREATE TABLE status_reception (
     code VARCHAR(10) PRIMARY KEY,
-    name VARCHAR(50) NOT NULL
+    name VARCHAR(20) NOT NULL
 );
 
 -- 2. Category and Area
 CREATE TABLE category (
     code VARCHAR(10) PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    description TEXT NULL
+    description VARCHAR(250) NULL
 );
 
 CREATE TABLE area (
@@ -61,16 +61,15 @@ CREATE TABLE provider (
     email VARCHAR(100) NULL,
     numTel VARCHAR(20) NULL,
     status BOOLEAN DEFAULT TRUE,
-    motive varchar (255) default null
+    motive VARCHAR(250) NULL
 );
 
- 
 -- 5. Raw Material
 CREATE TABLE raw_material (
     code VARCHAR(10) PRIMARY KEY,
-    price DECIMAL(12, 2) NOT NULL,
     name VARCHAR(100) NOT NULL,
-    descrp TEXT NULL,
+    price DECIMAL(12, 2) NOT NULL,
+    description TEXT NULL,
     weight DECIMAL(12, 2) NULL,
     stock INT NULL,
     category VARCHAR(10),
@@ -81,20 +80,19 @@ CREATE TABLE raw_material (
 CREATE TABLE orders (
     num INT PRIMARY KEY AUTO_INCREMENT,
     description TEXT NULL,
+    motive VARCHAR(250) NULL,
     employee INT,
-    raw_material VARCHAR(10),
-    status VARCHAR(10) DEFAULT 'CRTD',
+    status VARCHAR(10),
     creationDate DATE NOT NULL DEFAULT (CURRENT_DATE),
     FOREIGN KEY (employee) REFERENCES employee(num),
-    FOREIGN KEY (raw_material) REFERENCES raw_material(code),
     FOREIGN KEY (status) REFERENCES status_order(code)
 );
 
 -- 7. Request
 CREATE TABLE request (
     num INT PRIMARY KEY AUTO_INCREMENT,
-    subtotal DECIMAL(12, 2),
     request_date DATE DEFAULT (CURRENT_DATE),
+    estimated_date DATE,
     employee INT,
     provider INT,
     order_num INT,
@@ -116,12 +114,23 @@ CREATE TABLE request_material (
     FOREIGN KEY (material) REFERENCES raw_material(code)
 );
 
+CREATE TABLE order_material (
+    order_num INT,
+    material VARCHAR(10),
+    quantity INT,
+    PRIMARY KEY (order_num, material),
+    FOREIGN KEY (order_num) REFERENCES orders(num),
+    FOREIGN KEY (material) REFERENCES raw_material(code)
+);
+
+
 -- 9. Invoice
 CREATE TABLE invoice (
     folio VARCHAR(10) PRIMARY KEY,
     amount DECIMAL(12, 2),
-    payDate DATE DEFAULT (CURRENT_DATE),
     subtotal DECIMAL(12, 2),
+    iva DECIMAL(12, 2),
+    payDate DATE DEFAULT (CURRENT_DATE),
     request INT,
     provider INT,
     FOREIGN KEY (request) REFERENCES request(num),
@@ -133,10 +142,12 @@ CREATE TABLE budget (
     code VARCHAR(10) PRIMARY KEY,
     initialAmount DECIMAL(12, 2),
     budgetRemain DECIMAL(12, 2),
-    dateBudget DATETIME,
+    dateBudget DATE DEFAULT (CURRENT_DATE),
     area VARCHAR(10),
     FOREIGN KEY (area) REFERENCES area(code)
 );
+
+
 
 -- 11. User
 CREATE TABLE user (
@@ -161,7 +172,7 @@ CREATE TABLE reception (
     num INT PRIMARY KEY AUTO_INCREMENT,
     receptionDate DATE DEFAULT (CURRENT_DATE),
     observations TEXT NULL,
-    numReception INT NULL,
+    missings INT NULL,
     employee INT,
     request INT,
     status VARCHAR(10) DEFAULT 'PEND',
@@ -179,24 +190,14 @@ CREATE TABLE raw_provider (
     FOREIGN KEY (material) REFERENCES raw_material(code)
 );
 
--- 15. Raw Request
-CREATE TABLE raw_request (
-    request INT,
-    material VARCHAR(10),
-    PRIMARY KEY (request, material),
-    FOREIGN KEY (request) REFERENCES request(num),
-    FOREIGN KEY (material) REFERENCES raw_material(code)
-);
-
--- 16. Trouble History
-CREATE TABLE trouble_hist (
+-- 15. Trouble 
+CREATE TABLE trouble (
     num INT PRIMARY KEY AUTO_INCREMENT,
     troubleDate DATE DEFAULT (CURRENT_DATE),
     description TEXT,
     reception INT,
     FOREIGN KEY (reception) REFERENCES reception(num)
 );
-
 
 /* * * * * * * * * * * * * TRIGGERS * * * * * * * * * * * * */
     DELIMITER $$
