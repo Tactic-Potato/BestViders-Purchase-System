@@ -291,7 +291,7 @@ CREATE TABLE trouble (
     INNER JOIN raw_material AS rm ON rp.material = rm.code
     GROUP BY p.num, p.fiscal_name, p.email, p.numTel, p.status;
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-    CREATE VIEW  vw_order AS
+    CREATE VIEW vw_order AS
     SELECT
         o.num as num,
         o.description as description,
