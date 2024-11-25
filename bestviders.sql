@@ -319,8 +319,7 @@ CREATE TABLE trouble (
     INNER JOIN employee as e ON o.employee = e.num
     INNER JOIN raw_material as rw ON o.raw_material = rw.code
     INNER JOIN status_order as so ON o.status = so.code
-    INNER JOIN area_order as ao ON ao.order_num = o.num
-    INNER JOIN area as a ON ao.area = a.code;
+    INNER JOIN area as a ON o.area = a.code;
 
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
         CREATE VIEW vw_request AS
