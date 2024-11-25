@@ -82,13 +82,14 @@ CREATE TABLE orders (
     description TEXT NULL,
     motive VARCHAR(250) NULL,
     employee INT,
-    status VARCHAR(10),
+    status VARCHAR(10) DEFAULT 'PEND',
     creationDate DATE NOT NULL DEFAULT (CURRENT_DATE),
     area VARCHAR(10),
     FOREIGN KEY (employee) REFERENCES employee(num),
     FOREIGN KEY (status) REFERENCES status_order(code),
     FOREIGN KEY (area) REFERENCES area(code)
 );
+
 
 -- 7. Request
 CREATE TABLE request (
@@ -411,7 +412,7 @@ INSERT INTO provider (fiscal_name, email, numTel) VALUES
 ('Supplier D', 'supplier.d@example.com', '6645633214');
 
 -- Raw Material
-INSERT INTO raw_material (code, price, name, descrp, weight, stock, category) VALUES
+INSERT INTO raw_material (code, price, name, description, weight, stock, category) VALUES
 ('CAP003', 0.10, 'Ceramic Capacitor 10uF', 'General purpose capacitor for filtering', 0.00, 1000, 'CAP'),
 ('CON005', 0.50, 'USB Connector', 'Standard USB connector type-A', 0.01, 300, 'CON'),
 ('IC0002', 3.00, 'Microcontroller', '8-bit Microcontroller for embedded applications', 0.01, 200, 'IC'),
@@ -425,10 +426,10 @@ INSERT INTO budget (code, initialAmount, budgetRemain, dateBudget, area) VALUES
 ('BUD003', 2000.00, 1500.00, '2024-11-01', 'ST');
 
 -- Orders
-INSERT INTO orders (description, employee, raw_material, status, creationDate) VALUES
-('Order for capacitors for the assembly line', 2, 'CAP003', 'CRTD', '2024-11-10'),
-('Order for USB connectors for stock replenishment', 3, 'CON005', 'PROC', '2024-11-15'),
-('Order for microcontrollers for a new project', 2, 'IC0002', 'RCVD', '2024-11-12');
+INSERT INTO orders (description, employee, creationDate, area) VALUES
+('Order for capacitors for the assembly line', 2, '2024-11-10', 'RH'),
+('Order for USB connectors for stock replenishment',3, '2024-11-15', 'QC'),
+('Order for microcontrollers for a new project', 2, '2024-11-12', 'IT');
 
 -- Request
 INSERT INTO request (subtotal, request_date, employee, provider, order_num) VALUES
