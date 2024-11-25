@@ -1,3 +1,33 @@
+<?php
+// Incluir archivo de configuración y conexión
+include "../includes/config/conn.php";
+$db = connect();
+
+// Verificar si se ha solicitado aprobar una orden mediante POST
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['approve_order'])) {
+    $order_id = $_POST['order_id'];
+
+    // Consulta para actualizar el estado de la orden a "APRV"
+    $query = "UPDATE orders SET status = 'APRV' WHERE num = ?";
+    $stmt = $db->prepare($query);
+    $stmt->bind_param('i', $order_id);
+    $stmt->execute();
+
+    // Verificar si la actualización fue exitosa
+    if ($stmt->affected_rows > 0) {
+        $message = "Orden aprobada con éxito.";
+    } else {
+        $message = "Error al aprobar la orden o la orden ya está procesada.";
+    }
+
+    // Cerrar la conexión
+    $stmt->close();
+}
+
+// Consulta para obtener las órdenes pendientes
+$query = mysqli_query($db, "SELECT * from vw_order where status = 'Pending'");
+?>
+
 <!-- Add Bootstrap CSS -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <!-- Add DataTables CSS -->
@@ -99,7 +129,14 @@ body {
     <a href="../index.php" class="return-btn">
         <i class="fas fa-arrow-left me-2"></i>Return
     </a>
-    
+
+    <!-- Mostrar mensaje de éxito o error -->
+    <?php if (isset($message)): ?>
+        <div class="alert alert-info">
+            <?= htmlspecialchars($message) ?>
+        </div>
+    <?php endif; ?>
+
     <div class="table-container">
         <table class="table" id="ordersTable">
             <thead>
@@ -111,25 +148,30 @@ body {
                     <th>Status</th>
                     <th>Date</th>
                     <th>Area</th>
+                    <th>Action</th> <!-- Nueva columna para el botón de aprobación -->
                 </tr>
             </thead>
             <tbody>
-                <?php 
-                include "../includes/config/conn.php";
-                $db = connect();
-                $query = mysqli_query($db, "SELECT * from vw_order where status = 'Pending'");
-
-                while ($result = mysqli_fetch_array($query)) { ?>
+                <?php while ($result = mysqli_fetch_array($query)): ?>
                     <tr>
                         <td><?= htmlspecialchars($result['num']) ?></td>
                         <td><?= htmlspecialchars($result['description']) ?></td>
                         <td><?= htmlspecialchars($result['employee']) ?></td>
-                        <td><?= htmlspecialchars($result['rawMaterial']) ?></td>
+                        <td><?= htmlspecialchars($result['rawMaterials']) ?></td>
                         <td><?= htmlspecialchars($result['status']) ?></td>
-                        <td><?= htmlspecialchars($result['creationDate']) ?></td>
+                        <td><?= htmlspecialchars($result['creationDate']) ?></td> 
                         <td><?= htmlspecialchars($result['area']) ?></td>
+                        <td>
+                            <!-- Formulario para aprobar la orden -->
+                            <form method="POST" action="">
+                                <input type="hidden" name="order_id" value="<?= htmlspecialchars($result['num']) ?>">
+                                <button type="submit" name="approve_order" class="btn btn-success btn-sm">
+                                    Approve
+                                </button>
+                            </form>
+                        </td>
                     </tr>
-                <?php } mysqli_close($db); ?>
+                <?php endwhile; ?>
             </tbody>
         </table>
     </div>

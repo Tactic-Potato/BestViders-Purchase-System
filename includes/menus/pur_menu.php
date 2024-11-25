@@ -1,21 +1,13 @@
 <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
     <ul class="navbar-nav">
         <!-- Dropdown Orders -->
-        <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="reportsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Reports
-            </a>
-            <ul class="dropdown-menu" aria-labelledby="reportsDropdown">
-                <li><a class="dropdown-item" href="order/WOrder.php">Raw-Material Reports</a></li>
-            </ul>
-        </li>
 
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="ordersDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 Orders
             </a>
             <ul class="dropdown-menu" aria-labelledby="ordersDropdown">
-                <li><a class="dropdown-item" href="order/createOrder.php">Orders</a></li>
+                <li><a class="dropdown-item" href="order/WOrder_toAprove.php">Aprove Orders</a></li>
             </ul>
         </li>
         <!-- Dropdown Providers -->
