@@ -10,23 +10,38 @@ session_start();
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $descrp = $_POST['descrp'];
-    $selectedMaterials = $_POST['selectedMaterials']; // Materiales seleccionados (array)
-    $quantity = $_POST['quantity']; // Cantidad ingresada
+    $selectedMaterialsAndQuantities = $_POST['materials_and_quantities']; // Recibimos el JSON
     $employee = $_SESSION['num'];
     $area = $_SESSION['role'];
 
     // Inserta la orden principal
-    $insert_query = "INSERT INTO orders (description, employee) VALUES ('$descrp', '$employee')";
+    $insert_query = "INSERT INTO orders (description, employee, area) VALUES ('$descrp', '$employee', '$area')";
     if (mysqli_query($db, $insert_query)) {
         $order_num = mysqli_insert_id($db); // ID de la orden recién creada
 
+        // Decodificar el JSON para obtener el array de materiales y cantidades
+        $materials_and_quantities = json_decode($selectedMaterialsAndQuantities, true);
+
         // Inserta los materiales seleccionados y sus cantidades
-        foreach ($selectedMaterials as $materialCode) {
-            $insert_material_query = "INSERT INTO order_material (order_num, material, quantity) 
-                                      VALUES ('$order_num', '$materialCode', '$quantity')";
-            if (!mysqli_query($db, $insert_material_query)) {
+        foreach ($materials_and_quantities as $item) {
+            $materialCode = $item['material']; // Código del material
+            $quantity = $item['quantity']; // Cantidad
+
+            // Verifica que la cantidad sea un número válido y mayor que 0
+            if (is_numeric($quantity) && $quantity > 0) {
+                // Inserta el material y su cantidad en la tabla order_material
+                $insert_material_query = "INSERT INTO order_material (order_num, material, quantity) 
+                                          VALUES ('$order_num', '$materialCode', '$quantity')";
+                if (!mysqli_query($db, $insert_material_query)) {
+                    echo "<script>
+                            alert('Error al registrar material: " . mysqli_error($db) . "');
+                            window.location.href = 'createOrder.php';
+                          </script>";
+                    exit;
+                }
+            } else {
                 echo "<script>
-                        alert('Error al registrar material: " . mysqli_error($db) . "');
+                        alert('Cantidad inválida para el material $materialCode');
                         window.location.href = 'createOrder.php';
                       </script>";
                 exit;
@@ -79,13 +94,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <?php while($material = mysqli_fetch_assoc($materials)): ?>
                             <div class="form-check">
                                 <input 
-                                    class="form-check-input" 
+                                    class="form-check-input material-checkbox" 
                                     type="checkbox" 
                                     name="selectedMaterials[]" 
                                     id="material-<?php echo $material['code']; ?>" 
-                                    value="<?php echo $material['code']; ?>" 
+                                    value="<?php echo $material['code']; ?>"
                                     data-bs-toggle="modal" 
-                                    data-bs-target="#quantityModal" />
+                                    data-bs-target="#quantityModal" 
+                                    data-material="<?php echo $material['code']; ?>"
+                                    data-material-name="<?php echo $material['name']; ?>" />
                                 <label class="form-check-label" for="material-<?php echo $material['code']; ?>">
                                     <?php echo $material['name']; ?>
                                 </label>
@@ -94,7 +111,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     </div>
                 </div>
 
-                <input type="hidden" name="quantity" id="hiddenQuantity" />
+                <!-- Hidden field to hold materials and quantities as JSON -->
+                <input type="hidden" name="materials_and_quantities" id="hiddenMaterialsAndQuantities" />
 
                 <div class="mt-4">
                     <button type="submit" class="btn btn-primary">ADD ORDER</button>
@@ -115,6 +133,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div class="modal-body">
                 <label for="modalQuantity" class="form-label">Quantity</label>
                 <input type="number" class="form-control" id="modalQuantity" placeholder="Enter quantity" min="1" required />
+                <input type="hidden" id="modalMaterialCode" />
+                <input type="hidden" id="modalMaterialName" />
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -129,13 +149,38 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     document.addEventListener('DOMContentLoaded', function () {
         const saveQuantityBtn = document.getElementById('saveQuantity');
         const modalQuantityInput = document.getElementById('modalQuantity');
-        const hiddenQuantityInput = document.getElementById('hiddenQuantity');
+        const hiddenMaterialsInput = document.getElementById('hiddenMaterialsAndQuantities');
+        const modalMaterialCodeInput = document.getElementById('modalMaterialCode');
+
+        let selectedMaterialCode = null;
+
+        // Setup the modal with the correct material
+        document.querySelectorAll('.material-checkbox').forEach(item => {
+            item.addEventListener('click', function() {
+                if (item.checked) {
+                    selectedMaterialCode = item.getAttribute('data-material');
+                    modalMaterialCodeInput.value = selectedMaterialCode;
+                }
+            });
+        });
 
         saveQuantityBtn.addEventListener('click', function () {
             const quantity = modalQuantityInput.value;
 
             if (quantity && quantity > 0) {
-                hiddenQuantityInput.value = quantity;
+                // Crear un array con los materiales y sus cantidades
+                const currentMaterials = JSON.parse(hiddenMaterialsInput.value || '[]');
+                
+                // Agregar el material seleccionado con su cantidad al array
+                currentMaterials.push({
+                    material: selectedMaterialCode,
+                    quantity: quantity
+                });
+
+                // Actualizar el campo oculto con el JSON de materiales y cantidades
+                hiddenMaterialsInput.value = JSON.stringify(currentMaterials);
+
+                // Limpiar el modal y cerrarlo
                 modalQuantityInput.value = '';
                 const modal = bootstrap.Modal.getInstance(document.getElementById('quantityModal'));
                 modal.hide();
@@ -145,5 +190,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         });
     });
 </script>
+
 </body>
 </html>
