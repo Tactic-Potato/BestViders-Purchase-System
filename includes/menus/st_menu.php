@@ -14,7 +14,7 @@
                 Orders
             </a>
             <ul class="dropdown-menu" aria-labelledby="ordersDropdown">
-                <li><a class="dropdown-item" href="order/WOrder.php">Check Orders</a></li>
+                <li><a class="dropdown-item" href="order/WOrder_aprov.php">Check Orders</a></li>
             </ul>
         </li>
         <!-- Dropdown Providers -->
@@ -37,14 +37,6 @@
                 <li><a class="dropdown-item" href="request/WRequest.php">Check Requests</a></li>
             </ul>
         </li>
-        <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="requestsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Troubles
-            </a>
-            <ul class="dropdown-menu" aria-labelledby="requestsDropdown">
-                <li><a class="dropdown-item" href="request/WRequest.php">Check Requests</a></li>
-            </ul>
-        </li>
         <!-- Logout Button -->
         <li class="nav-item">
             <a class="nav-link btn btn-outline-danger ms-3" href="logout.php" role="button">
@@ -55,3 +47,16 @@
     </ul>
     </div>
     </section>
+
+
+
+    <!-- 
+       <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="requestsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Troubles
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="requestsDropdown">
+                <li><a class="dropdown-item" href="request/WRequest.php">Check Requests</a></li>
+            </ul>
+        </li>
+    -->
