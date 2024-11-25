@@ -124,7 +124,7 @@ body {
                         <td><?= htmlspecialchars($result['num']) ?></td>
                         <td><?= htmlspecialchars($result['description']) ?></td>
                         <td><?= htmlspecialchars($result['employee']) ?></td>
-                        <td><?= htmlspecialchars($result['rawMaterial']) ?></td>
+                        <td><?= htmlspecialchars($result['rawMaterials']) ?></td>
                         <td><?= htmlspecialchars($result['status']) ?></td>
                         <td><?= htmlspecialchars($result['creationDate']) ?></td>
                         <td><?= htmlspecialchars($result['area']) ?></td>

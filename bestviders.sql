@@ -294,19 +294,21 @@ CREATE TABLE trouble (
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
     CREATE VIEW vw_order AS
     SELECT
-        o.num as num,
-        o.description as description,
-        CONCAT(e.firstName, ' ', e.lastName) as employee,
-        rw.name as rawMaterial,
-        so.name as status,
-        o.creationDate as creationDate,
-        a.name as area
-    FROM orders as o 
-    INNER JOIN employee as e ON o.employee = e.num
-    INNER JOIN order_material as om ON om.order_num = o.num
-    INNER JOIN raw_material as rw ON om.material = rw.code
-    INNER JOIN status_order as so ON o.status = so.code
-    INNER JOIN area as a ON o.area = a.code;
+        o.num AS num,
+        o.description AS description,
+        CONCAT(e.firstName, ' ', e.lastName) AS employee,
+        GROUP_CONCAT(rw.name ORDER BY rw.name SEPARATOR ', ') AS rawMaterials,  -- Concatenamos los materiales
+        so.name AS status,
+        o.creationDate AS creationDate,
+        a.name AS area
+    FROM orders AS o
+    INNER JOIN employee AS e ON o.employee = e.num
+    INNER JOIN order_material AS om ON om.order_num = o.num
+    INNER JOIN raw_material AS rw ON om.material = rw.code
+    INNER JOIN status_order AS so ON o.status = so.code
+    INNER JOIN area AS a ON o.area = a.code
+    GROUP BY o.num, o.description, e.firstName, e.lastName, so.name, o.creationDate, a.name;
+
 
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
     CREATE VIEW vw_request AS
