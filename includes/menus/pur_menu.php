@@ -26,7 +26,7 @@
                 Providers
             </a>
             <ul class="dropdown-menu" aria-labelledby="providersDropdown">
-                <li><a class="dropdown-item" href="provider/WProvider.php">View Providers</a></li>
+                <li><a class="dropdown-item" href="provider/WAssocProvider.php">View Providers</a></li>
                 </ul>
         </li>
                 <!-- Logout Button -->
