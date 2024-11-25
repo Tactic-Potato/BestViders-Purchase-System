@@ -3,10 +3,6 @@ require '../includes/config/conn.php';
 
 $db = connect();
 
-// Consulta de empleados para asignación
-$employee_query = "SELECT num, firstName FROM employee";
-$employees = mysqli_query($db, $employee_query);
-
 // Consulta de proveedores
 $provider_query = "SELECT num, fiscal_name FROM provider";
 $providers = mysqli_query($db, $provider_query);
@@ -15,13 +11,25 @@ $providers = mysqli_query($db, $provider_query);
 $order_query = "SELECT num, description FROM orders";
 $orders = mysqli_query($db, $order_query);
 
+$materialCode_query = "SELECT rawMaterial from vw_order where num = $order";
+$materialCode = mysqli_query($db,$materialCode_query);
 // Consulta de materiales
-$material_query = "SELECT code, name, price FROM raw_material";
+$material_query = "SELECT code, name, price FROM raw_material ";
 $materials = mysqli_query($db, $material_query);
+
+
+
+session_start();
+$employee = $_SESSION['num'];
+
+// Consulta de empleados para asignación
+$employee_query = "SELECT num, firstName FROM employee WHERE num = $employee";
+$employee_result = mysqli_query($db, $employee_query);
+$employee_data = mysqli_fetch_assoc($employee_result);
+$employee_name = $employee_data['firstName'];  // Nombre del empleado
 
 // Procesar el formulario
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $employee = $_POST['employee'];
     $provider = $_POST['provider'];
     $order = $_POST['order'];
 
@@ -72,41 +80,36 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div class="row">
                 <div class="form-group">
                     <label>Employee</label>
-                    <select name="employee" id="employee" required>
-                        <option value="" disabled selected>Select an employee</option>
-                        <?php while($employee = mysqli_fetch_assoc($employees)): ?>
-                            <option value="<?php echo $employee['num']; ?>">
-                                <?php echo $employee['firstName']; ?>
-                            </option>
-                        <?php endwhile; ?>
-                    </select>
+                    <!-- Mostrar nombre del empleado en un campo readonly -->
+                    <input type="text" name="employee" id="employee" value="<?=$employee_name?>" readonly>
                 </div>
             </div>
 
             <h2>Request Information</h2>
             <div class="row">
+            <div class="form-group">
+                    <label>Order</label>
+                    <select name="order" id="order">
+                        <option value="">None</option>
+                        <?php while($order = mysqli_fetch_assoc($orders)): ?>
+                            <option value="<?php echo $order['num']; ?>">
+                                <?php echo $order['description']; ?>
+                            </option>
+                        <?php endwhile; ?>
+                    </select>
+                </div>
                 <div class="form-group">
                     <label>Provider</label>
                     <select name="provider" id="provider" required>
                         <option value="" disabled selected>Select a provider</option>
                         <?php while($provider = mysqli_fetch_assoc($providers)): ?>
                             <option value="<?php echo $provider['num']; ?>">
-                                <?php echo $provider['fiscalName']; ?>
+                                <?php echo $provider['fiscal_name']; ?>
                             </option>
                         <?php endwhile; ?>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label>Order</label>
-                    <select name="order" id="order">
-                        <option value="">None</option>
-                        <?php while($order = mysqli_fetch_assoc($orders)): ?>
-                            <option value="<?php echo $order['num']; ?>">
-                                <?php echo $order['descrp']; ?>
-                            </option>
-                        <?php endwhile; ?>
-                    </select>
-                </div>
+               
             </div>
 
             <h2>Request Materials</h2>
