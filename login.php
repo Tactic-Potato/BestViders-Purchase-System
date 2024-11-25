@@ -44,15 +44,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($user = mysqli_fetch_assoc($result)) {
             if ($password === $user['password']) { // Direct password comparison
-                $_SESSION['user_name'] = $user['firstName'] . ' ' . $user['lastName'];
-                $_SESSION['num'] = $user['num'];
-                $_SESSION['role'] = $user['area'];
-
-                if ($password === "1234567890") {
-                    $showPasswordChangeModal = true;
+                if ($user['status'] != 1) {  // Validate that the status is 1
+                    $error = "Your account is not active. Please contact support.";
                 } else {
-                    header("Location: index.php");
-                    exit();
+                    $_SESSION['user_name'] = $user['firstName'] . ' ' . $user['lastName'];
+                    $_SESSION['num'] = $user['num'];
+                    $_SESSION['role'] = $user['area'];
+        
+                    if ($password === "1234567890") {
+                        $showPasswordChangeModal = true;
+                    } else {
+                        header("Location: index.php");
+                        exit();
+                    }
                 }
             } else {
                 $error = "Invalid email or password.";

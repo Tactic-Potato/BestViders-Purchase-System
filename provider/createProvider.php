@@ -3,17 +3,14 @@ require '../includes/config/conn.php';
 
 $db = connect();
 
-$query_material = "SELECT code, name FROM raw_material";
-$materials = mysqli_query($db, $query_material);
-
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Escapamos las variables para evitar inyecciones SQL
     $fiscalName = mysqli_real_escape_string($db, $_POST['fiscal_name']);
     $email = mysqli_real_escape_string($db, $_POST['email']);
-    $materialCode = mysqli_real_escape_string($db, $_POST['materialCode']);
+    $numTel = mysqli_real_escape_string($db, $_POST['numTel']);
 
     // Insertar nuevo proveedor en la tabla PROVIDER
-    $insert_query = "INSERT INTO provider (fiscal_name, email, materialCode) VALUES ('$fiscalName', '$email', '$materialCode')";
+    $insert_query = "INSERT INTO provider (fiscal_name, email, numTel) VALUES ('$fiscalName', '$email', '$numTel')";
 
     if (mysqli_query($db, $insert_query)) {
         echo "<script>
@@ -55,18 +52,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <label>Email</label>
                 <input type="email" name="email" id="email" placeholder="Enter email address" required>
             </div>
-
             <div class="form-group">
-                    <labe>Material</label>
-                    <select name="materialCode" id="materialCode" required>
-                        <option value="" disabled selected>Select Material</option>
-                        <?php while($material = mysqli_fetch_assoc($materials)): ?>
-                            <option value="<?php echo $material['code']; ?>">
-                                <?php echo $material['name']; ?>
-                            </option>
-                        <?php endwhile; ?>
-                    </select>
-                </div>
+                <label>Phone Number</label>
+                <input type="tel" name="numTel" id="numTel" placeholder="Enter phone number" required>
+            </div>
 
             <div class="button-container">
                 <button type="submit" class="button">ADD PROVIDER</button>

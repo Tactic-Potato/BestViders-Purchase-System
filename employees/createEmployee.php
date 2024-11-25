@@ -62,15 +62,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div class="row">
                 <div class="form-group">
                     <label>Name</label>
-                    <input type="text" name="firstName" id="firstName" placeholder="Enter first name" required>
+                    <input type="text" name="firstName" id="firstName" placeholder="Enter first name" pattern="[A-Za-z]+" required>
                 </div>
                 <div class="form-group">
                     <label>Last Name</label>
-                    <input type="text" name="lastName" id="lastName" placeholder="Enter last name" required>
+                    <input type="text" name="lastName" id="lastName" placeholder="Enter last name" pattern="[A-Za-z]+" required>
                 </div>
                 <div class="form-group">
                     <label>Second Last Name</label>
-                    <input type="text" name="surName" id="surName" placeholder="Enter second last name" required>
+                    <input type="text" name="surName" id="surName" placeholder="Enter second last name" pattern="[A-Za-z]+" required>
                 </div>
             </div>
 
