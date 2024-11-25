@@ -126,6 +126,7 @@ body {
             </thead>
             <tbody>
                 <?php 
+                session_start(); // Asegúrate de iniciar la sesión
                 include "../includes/config/conn.php";
                 $db = connect();
                 $query = mysqli_query($db, "SELECT * FROM vw_provider_assoc");
@@ -137,15 +138,24 @@ body {
                         <td><?= htmlspecialchars($result['numTel']) ?></td>
                         <td><?= htmlspecialchars($result['status']) == 1 ? 'Associated' : 'Not Associated'?></td>
                         <td><?= htmlspecialchars($result['materials']) ?></td>
-                        <td><a href="updateProvider.php?num=<?=$result['num']?>">Modify</a></td>
-                        <td><a href="removeProvider.php?num=<?=$result['num']?>">Remove</a></td>
+                        <td>
+                            <?php if ($_SESSION['role'] == 'RH' && $result['status'] == 1): ?>
+                                <a href="updateProvider.php?num=<?=$result['num']?>">Modify</a>
+                            <?php endif; ?>
+                        </td>
+                        <td>
+                            <?php if ($_SESSION['role'] == 'RH' && $result['status'] == 1): ?>
+                                <a href="removeProvider.php?num=<?=$result['num']?>">Remove</a>
+                            <?php elseif ($_SESSION['role'] == 'RH' && $result['status'] == 0): ?>
+                                <a href="rehireProvider.php?num=<?=$result['num']?>">Re-Hire</a>
+                            <?php endif; ?>
+                        </td>
                     </tr>
                 <?php } mysqli_close($db); ?>
             </tbody>
         </table>
     </div> 
 </div>
-
 
 <!-- Add Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

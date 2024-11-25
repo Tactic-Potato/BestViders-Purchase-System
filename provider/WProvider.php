@@ -1,3 +1,8 @@
+<?php
+session_start(); // Inicia la sesión (asegúrate de que esté iniciada)
+$role = $_SESSION['role']; // Obtiene el rol del usuario desde la sesión
+?>
+
 <!-- Add Bootstrap CSS -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <!-- Add DataTables CSS -->
@@ -138,16 +143,14 @@ body {
                         <td><?= htmlspecialchars($result['status']) == 1 ? 'Associated' : 'Not Associated'?></td>
                         <td><?= htmlspecialchars($result['materials']) ?></td>
                         <td>
-                            <?php if ($result['status'] == 1): ?>
+                            <?php if ($role === 'RH' && $result['status'] == 1): ?>
                                 <a href="updateProvider.php?num=<?=$result['num']?>">Modify</a>
-                            <?php else: ?>
-                                
                             <?php endif; ?>
                         </td>
                         <td>
-                            <?php if ($result['status'] == 1): ?>
+                            <?php if ($role === 'RH' && $result['status'] == 1): ?>
                                 <a href="removeProvider.php?num=<?=$result['num']?>">Remove</a>
-                            <?php else: ?>
+                            <?php elseif ($role === 'RH' && $result['status'] == 0): ?>
                                 <a href="rehireProvider.php?num=<?=$result['num']?>">Re-Hire</a>
                             <?php endif; ?>
                         </td>

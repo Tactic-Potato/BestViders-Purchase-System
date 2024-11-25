@@ -18,7 +18,7 @@ if (!isset($_SESSION['num'])) {
                 include "includes/home/st_home.php";
                 break;
             default:
-                include "includes/home.php";
+                include "includes/home/home.php";
                 break;
         }
         ?>

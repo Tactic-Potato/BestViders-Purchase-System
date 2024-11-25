@@ -5,9 +5,16 @@
                 Orders
             </a>
             <ul class="dropdown-menu" aria-labelledby="ordersDropdown">
-                <li><a class="dropdown-item" href="order/WOrder.php">Check Orders</a></li>
+                <li><a class="dropdown-item" href="order/WOrder_byarea.php">Check Orders</a></li>
                 <li><a class="dropdown-item" href="order/createOrder.php">Generate Order</a></li>
             </ul>
+        </li>
+        </li>
+                <!-- Logout Button -->
+                <li class="nav-item">
+            <a class="nav-link btn btn-outline-danger ms-3" href="logout.php" role="button">
+                Logout
+            </a>
         </li>
     </ul>
 </div>
