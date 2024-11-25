@@ -210,6 +210,8 @@ CREATE TABLE trouble_hist (
         VALUES (NEW.num, Username, '1234567890');
     END $$
 
+
+
     DELIMITER $$
     CREATE TRIGGER UpdateOrderStatus
     AFTER INSERT ON request

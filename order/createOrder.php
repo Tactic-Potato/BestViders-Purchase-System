@@ -8,20 +8,37 @@ $employees = mysqli_query($db, $query_employee);
 
 $query_rawMaterial = "SELECT code, name FROM raw_material";
 $materials = mysqli_query($db, $query_rawMaterial);
- 
+
+session_start();
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $descrp = $_POST['descrp'];
-    $employee = $_POST['employee'];
     $rawMaterial = $_POST['rawMaterial'];
+    $employee = $_SESSION['num'];
+    $area = $_SESSION['role'];
 
     $insert_query = "INSERT INTO orders (description, employee, raw_material) 
                     VALUES ('$descrp', '$employee', '$rawMaterial')";
 
     if (mysqli_query($db, $insert_query)) {
-        echo "<script>
-                alert('Registro Exitoso');
-                window.location.href = 'createOrder.php';
-            </script>";
+        // Obtener el ID de la orden recién insertada
+        $order_num = mysqli_insert_id($db);
+
+
+        // Preparar consulta para insertar en la tabla intermedia
+        $insert_query_2 = "INSERT INTO area_order (area, order_num) VALUES ('$area', '$order_num')";
+
+        if (mysqli_query($db, $insert_query_2)) {
+            echo "<script>
+                    alert('Registro Exitoso');
+                    window.location.href = 'createOrder.php';
+                </script>";
+        } else {
+            echo "<script>
+                    alert('Error al registrar en área-orden: " . mysqli_error($db) . "');
+                    window.location.href = 'createOrder.php';
+                </script>";
+        }
     } else {
         echo "<script>
                 alert('Error al registrar: " . mysqli_error($db) . "');
@@ -51,17 +68,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </div>
 
             <div class="row">
-                <div class="form-group">
-                    <label>Employee</label>
-                    <select name="employee" id="employee" required>
-                        <option value="" disabled selected>Select employee</option>
-                        <?php while($employee = mysqli_fetch_assoc($employees)): ?>
-                            <option value="<?php echo $employee['num']; ?>">
-                                <?php echo $employee['firstName']; ?>
-                            </option>
-                        <?php endwhile; ?>
-                    </select>
-                </div>
                 <div class="form-group">
                     <label>Raw Material</label>
                     <select name="rawMaterial" id="rawMaterial" required>
