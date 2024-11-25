@@ -84,8 +84,10 @@ CREATE TABLE orders (
     employee INT,
     status VARCHAR(10),
     creationDate DATE NOT NULL DEFAULT (CURRENT_DATE),
+    area VARCHAR(10),
     FOREIGN KEY (employee) REFERENCES employee(num),
-    FOREIGN KEY (status) REFERENCES status_order(code)
+    FOREIGN KEY (status) REFERENCES status_order(code),
+    FOREIGN KEY (area) REFERENCES area(code)
 );
 
 -- 7. Request
