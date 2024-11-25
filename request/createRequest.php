@@ -1,8 +1,6 @@
 <?php
 require '../includes/config/conn.php';
-
 $db = connect();
-
 // Consulta de proveedores
 $provider_query = "SELECT num, fiscal_name FROM provider";
 $providers = mysqli_query($db, $provider_query);
@@ -11,13 +9,9 @@ $providers = mysqli_query($db, $provider_query);
 $order_query = "SELECT num, description FROM orders";
 $orders = mysqli_query($db, $order_query);
 
-$materialCode_query = "SELECT rawMaterial from vw_order where num = $order";
-$materialCode = mysqli_query($db,$materialCode_query);
 // Consulta de materiales
 $material_query = "SELECT code, name, price FROM raw_material ";
 $materials = mysqli_query($db, $material_query);
-
-
 
 session_start();
 $employee = $_SESSION['num'];
@@ -31,7 +25,20 @@ $employee_name = $employee_data['firstName'];  // Nombre del empleado
 // Procesar el formulario
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $provider = $_POST['provider'];
-    $order = $_POST['order'];
+    $order = $_POST['order'];  // Obtener el valor del campo order
+
+    // Comprobar que se haya seleccionado una orden
+    if (!empty($order)) {
+        // Si se seleccionó una orden, realiza la consulta para obtener los materiales relacionados con esa orden
+        $materialCode_query = "SELECT rawMaterial FROM vw_order WHERE num = $order";
+        $materialCode = mysqli_query($db, $materialCode_query);
+        if (!$materialCode) {
+            echo "Error en la consulta de materiales: " . mysqli_error($db);
+        }
+    } else {
+        // Si no se seleccionó una orden, maneja el caso adecuadamente
+        echo "Error: No order selected.";
+    }
 
     // Insertar la solicitud en la tabla REQUEST
     $insert_query = "INSERT INTO request (status, employee, provider, `order`, requestDate)
@@ -87,7 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             <h2>Request Information</h2>
             <div class="row">
-            <div class="form-group">
+                <div class="form-group">
                     <label>Order</label>
                     <select name="order" id="order">
                         <option value="">None</option>
@@ -109,7 +116,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <?php endwhile; ?>
                     </select>
                 </div>
-               
             </div>
 
             <h2>Request Materials</h2>
@@ -184,7 +190,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             const productSelect = row.querySelector('select[name*="[product]"]');
             const quantityInput = row.querySelector('input[name*="[cant]"]');
             const amountInput = row.querySelector('input[name*="[amount]"]');
-            const price = parseFloat(productSelect.options[productSelect.selectedIndex].getAttribute('data-price') || 0);
+            const price = parseFloat(productSelect
+.options[productSelect.selectedIndex].getAttribute('data-price') || 0);
             const quantity = parseInt(quantityInput.value || 0);
             amountInput.value = (price * quantity).toFixed(2);
         }
