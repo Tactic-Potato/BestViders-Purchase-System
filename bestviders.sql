@@ -573,10 +573,12 @@ DELIMITER $$
 CREATE PROCEDURE Sp_CreateOrder(
     IN p_descrp TEXT,
     IN p_employee INT,
-    IN p_rawMaterial VARCHAR(10)
+    IN p_area VARCHAR(10)
 )
 BEGIN
-    INSERT INTO orders (description, employee, raw_material)
-    VALUES (p_descrp, p_employee, p_rawMaterial);
+    INSERT INTO orders (description, employee, area)
+    VALUES (p_descrp, p_employee, p_area;
 END$$
+
+DELIMITER ;
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
