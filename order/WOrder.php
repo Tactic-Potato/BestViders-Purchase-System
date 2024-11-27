@@ -111,6 +111,7 @@ body {
                     <th>Status</th>
                     <th>Date</th>
                     <th>Area</th>
+                    <th>Actions</th> <!-- Nueva columna -->
                 </tr>
             </thead>
             <tbody>
@@ -128,6 +129,12 @@ body {
                         <td><?= htmlspecialchars($result['status']) ?></td>
                         <td><?= htmlspecialchars($result['creationDate']) ?></td>
                         <td><?= htmlspecialchars($result['area']) ?></td>
+                        <td>
+                            <a href="order_details.php?num=<?= urlencode($result['num']) ?>" 
+                            class="btn btn-info btn-sm">
+                            <i class="fas fa-eye"></i> View Details
+                            </a>
+                        </td>
                     </tr>
                 <?php } mysqli_close($db); ?>
             </tbody>
