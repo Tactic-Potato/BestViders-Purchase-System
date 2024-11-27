@@ -7,8 +7,8 @@
                 Orders
             </a>
             <ul class="dropdown-menu" aria-labelledby="ordersDropdown">
-                <li><a class="dropdown-item" href="order/WOrder_toAprove.php">Aprove Orders</a></li>
                 <li><a class="dropdown-item" href="order/WOrder.php">Check Orders</a></li>
+                <li><a class="dropdown-item" href="order/WOrder_toAprove.php">Aprove Orders</a></li>
                 <li><a class="dropdown-item" href="order/createOrder.php">Generate Order</a></li>
             </ul>
         </li>
