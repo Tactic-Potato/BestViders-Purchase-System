@@ -12,7 +12,7 @@
                 <li><a class="dropdown-item" href="order/createOrder.php">Generate Order</a></li>
             </ul>
         </li>
-        <!-- Dropdown Providers -->
+
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="requestDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 Request
@@ -22,14 +22,16 @@
             <li><a class="dropdown-item" href="request/WRequest.php">Request History</a></li>
             </ul>
         </li>
-        <!-- Dropdown Employees -->
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="providersDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 Providers
             </a>
             <ul class="dropdown-menu" aria-labelledby="providersDropdown">
-                <li><a class="dropdown-item" href="provider/WAssocProvider.php">View Providers</a></li>
-                </ul>
+                <li><a class="dropdown-item" href="provider/createProvider.php">Add Provider</a></li>
+                <li><a class="dropdown-item" href="provider/WProvider.php">Check All Providers</a></li>
+                <li><a class="dropdown-item" href="provider/WProviderRM.php">Check Removed Providers</a></li>
+                <li><a class="dropdown-item" href="provider/WAssocProvider.php">Check Associted Providers</a></li>
+            </ul>
         </li>
                 <!-- Logout Button -->
                 <li class="nav-item">
