@@ -201,7 +201,7 @@ CREATE TABLE trouble (
 );
 
 /* * * * * * * * * * * * * TRIGGERS * * * * * * * * * * * * */
-    DELIMITER $$
+ DELIMITER $$
     CREATE TRIGGER CreateUser
     AFTER INSERT ON employee
     FOR EACH ROW
@@ -210,62 +210,90 @@ CREATE TABLE trouble (
         SET Username = CONCAT(NEW.firstName, ' ', NEW.lastName, ' ', IFNULL(NEW.surname, ''));
         INSERT INTO user (num, username, password)
         VALUES (NEW.num, Username, '1234567890');
-    END $$
+END $$
 
-    DELIMITER $$
-    CREATE TRIGGER UpdateOrderStatus
-    AFTER INSERT ON request
-    FOR EACH ROW
-    BEGIN
-        IF NEW.order_num IS NOT NULL THEN
-            UPDATE orders
-            SET status = 'RCVD'
-            WHERE num = NEW.order_num;
-        END IF;
-    END $$
+DELIMITER $$
+CREATE TRIGGER RequestAutoAmount
+BEFORE INSERT ON request_material
+FOR EACH ROW
+BEGIN
+    DECLARE unit_price DECIMAL(12, 2);
+    SELECT price INTO unit_price
+    FROM raw_material
+    WHERE code = NEW.material;
+    SET NEW.amount = NEW.quantity * unit_price;
+END$$
 
-    DELIMITER $$
-    CREATE TRIGGER UpdateRequestStatus
-    BEFORE INSERT ON request
-    FOR EACH ROW
-    BEGIN
-        SET NEW.status = 'PROC';
-    END $$
+DELIMITER $$
+CREATE TRIGGER AutoInvoice
+AFTER INSERT ON request_material
+FOR EACH ROW
+BEGIN
+    DECLARE total_amount DECIMAL(12, 2);
+    DECLARE generated_folio VARCHAR(20);
+    DECLARE invoice_date DATE;
+    DECLARE provider_id INT;
 
-    DELIMITER $$
-    CREATE TRIGGER AutoRequest
-    BEFORE INSERT ON request
-    FOR EACH ROW
-    BEGIN
-        DECLARE total DECIMAL(10, 2) DEFAULT 0.0;
-        SELECT SUM(RM.quantity * M.price) INTO total
-        FROM request_material RM
-        JOIN raw_material M ON RM.material = M.code
-        WHERE RM.request = NEW.num;
+    SELECT SUM(amount) INTO total_amount
+    FROM request_material
+    WHERE request = NEW.request;
+    SELECT request_date, provider INTO invoice_date, provider_id
+    FROM request
+    WHERE num = NEW.request;
+    SET generated_folio = CONCAT(
+        'F', NEW.request,
+        LPAD(DAY(invoice_date), 2, '0'),
+        LPAD(MONTH(invoice_date), 2, '0'),
+        RIGHT(YEAR(invoice_date), 2)
+    );
+    INSERT INTO invoice (folio, amount, subtotal, iva, payDate, request, provider)
+    VALUES (
+        generated_folio,
+        total_amount + (total_amount * 0.16),
+        total_amount,
+        total_amount * 0.16,
+        invoice_date,
+        NEW.request,
+        provider_id
+    );
+END$$
 
-        SET NEW.subtotal = total;
-    END $$
-    DELIMITER;
 
-    DELIMITER $$    
-    CREATE TRIGGER UpdateRequestSubtotal
-    AFTER INSERT ON request_material
-    FOR EACH ROW
-    BEGIN
-        DECLARE total DECIMAL(10, 2);
+DELIMITER $$
+CREATE TRIGGER AutoBudget
+BEFORE INSERT ON invoice
+FOR EACH ROW
+BEGIN
+    DECLARE area_code VARCHAR(10);
+    DECLARE budget_month INT;
+    DECLARE budget_year INT;
+    DECLARE invoice_month INT;
+    DECLARE invoice_year INT;
+    DECLARE current_budget DECIMAL(12, 2);
+    SELECT area INTO area_code
+    FROM orders
+    WHERE num = (SELECT order_num FROM request WHERE num = NEW.request);
+    SET invoice_month = MONTH(NEW.payDate);
+    SET invoice_year = YEAR(NEW.payDate);
+    SELECT budgetRemain, budgetMonth, budgetYear INTO current_budget, budget_month, budget_year
+    FROM budget
+    WHERE area = area_code AND budgetMonth = invoice_month AND budgetYear = invoice_year;
+    IF budget_month IS NULL OR budget_year IS NULL THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'No matching budget found for this invoice period.';
+    ELSEIF current_budget >= NEW.amount THEN
+        UPDATE budget
+        SET budgetRemain = budgetRemain - NEW.amount
+        WHERE area = area_code AND budgetMonth = invoice_month AND budgetYear = invoice_year;
+    ELSE
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Insufficient budget to cover this invoice.';
+    END IF;
+END $$
 
-        SELECT SUM(RM.quantity * M.price)
-        INTO total
-        FROM request_material RM
-        JOIN raw_material M ON RM.material = M.code
-        WHERE RM.request = NEW.request;
-
-        UPDATE request
-        SET subtotal = total
-        WHERE num = NEW.request;
-    END $$
 
 /* * * * * * * * * * * * * VIEWS * * * * * * * * * * * * */
+ /* * * * * * * * * * * * * VIEWS * * * * * * * * * * * * */
     CREATE VIEW vw_employee_user AS
     SELECT 
         e.num as num,
@@ -376,7 +404,6 @@ CREATE TABLE trouble (
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
 /* * * * * * * * * * * * * INSERTS * * * * * * * * * * * * */
-
 -- Status Request
 INSERT INTO status_request (code, name) VALUES
 ('PEND', 'Pending'),
@@ -420,10 +447,33 @@ INSERT INTO charge (code, name) VALUES
 
 -- Employee
 INSERT INTO employee (firstName, lastName, surname, status, numTel, email, charge, area) VALUES
-('Carlos', 'Gómez', 'Pérez', TRUE, '5551234567', 'carlos.gomez@gmail.com', 'MNGR', 'RH'),
+('Carlos', 'Gómez', 'Pérez', TRUE, '5551234561', 'carlos.gomez@gmail.com', 'MNGR', 'RH'),
+('Laura', 'Fernández', NULL, TRUE, '5551234562', 'laura.fernandez@gmail.com', 'MNGR', 'PR'),
+('José', 'Martínez', NULL, TRUE, '5551234563', 'jose.martinez@gmail.com', 'MNGR', 'ST'),
+('Lucía', 'Sánchez', NULL, TRUE, '5551234564', 'lucia.sanchez@gmail.com', 'MNGR', 'PA1'),
+('David', 'López', NULL, TRUE, '5551234565', 'david.lopez@gmail.com', 'MNGR', 'PA2'),
+('Elena', 'García', NULL, TRUE, '5551234566', 'elena.garcia@gmail.com', 'MNGR', 'PA3'),
 ('Ana', 'Martínez', NULL, TRUE, '5552345678', 'ana.martinez@gmail.com', 'WRKR', 'PA1'),
-('Maria', 'Salem', NULL, TRUE, '5552345678', 'MariaSal@gmail.com', 'WRKR', 'PA2'),
-('Jane', 'Lopez', NULL, TRUE, '5552345678', 'JaneL@gmail.com', 'WRKR', 'PA3')
+('Mario', 'Pérez', NULL, TRUE, '5552345679', 'mario.perez@gmail.com', 'WRKR', 'PA2'),
+('Clara', 'Núñez', NULL, TRUE, '5552345680', 'clara.nunez@gmail.com', 'WRKR', 'PA3'),
+('Pedro', 'González', NULL, TRUE, '5552345681', 'pedro.gonzalez@gmail.com', 'WRKR', 'RH'),
+('Sara', 'Hernández', NULL, TRUE, '5552345682', 'sara.hernandez@gmail.com', 'WRKR', 'PR'),
+('Luis', 'Ortiz', NULL, FALSE, '5552345683', 'luis.ortiz@gmail.com', 'WRKR', 'PA1'),
+('Eva', 'Morales', NULL, FALSE, '5552345684', 'eva.morales@gmail.com', 'WRKR', 'PA2'),
+('Javier', 'Ruiz', NULL, FALSE, '5552345685', 'javier.ruiz@gmail.com', 'WRKR', 'PA3'),
+('Miguel', 'Domínguez', NULL, TRUE, '5552345690', 'miguel.dominguez@gmail.com', 'WRKR', 'RH'),
+('Lucía', 'Alvarez', NULL, FALSE, '5552345691', 'lucia.alvarez@gmail.com', 'WRKR', 'RH'),
+('Roberto', 'Torres', NULL, TRUE, '5552345692', 'roberto.torres@gmail.com', 'WRKR', 'PR'),
+('Paula', 'Jiménez', NULL, FALSE, '5552345693', 'paula.jimenez@gmail.com', 'WRKR', 'PR'),
+('Carmen', 'Mendoza', NULL, TRUE, '5552345694', 'carmen.mendoza@gmail.com', 'WRKR', 'ST'),
+('Jorge', 'Navarro', NULL, FALSE, '5552345695', 'jorge.navarro@gmail.com', 'WRKR', 'ST'),
+('Andrea', 'Ríos', NULL, TRUE, '5552345696', 'andrea.rios@gmail.com', 'WRKR', 'PA1'),
+('Victor', 'Delgado', NULL, FALSE, '5552345697', 'victor.delgado@gmail.com', 'WRKR', 'PA1'),
+('Marta', 'Iglesias', NULL, TRUE, '5552345698', 'marta.iglesias@gmail.com', 'WRKR', 'PA2'),
+('Samuel', 'Ortiz', NULL, FALSE, '5552345699', 'samuel.ortiz@gmail.com', 'WRKR', 'PA2'),
+('Rafael', 'Silva', NULL, TRUE, '5552345700', 'rafael.silva@gmail.com', 'WRKR', 'PA3'),
+('Adriana', 'Reyes', NULL, FALSE, '5552345701', 'adriana.reyes@gmail.com', 'WRKR', 'PA3');
+
 
 -- Raw Material
 INSERT INTO raw_material (code, price, name, description, weight, stock, category) VALUES
@@ -466,15 +516,12 @@ INSERT INTO raw_provider (provider, material) VALUES
 (6, 'DIO003');
 
 -- Budget
-INSERT INTO budget (code, initialAmount, budgetRemain, dateBudget, area) VALUES
-('BPA1-1', 250000.00, 250000.00, CURRENT_DATE, 'PA1'),
-('BPA2-1', 250000.00, 250000.00, CURRENT_DATE, 'PA2'),
-('BPA3-1', 250000.00, 250000.00, CURRENT_DATE, 'PA3');
+INSERT INTO budget (code, initialAmount, budgetRemain, budgetMonth, budgetYear, area) VALUES
+('BRH-1', 250000.00, 250000.00, MONTH(CURRENT_DATE), YEAR(CURRENT_DATE), 'RH');
 
 /********************** PROCEDURES ***********************/
 
 DELIMITER $$
-
 CREATE PROCEDURE Sp_RegistrarEmpleado(
     IN firstName VARCHAR(100),
     IN lastName VARCHAR(100),
@@ -496,8 +543,6 @@ BEGIN
         area
     );
 END$$
-
-DELIMITER ;
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
 DELIMITER $$
 
@@ -511,8 +556,6 @@ BEGIN
     SET status = p_status, motive = p_motive
     WHERE num = p_num;
 END$$
-
-DELIMITER ;
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
 DELIMITER $$
 CREATE PROCEDURE sp_RehireProvider(
@@ -524,8 +567,6 @@ BEGIN
     SET status = p_status
     WHERE num = p_num;
 END$$
-
-DELIMITER ;
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
 DELIMITER $$
 
@@ -538,6 +579,4 @@ BEGIN
     INSERT INTO orders (description, employee, raw_material)
     VALUES (p_descrp, p_employee, p_rawMaterial);
 END$$
-
-DELIMITER ;
--- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
