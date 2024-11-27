@@ -132,7 +132,7 @@ body {
                         <td>
                             <a href="order_details.php?num=<?= urlencode($result['num']) ?>" 
                             class="btn btn-info btn-sm">
-                            <i class="fas fa-eye"></i> View Details
+                            <i class="fas fa-eye"></i> Details
                             </a>
                         </td>
                     </tr>
