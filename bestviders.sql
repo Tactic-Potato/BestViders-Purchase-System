@@ -577,7 +577,7 @@ CREATE PROCEDURE Sp_CreateOrder(
 )
 BEGIN
     INSERT INTO orders (description, employee, area)
-    VALUES (p_descrp, p_employee, p_area;
+    VALUES (p_descrp, p_employee, p_area);
 END$$
 
 DELIMITER ;
