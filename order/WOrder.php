@@ -1,6 +1,5 @@
-<!-- Add Bootstrap CSS -->
+<title>Orders History</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<!-- Add DataTables CSS -->
 <link href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" rel="stylesheet">
 
 <style>
@@ -111,7 +110,6 @@ body {
                     <th>Status</th>
                     <th>Date</th>
                     <th>Area</th>
-                    <th>Actions</th> <!-- Nueva columna -->
                 </tr>
             </thead>
             <tbody>
@@ -129,12 +127,6 @@ body {
                         <td><?= htmlspecialchars($result['status']) ?></td>
                         <td><?= htmlspecialchars($result['creationDate']) ?></td>
                         <td><?= htmlspecialchars($result['area']) ?></td>
-                        <td>
-                            <a href="order_details.php?num=<?= urlencode($result['num']) ?>" 
-                            class="btn btn-info btn-sm">
-                            <i class="fas fa-eye"></i> Details
-                            </a>
-                        </td>
                     </tr>
                 <?php } mysqli_close($db); ?>
             </tbody>
@@ -142,22 +134,36 @@ body {
     </div>
 </div>
 
-<!-- Add Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<!-- Add jQuery -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<!-- Add DataTables JS -->
 <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
-<!-- Add Font Awesome -->
 <script src="https://kit.fontawesome.com/your-kit-code.js" crossorigin="anonymous"></script>
 
 <script>
 $(document).ready(function() {
     $('#ordersTable').DataTable({
-        pageLength: 10,
-        lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
-        responsive: true
+        "paging": true,
+        "searching": true,
+        "ordering": true,
+        "pageLength": 10,
+        "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+        "language": {
+            "lengthMenu": "Show _MENU_ entries",
+            "search": "Search:",
+            "paginate": {
+                "first": "First",
+                "last": "Last",
+                "next": "Next",
+                "previous": "Previous"
+            },
+            "info": "Showing _START_ to _END_ of _TOTAL_ entries",
+            "infoEmpty": "Showing 0 to 0 of 0 entries",
+            "infoFiltered": "(filtered from _MAX_ total entries)"
+        },
+        "dom": '<"row"<"col-sm-6"l><"col-sm-6"f>>rtip',
+        "responsive": true
     });
+    $('.dataTables_length label').find('select').removeClass('form-select');
 });
 </script>

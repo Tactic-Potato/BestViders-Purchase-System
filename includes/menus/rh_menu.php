@@ -1,7 +1,10 @@
 <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
     <ul class="navbar-nav">
+<<<<<<< HEAD
         <!-- Dropdown Orders -->
         <!-- Dropdown Providers -->
+=======
+>>>>>>> d0a0d1c (todo w)
         <!-- Dropdown Employees -->
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="employeesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">

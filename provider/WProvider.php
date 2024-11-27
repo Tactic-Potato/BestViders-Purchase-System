@@ -1,11 +1,9 @@
 <?php
-session_start(); // Inicia la sesión (asegúrate de que esté iniciada)
-$role = $_SESSION['role']; // Obtiene el rol del usuario desde la sesión
+session_start();
+$role = $_SESSION['role'];
 ?>
 
-<!-- Add Bootstrap CSS -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<!-- Add DataTables CSS -->
 <link href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap5.min.css" rel="stylesheet">
 
 <style>
@@ -162,14 +160,10 @@ body {
 </div>
 
 
-<!-- Add Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<!-- Add jQuery -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<!-- Add DataTables JS -->
 <script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.1/js/dataTables.bootstrap5.min.js"></script>
-<!-- Add Font Awesome -->
 <script src="https://kit.fontawesome.com/your-code.js" crossorigin="anonymous"></script>
 
 <script>

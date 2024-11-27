@@ -11,63 +11,34 @@ session_start();
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $descrp = $_POST['descrp'];
     $selectedMaterialsAndQuantities = $_POST['materials_and_quantities']; // Recibimos el JSON
+    $materials_and_quantities = json_decode($selectedMaterialsAndQuantities, true); // Decodificamos el JSON
     $employee = $_SESSION['num'];
     $area = $_SESSION['role'];
 
-    // Inserta la orden principal
-    $insert_query = "INSERT INTO orders (description, employee, area) VALUES ('$descrp', '$employee', '$area')";
-    if (mysqli_query($db, $insert_query)) {
-        $order_num = mysqli_insert_id($db); // ID de la orden recién creada
+    $insert_order_query = "INSERT INTO orders (description, employee, area) VALUES (?, ?, ?)";
+    $stmt_order = $db->prepare($insert_order_query);
+    $stmt_order->bind_param("sis", $descrp, $employee, $area);
 
-        // Decodificar el JSON para obtener el array de materiales y cantidades
-        $materials_and_quantities = json_decode($selectedMaterialsAndQuantities, true);
+    if ($stmt_order->execute()) {
+        $order_num = $stmt_order->insert_id;
 
-        // Inserta los materiales seleccionados y sus cantidades
+        $insert_material_query = "INSERT INTO order_material (order_num, material, quantity) VALUES (?, ?, ?)";
+        $stmt_material = $db->prepare($insert_material_query);
+
         foreach ($materials_and_quantities as $item) {
-            $materialCode = $item['material']; // Código del material
-            $quantity = $item['quantity']; // Cantidad
-
-            // Verifica que la cantidad sea un número válido y mayor que 0
-            if (is_numeric($quantity) && $quantity > 0) {
-                // Inserta el material y su cantidad en la tabla order_material
-                $insert_material_query = "INSERT INTO order_material (order_num, material, quantity) 
-                                          VALUES ('$order_num', '$materialCode', '$quantity')";
-                if (!mysqli_query($db, $insert_material_query)) {
-                    echo "<script>
-                            alert('Error al registrar material: " . mysqli_error($db) . "');
-                            window.location.href = 'createOrder.php';
-                          </script>";
-                    exit;
-                }
-            } else {
-                echo "<script>
-                        alert('Cantidad inválida para el material $materialCode');
-                        window.location.href = 'createOrder.php';
-                      </script>";
+            $stmt_material->bind_param("isi", $order_num, $item['material'], $item['quantity']);
+            if (!$stmt_material->execute()) {
+                echo "<script>alert('Error al registrar material: " . $stmt_material->error . "');</script>";
                 exit;
             }
         }
 
-        // Inserta en la tabla área-orden
-        $insert_query_2 = "INSERT INTO area_order (area, order_num) VALUES ('$area', '$order_num')";
-        if (mysqli_query($db, $insert_query_2)) {
-            echo "<script>
-                    alert('Registro Exitoso');
-                    window.location.href = 'createOrder.php';
-                  </script>";
-        } else {
-            echo "<script>
-                    alert('Error al registrar en área-orden: " . mysqli_error($db) . "');
-                    window.location.href = 'createOrder.php';
-                  </script>";
-        }
+        echo "<script>alert('Registro exitoso'); window.location.href = 'createOrder.php';</script>";
     } else {
-        echo "<script>
-                alert('Error al registrar la orden: " . mysqli_error($db) . "');
-                window.location.href = 'createOrder.php';
-              </script>";
+        echo "<script>alert('Error al registrar la orden: " . $stmt_order->error . "');</script>";
     }
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -150,7 +121,6 @@ h2 {
     box-shadow: none;
 }
 
-/* Raw Materials Grid Layout */
 .mb-3 > div {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -185,7 +155,6 @@ h2 {
     background: #4b4848;
 }
 
-/* Modal Styling */
 .modal-content {
     background: rgba(255, 255, 255, 0.95);
     border-radius: 15px;
@@ -276,7 +245,6 @@ h2 {
                     </div>
                 </div>
 
-                <!-- Hidden field to hold materials and quantities as JSON -->
                 <input type="hidden" name="materials_and_quantities" id="hiddenMaterialsAndQuantities" />
 
                 <div class="mt-4">
@@ -319,7 +287,6 @@ h2 {
 
         let selectedMaterialCode = null;
 
-        // Setup the modal with the correct material
         document.querySelectorAll('.material-checkbox').forEach(item => {
             item.addEventListener('click', function() {
                 if (item.checked) {
@@ -333,19 +300,14 @@ h2 {
             const quantity = modalQuantityInput.value;
 
             if (quantity && quantity > 0) {
-                // Crear un array con los materiales y sus cantidades
                 const currentMaterials = JSON.parse(hiddenMaterialsInput.value || '[]');
                 
-                // Agregar el material seleccionado con su cantidad al array
                 currentMaterials.push({
                     material: selectedMaterialCode,
                     quantity: quantity
                 });
 
-                // Actualizar el campo oculto con el JSON de materiales y cantidades
                 hiddenMaterialsInput.value = JSON.stringify(currentMaterials);
-
-                // Limpiar el modal y cerrarlo
                 modalQuantityInput.value = '';
                 const modal = bootstrap.Modal.getInstance(document.getElementById('quantityModal'));
                 modal.hide();

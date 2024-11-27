@@ -3,9 +3,7 @@ include "../includes/config/conn.php";
 $conn = connect();
 
 $num = $_POST['num'];  
-$status = $_POST['status'];  
-
-// Escapar los valores para evitar inyecciones SQL
+$status = $_POST['status'];     
 $num = $conn->real_escape_string($num);
 $status = $conn->real_escape_string($status);
 

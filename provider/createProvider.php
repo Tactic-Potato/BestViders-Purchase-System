@@ -1,226 +1,183 @@
 <?php
 require '../includes/config/conn.php';
-
 $db = connect();
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+file_put_contents('debug.log', date('Y-m-d H:i:s') . " - POST data: " . print_r($_POST, true) . "\n\n", FILE_APPEND);
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Escapamos las variables para evitar inyecciones SQL
-    $fiscalName = mysqli_real_escape_string($db, $_POST['fiscal_name']);
-    $email = mysqli_real_escape_string($db, $_POST['email']);
-    $numTel = mysqli_real_escape_string($db, $_POST['numTel']);
-    
-    // Insertar nuevo proveedor en la tabla PROVIDER
-    $insert_query = "INSERT INTO provider (fiscal_name, email, numTel) VALUES ('$fiscalName', '$email', '$numTel')";
-    
-    if (mysqli_query($db, $insert_query)) {
-        $providerId = mysqli_insert_id($db); // Obtener el ID del proveedor insertado
-        
-        // Verificar si se seleccionó un material
-        if (isset($_POST['material']) && !empty($_POST['material'])) {
-            // Limpiar el código del material y evitar espacios extra
-            $materialCode = trim(mysqli_real_escape_string($db, $_POST['material']));
-            
-            // Consultar si el código del material existe
-            $checkMaterialQuery = "SELECT COUNT(*) as count FROM raw_material WHERE code = '$materialCode'";
-            $result = mysqli_query($db, $checkMaterialQuery);
-            
-            // Verificar si la consulta fue exitosa
-            if ($result) {
-                $row = mysqli_fetch_assoc($result);
-                if ($row['count'] > 0) {
-                    // El material existe, insertar en raw_provider
-                    $materialInsertQuery = "INSERT INTO raw_provider (provider, material) VALUES ('$providerId', '$materialCode')";
-                    if (mysqli_query($db, $materialInsertQuery)) {
-                        echo "<script>
-                                alert('Proveedor registrado exitosamente');
-                                if (confirm('¿Deseas registrar otro proveedor?')) {
-                                    document.getElementById('providerForm').reset();
-                                } else {
-                                    window.location.href = '../index.php';
-                                }
-                            </script>";
-                    } else {
-                        echo "<script>
-                                alert('Error al registrar el material: " . mysqli_error($db) . "');
-                                window.location.href = 'createProvider.php';
-                            </script>";
-                    }
-                } else {
-                    echo "<script>
-                            alert('El material con código $materialCode no existe en la base de datos.');
-                            window.location.href = 'createProvider.php';
-                        </script>";
+    if (isset($_POST['action']) && $_POST['action'] == 'add_provider') {
+        $fiscal_name = $_POST['fiscalName'];
+        $email = $_POST['email'];
+        $numTel = $_POST['numTel'];
+        $materials = isset($_POST['materials']) ? $_POST['materials'] : [];
+
+        $db->begin_transaction();
+
+        try {
+            $query = "INSERT INTO provider (fiscal_name, email, numTel) VALUES (?, ?, ?)";
+            $stmt = $db->prepare($query);
+            $stmt->bind_param("sss", $fiscal_name, $email, $numTel);
+            $stmt->execute();
+            $provider_id = $db->insert_id;
+
+            if (!empty($materials)) {
+                $query = "INSERT INTO raw_provider (provider, material) VALUES (?, ?)";
+                $stmt = $db->prepare($query);
+                foreach ($materials as $material) {
+                    $stmt->bind_param("is", $provider_id, $material);
+                    $stmt->execute();
                 }
-            } else {
-                echo "<script>
-                        alert('Error al verificar el material con código $materialCode. " . mysqli_error($db) . "');
-                        window.location.href = 'createProvider.php';
-                    </script>";
             }
-        } else {
-            echo "<script>
-                    alert('Por favor, selecciona un material.');
-                    window.location.href = 'createProvider.php';
-                </script>";
+
+            $db->commit();
+            echo json_encode(['success' => true, 'message' => 'Provider added successfully']);
+        } catch (Exception $e) {
+            $db->rollback();
+            file_put_contents('debug.log', date('Y-m-d H:i:s') . " - Error: " . $e->getMessage() . "\n\n", FILE_APPEND);
+            echo json_encode(['success' => false, 'message' => $e->getMessage()]);
         }
-    } else {
-        echo "<script>
-                alert('Error al registrar el proveedor: " . mysqli_error($db) . "');
-                window.location.href = 'createProvider.php';
-            </script>";
+        exit;
     }
 }
-?>
 
+$query_materials = "SELECT code, name FROM raw_material ORDER BY name";
+$materials = $db->query($query_materials);
+?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="../includes/css/form2.css">
-    <title>Human Resources</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Provider Registration</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
-        /* Estilo para la ventana modal */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.5);
-        }
-        .modal-content {
-            background-color: #fff;
-            margin: 15% auto;
+        body {
+            min-height: 100vh;
+            background-image: url('https://4kwallpapers.com/images/wallpapers/macos-monterey-stock-black-dark-mode-layers-5k-4480x2520-5889.jpg');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
         }
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
+
+        .card-container {
+            width: 100%;
+            max-width: 800px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
         }
-        .close:hover,
-        .close:focus {
-            color: black;
+
+        .return-btn {
+            background: #1a1a1a;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 8px;
             text-decoration: none;
-            cursor: pointer;
+            display: inline-block;
+            margin: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        .return-btn:hover {
+            background: #333;
+            color: #fff;
+        }
+
+        .form-card {
+            padding: 2rem;
+        }
+
+        .materials-list {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem;
+            padding: 0.5rem;
         }
     </style>
 </head>
 <body>
-<nav id="Return"><a href="../index.php"> Return </a></nav>
-<section id="formCont">
-    <div id="formCard">
-    <form id="providerForm" method="POST">
-    <h2>Provider Information</h2>
+<div class="card-container">
+    <a href="../index.php" class="return-btn">
+        <i class="fas fa-arrow-left me-2"></i>Return
+    </a>
+    <div class="form-card">
+        <form id="providerForm">
+            <h2 class="mb-4">Provider Information</h2>
 
-    <div class="form-group">
-        <label>Fiscal Name</label>
-        <input type="text" name="fiscal_name" id="fiscalName" placeholder="Enter fiscal name" required>
-    </div>
+            <div class="form-group mb-3">
+                <label for="fiscalName">Fiscal Name</label>
+                <input type="text" name="fiscalName" id="fiscalName" class="form-control" required>
+            </div>
 
-    <div class="form-group">
-        <label>Email</label>
-        <input type="email" name="email" id="email" placeholder="Enter email address" required>
-    </div>
+            <div class="form-group mb-3">
+                <label for="numTel">Phone Number</label>
+                <input type="tel" name="numTel" id="numTel" class="form-control" required>
+            </div>
 
-    <div class="form-group">
-        <label>Phone Number</label>
-        <input type="tel" name="numTel" id="numTel" placeholder="Enter phone number" required>
-    </div>
+            <div class="form-group mb-3">
+                <label for="email">Email</label>
+                <input type="email" name="email" id="email" class="form-control" required>
+            </div>
 
-    <div class="form-group">
-        <label>Material</label>
-        <select name="material" id="material" required>
-            <option value="">Select a material</option>
-            <?php
-            // Fetch materials from raw_material table
-            $materials_query = "SELECT code, name FROM raw_material";
-            $materials_result = mysqli_query($db, $materials_query);
-            
-            if ($materials_result) {
-                while ($row = mysqli_fetch_assoc($materials_result)) {
-                    echo "<option value='" . htmlspecialchars($row['code']) . "'>" . htmlspecialchars($row['name']) . "</option>";
-                }
-            } else {
-                echo "<option disabled>No materials available</option>";
-            }
-            ?>
-        </select>
-    </div>
+            <div class="form-group mb-3">
+                <label>Raw Materials</label>
+                <div class="materials-list">
+                    <?php while ($material = $materials->fetch_assoc()): ?>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="materials[]" 
+                               value="<?= htmlspecialchars($material['code']) ?>" 
+                               id="material_<?= htmlspecialchars($material['code']) ?>">
+                        <label class="form-check-label" for="material_<?= htmlspecialchars($material['code']) ?>">
+                            <?= htmlspecialchars($material['name']) ?>
+                        </label>
+                    </div>
+                    <?php endwhile; ?>
+                </div>
+            </div>
 
-    <div class="button-container">
-        <button type="submit" class="button">ADD PROVIDER</button>
-    </div>
-</form>
-
-    </div>
-</section>
-
-<!-- Modal for material selection -->
-<div id="materialModal" class="modal">
-    <div class="modal-content">
-        <span class="close">&times;</span>
-        <h2>Select Materials</h2>
-        <form id="materialForm">
-            <?php
-            if (mysqli_num_rows($materials_result) > 0) {
-                while ($material = mysqli_fetch_assoc($materials_result)) {
-                    echo '<div class="checkbox">
-                            <label>
-                                <input type="checkbox" name="materials[]" value="' . $material['code'] . '"> ' . $material['name'] . '
-                            </label>
-                          </div>';
-                }
-            } else {
-                echo "<p>No materials found.</p>";
-            }
-            ?>
-            <button type="button" id="submitMaterialSelection" class="button">Save Selection</button>
+            <div class="button-container mt-4">
+                <button type="submit" class="btn btn-dark w-100">Add Provider</button>
+            </div>
         </form>
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    // Open the modal when the button is clicked
-    document.getElementById("openModalBtn").onclick = function() {
-        document.getElementById("materialModal").style.display = "block";
-    }
+document.getElementById('providerForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    formData.append('action', 'add_provider');
 
-    // Close the modal when the close button is clicked
-    document.getElementsByClassName("close")[0].onclick = function() {
-        document.getElementById("materialModal").style.display = "none";
-    }
-
-    // Close the modal if the user clicks outside of the modal content
-    window.onclick = function(event) {
-        if (event.target == document.getElementById("materialModal")) {
-            document.getElementById("materialModal").style.display = "none";
+    fetch(window.location.href, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            location.href = '../index.php';
+        } else {
+            alert('Error: ' + data.message);
         }
-    }
-
-    // Handle material selection and save the selected materials
-    document.getElementById("submitMaterialSelection").onclick = function() {
-        var selectedMaterials = [];
-        var checkboxes = document.querySelectorAll('input[name="materials[]"]:checked');
-        checkboxes.forEach(function(checkbox) {
-            selectedMaterials.push(checkbox.value);
-        });
-        
-        // Set the selected materials in the hidden input field
-        document.getElementById("selectedMaterials").value = selectedMaterials.join(',');
-
-        // Close the modal
-        document.getElementById("materialModal").style.display = "none";
-    }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred. Please try again.');
+    });
+});
 </script>
-
 </body>
 </html>
-
-

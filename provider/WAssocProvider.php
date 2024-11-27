@@ -1,6 +1,4 @@
-<!-- Add Bootstrap CSS -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<!-- Add DataTables CSS -->
 <link href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap5.min.css" rel="stylesheet">
 
 <style>
@@ -60,7 +58,6 @@ body {
     background-color: rgba(0, 0, 0, 0.02);
 }
 
-/* Custom DataTables Styling */
 .dataTables_wrapper .dataTables_length select {
     border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 6px;
@@ -126,7 +123,7 @@ body {
             </thead>
             <tbody>
                 <?php 
-                session_start(); // Asegúrate de iniciar la sesión
+                session_start();
                 include "../includes/config/conn.php";
                 $db = connect();
                 $query = mysqli_query($db, "SELECT * FROM vw_provider_assoc");
@@ -157,14 +154,10 @@ body {
     </div> 
 </div>
 
-<!-- Add Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<!-- Add jQuery -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<!-- Add DataTables JS -->
 <script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.1/js/dataTables.bootstrap5.min.js"></script>
-<!-- Add Font Awesome -->
 <script src="https://kit.fontawesome.com/your-code.js" crossorigin="anonymous"></script>
 
 <script>

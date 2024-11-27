@@ -12,8 +12,6 @@ if (!$infoProvider) {
     exit("Proveedor no encontrado.");
 }
 ?>
-
-
 <link rel="stylesheet" href="includes/css/forms.css">
 <nav id="Return"><a href="../index.php">Return</a></nav>
 <section id="formCont">
