@@ -37,19 +37,25 @@ CREATE TABLE charge (
     name VARCHAR(100) NOT NULL
 );
 
-CREATE TABLE employee (
+Alter TABLE employee (
     num INT PRIMARY KEY AUTO_INCREMENT,
     firstName VARCHAR(100) NOT NULL,
     lastName VARCHAR(100) NOT NULL,
     surname VARCHAR(100) NULL,
     status BOOLEAN DEFAULT TRUE,
-    numTel VARCHAR(20) NULL,
-    email VARCHAR(100) NULL,
+    numTel VARCHAR(20) NULL UNIQUE,
+    email VARCHAR(100) NULL UNIQUE,
     charge VARCHAR(10),
     area VARCHAR(10),
     FOREIGN KEY (charge) REFERENCES charge(code),
     FOREIGN KEY (area) REFERENCES area(code) ON DELETE SET NULL
 );
+
+Alter TABLE employee (
+    modify column numTel VARCHAR(20) NULL UNIQUE,
+    modify column email VARCHAR(100) NULL UNIQUE
+);
+
 
 ALTER TABLE area
 ADD FOREIGN KEY (manager) REFERENCES employee(num) ON DELETE SET NULL;
@@ -57,18 +63,18 @@ ADD FOREIGN KEY (manager) REFERENCES employee(num) ON DELETE SET NULL;
 -- 4. Provider
 CREATE TABLE provider (
     num INT PRIMARY KEY AUTO_INCREMENT,
-    fiscal_name VARCHAR(100) NOT NULL,
-    email VARCHAR(100) NULL,
-    numTel VARCHAR(20) NULL,
+    fiscal_name VARCHAR(100) NOT NULL UNIQUE,
+    email VARCHAR(100) NULL UNIQUE,
+    numTel VARCHAR(20) NULL UNIQUE,
     status BOOLEAN DEFAULT TRUE,
     motive VARCHAR(250) NULL
 );
+
 
 -- 5. Raw Material
 CREATE TABLE raw_material (
     code VARCHAR(10) PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    price DECIMAL(12, 2) NOT NULL,
     description TEXT NULL,
     weight DECIMAL(12, 2) NULL,
     stock INT NULL,
@@ -104,8 +110,31 @@ CREATE TABLE request (
     FOREIGN KEY (provider) REFERENCES provider(num),
     FOREIGN KEY (order_num) REFERENCES orders(num),
     FOREIGN KEY (status) REFERENCES status_request(code)
-);
+); -- este ya no
 
+SELECT CONSTRAINT_NAME 
+FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE 
+WHERE TABLE_NAME = 'request' AND COLUMN_NAME = 'provider';
+
+
+ALTER TABLE request
+DROP FOREIGN KEY request_ibfk_2;
+
+ALTER TABLE request
+DROP COLUMN provider;
+
+CREATE TABLE request (
+    num INT PRIMARY KEY AUTO_INCREMENT,
+    request_date DATE DEFAULT (CURRENT_DATE),
+    estimated_date DATE,
+    employee INT,
+    provider INT,
+    order_num INT,
+    status VARCHAR(10) DEFAULT 'PEND',
+    FOREIGN KEY (employee) REFERENCES employee(num),
+    FOREIGN KEY (order_num) REFERENCES orders(num),
+    FOREIGN KEY (status) REFERENCES status_request(code)
+);
 -- 8. Request Material
 CREATE TABLE request_material (
     request INT,
@@ -145,10 +174,14 @@ CREATE TABLE budget (
     code VARCHAR(10) PRIMARY KEY,
     initialAmount DECIMAL(12, 2),
     budgetRemain DECIMAL(12, 2),
-    dateBudget DATE DEFAULT (CURRENT_DATE),
+    budgetMonth INT,
+    budgetYear INT,
     area VARCHAR(10),
     FOREIGN KEY (area) REFERENCES area(code)
 );
+
+INSERT INTO budget (code, initialAmount, budgetRemain, budgetMonth, budgetYear, area) VALUES
+('BRH-1', 250000.00, 250000.00, MONTH(CURRENT_DATE), YEAR(CURRENT_DATE), 'RH');
 
 -- 11. User
 CREATE TABLE user (
@@ -156,16 +189,6 @@ CREATE TABLE user (
     username VARCHAR(100) NOT NULL UNIQUE,
     password VARCHAR(100),
     FOREIGN KEY (num) REFERENCES employee(num)
-);
-
--- 12. Area Order
-CREATE TABLE area_order (
-    area VARCHAR(10),
-    order_num INT,
-    quantity INT,
-    PRIMARY KEY (area, order_num),
-    FOREIGN KEY (area) REFERENCES area(code),
-    FOREIGN KEY (order_num) REFERENCES orders(num)
 );
 
 -- 13. Reception
@@ -186,6 +209,7 @@ CREATE TABLE reception (
 CREATE TABLE raw_provider (
     provider INT,
     material VARCHAR(10),
+    price DECIMAL(12, 2) NOT NULL,
     PRIMARY KEY (provider, material),
     FOREIGN KEY (provider) REFERENCES provider(num),
     FOREIGN KEY (material) REFERENCES raw_material(code)
@@ -200,32 +224,68 @@ CREATE TABLE trouble (
     FOREIGN KEY (reception) REFERENCES reception(num)
 );
 
+CREATE TABLE request_provider (
+    request INT,
+    provider INT,
+    PRIMARY KEY (request, provider),
+    FOREIGN KEY (request) REFERENCES request(num),
+    FOREIGN KEY (provider) REFERENCES provider(num)
+);
+
+
 /* * * * * * * * * * * * * TRIGGERS * * * * * * * * * * * * */
- DELIMITER $$
-    CREATE TRIGGER CreateUser
-    AFTER INSERT ON employee
-    FOR EACH ROW
-    BEGIN
-        DECLARE Username VARCHAR(100);
-        SET Username = CONCAT(NEW.firstName, ' ', NEW.lastName, ' ', IFNULL(NEW.surname, ''));
-        INSERT INTO user (num, username, password)
-        VALUES (NEW.num, Username, '1234567890');
+DELIMITER $$
+CREATE TRIGGER CreateUser
+AFTER INSERT ON employee
+FOR EACH ROW
+BEGIN
+    DECLARE Username VARCHAR(100);
+    SET Username = CONCAT(NEW.firstName, ' ', NEW.lastName, ' ', IFNULL(NEW.surname, ''));
+    INSERT INTO user (num, username, password)
+    VALUES (NEW.num, Username, '1234567890');
 END $$
 
+DELIMITER $$
+DROP TRIGGER RequestAutoAmount
+BEFORE INSERT ON request_material
+FOR EACH ROW
+BEGIN
+    DECLARE unit_price DECIMAL(12, 2);
+    SELECT price INTO unit_price
+    FROM raw_provider
+    WHERE provider = (SELECT provider FROM request WHERE num = NEW.request)
+    AND material = NEW.material;
+    SET NEW.amount = NEW.quantity * unit_price;
+END$$
+--
 DELIMITER $$
 CREATE TRIGGER RequestAutoAmount
 BEFORE INSERT ON request_material
 FOR EACH ROW
 BEGIN
     DECLARE unit_price DECIMAL(12, 2);
-    SELECT price INTO unit_price
-    FROM raw_material
-    WHERE code = NEW.material;
-    SET NEW.amount = NEW.quantity * unit_price;
-END$$
 
+    SELECT rp.price
+    INTO unit_price
+    FROM raw_provider rp
+    INNER JOIN request_provider reqp ON reqp.provider = rp.provider
+    WHERE reqp.request = NEW.request
+    AND rp.material = NEW.material
+    LIMIT 1;
+
+    IF unit_price IS NULL THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Material or Provider not found for the given request.';
+    END IF;
+
+    SET NEW.amount = NEW.quantity * unit_price;
+END $$
+
+DELIMITER ;
+
+--
 DELIMITER $$
-CREATE TRIGGER AutoInvoice
+DROP TRIGGER AutoInvoice
 AFTER INSERT ON request_material
 FOR EACH ROW
 BEGIN
@@ -240,12 +300,13 @@ BEGIN
     SELECT request_date, provider INTO invoice_date, provider_id
     FROM request
     WHERE num = NEW.request;
-    SET generated_folio = CONCAT(
-        'F', NEW.request,
-        LPAD(DAY(invoice_date), 2, '0'),
-        LPAD(MONTH(invoice_date), 2, '0'),
-        RIGHT(YEAR(invoice_date), 2)
-    );
+        SET generated_folio = CONCAT(
+            'F', NEW.request,
+            LPAD(DAY(invoice_date), 2, '0'),
+            LPAD(MONTH(invoice_date), 2, '0'),
+            RIGHT(YEAR(invoice_date), 2)
+        );
+        
     INSERT INTO invoice (folio, amount, subtotal, iva, payDate, request, provider)
     VALUES (
         generated_folio,
@@ -260,7 +321,7 @@ END$$
 
 
 DELIMITER $$
-CREATE TRIGGER AutoBudget
+DROP TRIGGER AutoBudget
 BEFORE INSERT ON invoice
 FOR EACH ROW
 BEGIN
@@ -270,14 +331,18 @@ BEGIN
     DECLARE invoice_month INT;
     DECLARE invoice_year INT;
     DECLARE current_budget DECIMAL(12, 2);
+
     SELECT area INTO area_code
     FROM orders
     WHERE num = (SELECT order_num FROM request WHERE num = NEW.request);
+
     SET invoice_month = MONTH(NEW.payDate);
     SET invoice_year = YEAR(NEW.payDate);
+
     SELECT budgetRemain, budgetMonth, budgetYear INTO current_budget, budget_month, budget_year
     FROM budget
     WHERE area = area_code AND budgetMonth = invoice_month AND budgetYear = invoice_year;
+
     IF budget_month IS NULL OR budget_year IS NULL THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'No matching budget found for this invoice period.';
@@ -291,9 +356,54 @@ BEGIN
     END IF;
 END $$
 
+/********************** PROCEDURES ***********************/
+DELIMITER $$
+CREATE PROCEDURE Sp_RegistrarEmpleado(
+    IN firstName VARCHAR(100), IN lastName VARCHAR(100),
+    IN surName VARCHAR(100), IN numTel VARCHAR(20),
+    IN email VARCHAR(100), IN charge VARCHAR(10), IN area VARCHAR(10)
+)
+BEGIN
+    INSERT INTO employee (firstName, lastName, surname, numTel, email, charge, area)
+    VALUES (firstName, lastName, surName, numTel, email, charge, area);
+END$$
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+DELIMITER $$
 
+CREATE PROCEDURE sp_RemoveProvider(
+    IN p_num INT,
+    IN p_motive TEXT,
+    IN p_status INT
+)
+BEGIN
+    UPDATE provider
+    SET status = p_status, motive = p_motive
+    WHERE num = p_num;
+END$$
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+DELIMITER $$
+CREATE PROCEDURE sp_RehireProvider(
+    IN p_num INT,
+    IN p_status INT
+)
+BEGIN
+    UPDATE provider
+    SET status = p_status
+    WHERE num = p_num;
+END$$
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+DELIMITER $$
+CREATE PROCEDURE Sp_CreateOrder(
+    IN p_descrp TEXT,
+    IN p_employee INT,
+    IN p_rawMaterial VARCHAR(10)
+)
+BEGIN
+    INSERT INTO orders (description, employee, raw_material)
+    VALUES (p_descrp, p_employee, p_rawMaterial);
+END$$
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -
 /* * * * * * * * * * * * * VIEWS * * * * * * * * * * * * */
- /* * * * * * * * * * * * * VIEWS * * * * * * * * * * * * */
     CREATE VIEW vw_employee_user AS
     SELECT 
         e.num as num,
@@ -404,6 +514,7 @@ END $$
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
 /* * * * * * * * * * * * * INSERTS * * * * * * * * * * * * */
+
 -- Status Request
 INSERT INTO status_request (code, name) VALUES
 ('PEND', 'Pending'),
@@ -476,109 +587,269 @@ INSERT INTO employee (firstName, lastName, surname, status, numTel, email, charg
 
 
 -- Raw Material
-INSERT INTO raw_material (code, price, name, description, weight, stock, category) VALUES
-('CAP003', 0.10, 'Ceramic Capacitor 10uF', 'General purpose capacitor for filtering', 0.00, 1000, 'CAP'),
-('CON005', 0.50, 'USB Connector', 'Standard USB connector type-A', 0.01, 300, 'CON'),
-('IC0002', 3.00, 'Microcontroller', '8-bit Microcontroller for embedded applications', 0.01, 200, 'IC'),
-('PCB001', 1.50, 'PCB 2-layer', 'Standard 2-layer PCB for general applications', 0.05, 500, 'PCB'),
-('RES004', 0.05, 'Resistor 100 Ohm', 'General purpose resistor 100 Ohm 1/4W', 0.00, 1500, 'RES'),
-('CAP006', 0.15, 'Ceramic Capacitor 22uF', 'High capacitance for filtering', 0.00, 800, 'CAP'),
-('CON008', 0.75, 'HDMI Connector', 'Standard HDMI connector for video/audio', 0.02, 400, 'CON'),
-('IC0030', 5.50, 'ARM Cortex-M0', '32-bit microcontroller for IoT applications', 0.01, 100, 'IC'),
-('PCB002', 2.00, 'PCB 4-layer', '4-layer PCB for advanced designs', 0.07, 300, 'PCB'),
-('RES010', 0.10, 'Resistor 1k Ohm', 'General purpose resistor 1k Ohm 1/2W', 0.00, 1200, 'RES'),
-('LED001', 0.25, 'LED 5mm Red', 'Standard red LED for indicators', 0.00, 1000, 'LED'),
-('TRN002', 0.90, 'NPN Transistor', 'General purpose NPN transistor', 0.01, 700, 'TRN'),
-('DIO003', 0.20, 'Schottky Diode', 'High-speed switching diode', 0.01, 600, 'DIO');
+INSERT INTO raw_material (code, name, description, weight, stock, category) VALUES
+('CAP003', 'Ceramic Capacitor 10uF', 'General purpose capacitor for filtering', 0.00, 1000, 'CAP'),
+('CON005', 'USB Connector', 'Standard USB connector type-A', 0.01, 300, 'CON'),
+('IC0002', 'Microcontroller', '8-bit Microcontroller for embedded applications', 0.01, 200, 'IC'),
+('PCB001', 'PCB 2-layer', 'Standard 2-layer PCB for general applications', 0.05, 500, 'PCB'),
+('RES004', 'Resistor 100 Ohm', 'General purpose resistor 100 Ohm 1/4W', 0.00, 1500, 'RES'),
+('CAP006', 'Ceramic Capacitor 22uF', 'High capacitance for filtering', 0.00, 800, 'CAP'),
+('CON008', 'HDMI Connector', 'Standard HDMI connector for video/audio', 0.02, 400, 'CON'),
+('IC0030', 'ARM Cortex-M0', '32-bit microcontroller for IoT applications', 0.01, 100, 'IC'),
+('PCB002', 'PCB 4-layer', '4-layer PCB for advanced designs', 0.07, 300, 'PCB'),
+('RES010', 'Resistor 1k Ohm', 'General purpose resistor 1k Ohm 1/2W', 0.00, 1200, 'RES'),
+('LED001', 'LED 5mm Red', 'Standard red LED for indicators', 0.00, 1000, 'LED'),
+('TRN002', 'NPN Transistor', 'General purpose NPN transistor', 0.01, 700, 'TRN'),
+('DIO003', 'Schottky Diode', 'High-speed switching diode', 0.01, 600, 'DIO');
 
 -- Provider
 INSERT INTO provider (fiscal_name, email, numTel) VALUES
-('Electronic Parts Co.', 'electronicparts@gmail.com', '6647891234'),
-('Global Circuits Ltd.', 'globalcircuits@gmail.com', '6643216789'),
-('Resistor World', 'resistorworld@gmail.com', '6649876543'),
-('Capacitor Central', 'capacitorcentral@gmail.com', '6645674321'),
-('LED Galaxy', 'ledgalaxy@gmail.com', '6641234567'),
-('Semiconductor Solutions', 'semiconductorsolutions@gmail.com', '6644567890');
+('ElectroComp Distributors', 'sales@electrocomp.com', '6647891234'),
+('CircuitTech Solutions', 'info@circuittech.com', '6643216789'),
+('ComponentWorld Inc.', 'orders@componentworld.com', '6649876543'),
+('MicroElectronics Ltd.', 'support@microelectronics.com', '6645674321'),
+('GlobalTech Supplies', 'contact@globaltechsupplies.com', '6641234567'),
+('PrecisionParts Co.', 'info@precisionparts.com', '6644567890');
 
 -- Raw Provider
-INSERT INTO raw_provider (provider, material) VALUES
-(1, 'CAP003'),
-(1, 'CAP006'),
-(2, 'PCB001'),
-(2, 'PCB002'),
-(3, 'RES004'),
-(3, 'RES010'),
-(4, 'LED001'),
-(5, 'LED001'),
-(6, 'IC0002'),
-(6, 'IC0030'),
-(6, 'TRN002'),
-(6, 'DIO003');
+INSERT INTO raw_provider (provider, material, price) VALUES
+(1, 'CAP003', 0.10),
+(2, 'CAP003', 0.11),
+(3, 'CAP003', 0.09),
+(1, 'CON005', 0.50),
+(2, 'CON005', 0.52),
+(4, 'CON005', 0.48),
+(3, 'IC0002', 3.00),
+(5, 'IC0002', 3.10),
+(6, 'IC0002', 2.95),
+(2, 'PCB001', 1.50),
+(4, 'PCB001', 1.55),
+(5, 'PCB001', 1.48),
+(1, 'RES004', 0.05),
+(3, 'RES004', 0.06),
+(6, 'RES004', 0.04),
+(2, 'CAP006', 0.15),
+(4, 'CAP006', 0.16),
+(5, 'CAP006', 0.14),
+(1, 'CON008', 0.75),
+(3, 'CON008', 0.78),
+(6, 'CON008', 0.73),
+(2, 'IC0030', 5.50),
+(4, 'IC0030', 5.60),
+(5, 'IC0030', 5.45),
+(3, 'PCB002', 2.00),
+(5, 'PCB002', 2.05),
+(6, 'PCB002', 1.98),
+(1, 'RES010', 0.10),
+(2, 'RES010', 0.11),
+(4, 'RES010', 0.09),
+(3, 'LED001', 0.25),
+(5, 'LED001', 0.26),
+(6, 'LED001', 0.24),
+(1, 'TRN002', 0.90),
+(2, 'TRN002', 0.92),
+(4, 'TRN002', 0.88),
+(3, 'DIO003', 0.20),
+(5, 'DIO003', 0.21),
+(6, 'DIO003', 0.19);
 
 -- Budget
 INSERT INTO budget (code, initialAmount, budgetRemain, budgetMonth, budgetYear, area) VALUES
 ('BRH-1', 250000.00, 250000.00, MONTH(CURRENT_DATE), YEAR(CURRENT_DATE), 'RH');
 
-/********************** PROCEDURES ***********************/
+INSERT INTO budget (code, initialAmount, budgetRemain, budgetMonth, budgetYear, area) VALUES
+('BPA1-1', 25000.00, 25000.00, MONTH(CURRENT_DATE), YEAR(CURRENT_DATE), 'PA1'),
+('BPA2-1', 25000.00, 25000.00, MONTH(CURRENT_DATE), YEAR(CURRENT_DATE), 'PA2'),
+('BPA3-1', 25000.00, 25000.00, MONTH(CURRENT_DATE), YEAR(CURRENT_DATE), 'PA3');
+
+INSERT INTO budget (code, initialAmount, budgetRemain, budgetMonth, budgetYear, area) VALUES
+('BPA1-2', 25000.00, 8000.00, 10, 2024, 'PA1'),
+('BPA2-2', 25000.00, 4000.00, 10, 2024, 'PA2'),
+('BPA3-2', 25000.00, 1000.00, 10, 2024, 'PA3'),
+('BPA3-3', 25000.00, 25000.00, 12, 2024, 'PA3');
 
 DELIMITER $$
-CREATE PROCEDURE Sp_RegistrarEmpleado(
-    IN firstName VARCHAR(100),
-    IN lastName VARCHAR(100),
-    IN surName VARCHAR(100),
-    IN numTel VARCHAR(20),
-    IN email VARCHAR(100),
-    IN charge VARCHAR(10),
-    IN area VARCHAR(10)
-)
+CREATE TRIGGER AutoInvoice
+AFTER INSERT ON request_material
+FOR EACH ROW
 BEGIN
-    INSERT INTO employee (firstName, lastName, surname, numTel, email, charge, area)
+    DECLARE total_amount DECIMAL(12, 2);
+    DECLARE generated_folio VARCHAR(20);
+    DECLARE invoice_date DATE;
+    DECLARE provider_id INT;
+
+    -- Calcular el monto total
+    SELECT SUM(amount) INTO total_amount
+    FROM request_material
+    WHERE request = NEW.request;
+
+    -- Obtener la fecha de la solicitud
+    SELECT request_date INTO invoice_date
+    FROM request
+    WHERE num = NEW.request;
+
+    -- Obtener el proveedor relacionado
+    SELECT provider INTO provider_id
+    FROM request_provider
+    WHERE request = NEW.request;
+
+    -- Generar el folio de la factura
+    SET generated_folio = CONCAT(
+        'F', NEW.request,
+        LPAD(DAY(invoice_date), 2, '0'),
+        LPAD(MONTH(invoice_date), 2, '0'),
+        RIGHT(YEAR(invoice_date), 2)
+    );
+
+    -- Insertar en la tabla invoice
+    INSERT INTO invoice (folio, amount, subtotal, iva, payDate, request, provider)
     VALUES (
-        firstName, 
-        lastName, 
-        surName, 
-        numTel, 
-        email, 
-        charge, 
-        area
+        generated_folio,
+        total_amount + (total_amount * 0.16),
+        total_amount,
+        total_amount * 0.16,
+        invoice_date,
+        NEW.request,
+        provider_id
     );
 END$$
--- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
-DELIMITER $$
 
-CREATE PROCEDURE sp_RemoveProvider(
-    IN p_num INT,
-    IN p_motive TEXT,
-    IN p_status INT
-)
-BEGIN
-    UPDATE provider
-    SET status = p_status, motive = p_motive
-    WHERE num = p_num;
-END$$
--- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
 DELIMITER $$
-CREATE PROCEDURE sp_RehireProvider(
-    IN p_num INT,
-    IN p_status INT
-)
+CREATE TRIGGER AutoBudget
+BEFORE INSERT ON invoice
+FOR EACH ROW
 BEGIN
-    UPDATE provider
-    SET status = p_status
-    WHERE num = p_num;
+    DECLARE area_code VARCHAR(10);
+    DECLARE budget_month INT;
+    DECLARE budget_year INT;
+    DECLARE invoice_month INT;
+    DECLARE invoice_year INT;
+    DECLARE current_budget DECIMAL(12, 2);
+
+    -- Obtener el área asociada con el pedido
+    SELECT area INTO area_code
+    FROM orders
+    WHERE num = (SELECT order_num FROM request WHERE num = NEW.request);
+
+    -- Calcular el mes y el año de la factura
+    SET invoice_month = MONTH(NEW.payDate);
+    SET invoice_year = YEAR(NEW.payDate);
+
+    -- Validar y actualizar el presupuesto
+    SELECT budgetRemain, budgetMonth, budgetYear INTO current_budget, budget_month, budget_year
+    FROM budget
+    WHERE area = area_code AND budgetMonth = invoice_month AND budgetYear = invoice_year;
+
+    IF budget_month IS NULL OR budget_year IS NULL THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'No matching budget found for this invoice period.';
+    ELSEIF current_budget >= NEW.amount THEN
+        UPDATE budget
+        SET budgetRemain = budgetRemain - NEW.amount
+        WHERE area = area_code AND budgetMonth = invoice_month AND budgetYear = invoice_year;
+    ELSE
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Insufficient budget to cover this invoice.';
+    END IF;
 END$$
--- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+
 DELIMITER $$
-
-CREATE PROCEDURE Sp_CreateOrder(
-    IN p_descrp TEXT,
-    IN p_employee INT,
-    IN p_area VARCHAR(10)
-)
+CREATE TRIGGER ValidateRequestProvider
+BEFORE INSERT ON request_provider
+FOR EACH ROW
 BEGIN
-    INSERT INTO orders (description, employee, area)
-    VALUES (p_descrp, p_employee, p_area);
+    DECLARE provider_exists INT;
+
+    -- Verificar que el proveedor exista
+    SELECT COUNT(*) INTO provider_exists
+    FROM provider
+    WHERE num = NEW.provider;
+
+    IF provider_exists = 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Provider does not exist.';
+    END IF;
 END$$
 
-DELIMITER ;
--- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+DELIMITER $$
+CREATE TRIGGER AutoInvoice
+AFTER INSERT ON request_material
+FOR EACH ROW
+BEGIN
+    -- Declaración de variables
+    DECLARE total_amount DECIMAL(12, 2);
+    DECLARE generated_folio VARCHAR(20);
+    DECLARE invoice_date DATE;
+    DECLARE provider_id INT;
+
+    -- Cursor para iterar sobre los proveedores relacionados con la solicitud
+    DECLARE provider_cursor CURSOR FOR
+    SELECT provider
+    FROM request_provider
+    WHERE request = NEW.request;
+
+    -- Variable de control para el cursor
+    DECLARE done INT DEFAULT FALSE;
+
+    -- Manejo del final del cursor
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done
+
+
+DELIMITER $$
+CREATE TRIGGER AutoInvoice
+AFTER INSERT ON request_material
+FOR EACH ROW
+BEGIN
+    DECLARE total_amount DECIMAL(12, 2);
+    DECLARE generated_folio VARCHAR(20);
+    DECLARE invoice_date DATE;
+    DECLARE provider_id INT;
+    DECLARE done INT DEFAULT 0;
+    DECLARE cur_providers CURSOR FOR 
+        SELECT provider 
+        FROM request_provider 
+        WHERE request = NEW.request;
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+
+    -- Obtener la fecha de la solicitud
+    SELECT request_date INTO invoice_date
+    FROM request
+    WHERE num = NEW.request;
+
+    -- Cursor para iterar sobre los proveedores
+    OPEN cur_providers;
+    read_loop: LOOP
+        FETCH cur_providers INTO provider_id;
+        IF done THEN
+            LEAVE read_loop;
+        END IF;
+
+        -- Calcular el monto total para el proveedor actual
+        SELECT SUM(amount) INTO total_amount
+        FROM request_material
+        WHERE request = NEW.request;
+
+        -- Generar el folio para la factura
+        SET generated_folio = CONCAT(
+            'F', NEW.request,
+            LPAD(DAY(invoice_date), 2, '0'),
+            LPAD(MONTH(invoice_date), 2, '0'),
+            RIGHT(YEAR(invoice_date), 2),
+            '-', provider_id
+        );
+
+        -- Crear la factura para el proveedor actual
+        INSERT INTO invoice (folio, amount, subtotal, iva, payDate, request, provider)
+        VALUES (
+            generated_folio,
+            total_amount + (total_amount * 0.16),
+            total_amount,
+            total_amount * 0.16,
+            invoice_date,
+            NEW.request,
+            provider_id
+        );
+    END LOOP;
+
+    CLOSE cur_providers;
+END$$

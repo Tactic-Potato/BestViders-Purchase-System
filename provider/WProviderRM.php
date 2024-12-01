@@ -1,6 +1,9 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap5.min.css" rel="stylesheet">
-
+<?php
+session_start();
+$role = $_SESSION['role'];
+?>
 <style>
 body {
     min-height: 100vh;
@@ -116,8 +119,8 @@ body {
                     <th>Fiscal Name</th>
                     <th>Email</th>
                     <th>Phone Number</th>
-                    <th>Status</th>
                     <th>Materials</th>
+                    <th>Re-Hire</th>
                 </tr>
             </thead>
             <tbody>
@@ -131,8 +134,12 @@ body {
                         <td><?= htmlspecialchars($result['fiscalName']) ?></td>
                         <td><?= htmlspecialchars($result['email']) ?></td>
                         <td><?= htmlspecialchars($result['numTel']) ?></td>
-                        <td><?= htmlspecialchars($result['status']) == 1 ? 'Afiliado' : 'No afiliado'?></td>
                         <td><?= htmlspecialchars($result['materials']) ?></td>
+                        <?php if ($role === 'PR' && $result['status'] == 0): ?>
+                            <td><a href="rehireProvider.php?num=<?=$result['num']?>">Rehire</a></td>
+                        <?php else: ?>
+                            <td></td> <!-- Celda vacía cuando no hay enlace -->
+                        <?php endif; ?>
                     </tr>
                 <?php } mysqli_close($db); ?>
             </tbody>

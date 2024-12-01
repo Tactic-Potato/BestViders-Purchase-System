@@ -1,8 +1,7 @@
 <?php
 session_start();
-$role = $_SESSION['role'];
+$role = $_SESSION['role'] ?? '';
 ?>
-
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap5.min.css" rel="stylesheet">
 
@@ -63,12 +62,10 @@ body {
     background-color: rgba(0, 0, 0, 0.02);
 }
 
-/* Custom DataTables Styling */
 .dataTables_wrapper .dataTables_length select {
     border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 6px;
     padding: 0.375rem 0.75rem;
-    background-image: none;
 }
 
 .dataTables_wrapper .dataTables_filter input {
@@ -93,6 +90,12 @@ body {
     color: #fff !important;
 }
 
+.materials-list {
+    max-width: 300px;
+    white-space: normal;
+    word-wrap: break-word;
+}
+
 @media (max-width: 767px) {
     body {
         padding: 1rem;
@@ -114,51 +117,69 @@ body {
     </a>
     
     <div class="table-container">
-        <table id="providerTable" class="table table-hover">
-            <thead>
-                <tr>
-                    <th>Provider Number</th>
-                    <th>Fiscal Name</th>
-                    <th>Email</th>
-                    <th>Phone Number</th>
-                    <th>Status</th>
-                    <th>Materials</th>
-                    <th>Modify</th>
-                    <th>Remove</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php 
-                include "../includes/config/conn.php";
-                $db = connect();
-                $query = mysqli_query($db, "SELECT * FROM vw_provider");
-                while ($result = mysqli_fetch_array($query)){ ?>
-                    <tr>
-                        <td><?= htmlspecialchars($result['num']) ?></td>
-                        <td><?= htmlspecialchars($result['fiscalName']) ?></td>
-                        <td><?= htmlspecialchars($result['email']) ?></td>
-                        <td><?= htmlspecialchars($result['numTel']) ?></td>
-                        <td><?= htmlspecialchars($result['status']) == 1 ? 'Associated' : 'Not Associated'?></td>
-                        <td><?= htmlspecialchars($result['materials']) ?></td>
-                        <td>
-                            <?php if ($role === 'PR' && $result['status'] == 1): ?>
-                                <a href="updateProvider.php?num=<?=$result['num']?>">Modify</a>
-                            <?php endif; ?>
-                        </td>
-                        <td>
-                            <?php if ($role === 'PR' && $result['status'] == 1): ?>
-                                <a href="removeProvider.php?num=<?=$result['num']?>">Remove</a>
-                            <?php elseif ($role === 'PR' && $result['status'] == 0): ?>
-                                <a href="rehireProvider.php?num=<?=$result['num']?>">Re-Hire</a>
-                            <?php endif; ?>
-                        </td>
-                    </tr>
-                <?php } mysqli_close($db); ?>
-            </tbody>
-        </table>
-    </div> 
-</div>
+        <table id="requestTable" class="table table-hover">
+        <thead>
+    <tr>
+        <th>Request Number</th>
+        <th>Request Date</th>
+        <th>Status</th>
+        <th>Employee</th>
+        <th>Provider</th>
+        <th>Materials</th>
+        <th>Make report</th>
+    </tr>
+</thead>
+<tbody>
+    <?php 
+    include "../includes/config/conn.php";
+    $db = connect();    
 
+    $query = "
+        SELECT 
+            r.num AS requestNum,
+            r.request_date,
+            sr.name AS status_name,
+            CONCAT(e.firstName, ' ', e.lastName) AS employee_name,
+            p.fiscal_name AS provider_name,
+            GROUP_CONCAT(
+                CONCAT(
+                    rm.material, ': ',
+                    m.name,
+                    ' (Quantity: ', rm.quantity,
+                    ', Amount: $', rm.amount, ')'
+                ) SEPARATOR '<br>'
+            ) AS materials_detail
+        FROM request r
+        LEFT JOIN employee e ON r.employee = e.num
+        LEFT JOIN provider p ON r.provider = p.num
+        LEFT JOIN request_material rm ON r.num = rm.request
+        LEFT JOIN raw_material m ON rm.material = m.code
+        LEFT JOIN status_request sr ON r.status = sr.code
+        GROUP BY r.num
+        ORDER BY r.request_date DESC
+    ";
+
+    $result = mysqli_query($db, $query);
+    
+    while ($row = mysqli_fetch_assoc($result)) { ?>
+        <tr>
+            <td><?= htmlspecialchars($row['requestNum']) ?></td>lucia.sanchez@gmail.com
+            <td><?= htmlspecialchars($row['request_date']) ?></td>
+            <td><?= htmlspecialchars($row['status_name']) ?></td>
+            <td><?= htmlspecialchars($row['employee_name']) ?></td>
+            <td><?= htmlspecialchars($row['provider_name']) ?></td>
+            <td class="materials-list"><?= $row['materials_detail'] ?></td>
+            <<td><a href="receptionCreate.php?requestNum=<?=$row['requestNum']?>">Report</a></td>
+
+        </tr>
+    <?php }
+    mysqli_close($db);
+    ?>
+</tbody>
+
+        </table>
+    </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -168,7 +189,7 @@ body {
 
 <script>
 $(document).ready(function() {
-    $('#providerTable').DataTable({
+    $('#requestTable').DataTable({
         "paging": true,
         "searching": true,
         "ordering": true,
@@ -188,10 +209,12 @@ $(document).ready(function() {
             "infoFiltered": "(filtered from _MAX_ total entries)"
         },
         "columnDefs": [
-            { "searchable": false, "targets": 3 }
+            { "orderable": false, "targets": 5 },
+            { "searchable": false, "targets": 5 }
         ],
         "dom": '<"row"<"col-sm-6"l><"col-sm-6"f>>rtip',
         "responsive": true
     });
+    $('.dataTables_length label').find('select').removeClass('form-select');
 });
 </script>

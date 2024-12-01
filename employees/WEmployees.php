@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Información de Empleados</title>
+    <title>History Employees</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap5.min.css" rel="stylesheet">
     <style>
@@ -149,41 +149,42 @@
         </div>
     </div>
 
-    <!-- Add Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Add jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- Add DataTables JS -->
     <script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.1/js/dataTables.bootstrap5.min.js"></script>
-    <!-- Add Font Awesome -->
     <script src="https://kit.fontawesome.com/your-code.js" crossorigin="anonymous"></script>
 
     <script>
-    $(document).ready(function() {
-        $('#employeesTable').DataTable({
-            "paging": true,
-            "searching": true,
-            "ordering": true,
-            "pageLength": 10,
-            "lengthMenu": [[5, 10, 25, 50], [5, 10, 25, 50]],
-            "language": {
-                "lengthMenu": "Show MENU entries",
-                "search": "Search:",
-                "paginate": {
-                    "first": "First",
-                    "last": "Last",
-                    "next": "Next",
-                    "previous": "Previous"
-                },
-                "info": "Showing START to END of TOTAL entries",
-                "infoEmpty": "Showing 0 to 0 of 0 entries",
-                "infoFiltered": "(filtered from MAX total entries)"
+$(document).ready(function() {
+    $('#employeesTable').DataTable({
+        "paging": true,
+        "searching": true,
+        "ordering": true,
+        "pageLength": 10,
+        "lengthMenu": [[5, 10, 25, 50], [5, 10, 25, 50]],
+        "language": {
+            "lengthMenu": "Show _MENU_ entries",
+            "search": "Search:",
+            "paginate": {
+                "first": "First",
+                "last": "Last",
+                "next": "Next",
+                "previous": "Previous"
             },
-            "dom": '<"row"<"col-sm-6"l><"col-sm-6"f>>rtip',
-            "responsive": true
-        });
+            "info": "Showing _START_ to _END_ of _TOTAL_ entries",
+            "infoEmpty": "Showing 0 to 0 of 0 entries",
+            "infoFiltered": "(filtered from _MAX_ total entries)"
+        },
+        "columnDefs": [
+            { "orderable": false, "targets": 5 },
+            { "searchable": false, "targets": 5 }
+        ],
+        "dom": '<"row"<"col-sm-6"l><"col-sm-6"f>>rtip',
+        "responsive": true
     });
-    </script>
+    $('.dataTables_length label').find('select').removeClass('form-select');
+});
+</script>
 </body>
 </html>

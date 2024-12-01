@@ -9,7 +9,7 @@ if (!isset($_SESSION['num'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BestViders</title>
+    <title>BestViders - Human Resources</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .hover-card {
@@ -41,11 +41,11 @@ if (!isset($_SESSION['num'])) {
                             include "menus/st_menu.php";
                             break;
                         default:
-                            include "menus/menu.php";
+                            include "menus/home_menu.php";
                             break;
                     }
                     ?>
                 </div>
             </nav>
         </div>
-    </header> 
+    </header>

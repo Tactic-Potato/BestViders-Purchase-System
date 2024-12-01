@@ -1,25 +1,32 @@
 <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
     <ul class="navbar-nav">
-        <!-- Dropdown Orders -->
-
+    <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="requestsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Budget and Invoice
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="requestsDropdown">
+                <li><a class="dropdown-item" href="invoice/WInvoice.php">History Invoice</a></li>
+                <li><a class="dropdown-item" href="budget/WBudget.php">Budgets</a></li>
+            </ul>
+        </li>
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="ordersDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 Orders
             </a>
             <ul class="dropdown-menu" aria-labelledby="ordersDropdown">
-                <li><a class="dropdown-item" href="order/WOrder.php">Check Orders</a></li>
-                <li><a class="dropdown-item" href="order/WOrder_toAprove.php">Aprove Orders</a></li>
-                <li><a class="dropdown-item" href="order/createOrder.php">Generate Order</a></li>
+                <li><a class="dropdown-item" href="order/WOrder_toAprove.php">Pending Orders</a></li>
+                <li><a class="dropdown-item" href="order/WOrder_aprov.php">Approved Orders</a></li>
+                <li><a class="dropdown-item" href="order/WOrder_reject.php">Reject Orders</a></li>
             </ul>
         </li>
-
+        </li>
         <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="requestDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Request
+            <a class="nav-link dropdown-toggle" href="#" id="requestsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Resquest
             </a>
-            <ul class="dropdown-menu" aria-labelledby="requestDropdown">
-            <li><a class="dropdown-item" href="request/createRequest.php">Generate Request</a></li>
-            <li><a class="dropdown-item" href="request/WRequest.php">Request History</a></li>
+            <ul class="dropdown-menu" aria-labelledby="requestsDropdown">
+                <li><a class="dropdown-item" href="request/WRequest.php">Check Requests</a></li>
+                <li><a class="dropdown-item" href="request/createRequest.php">Create Request</a></li>
             </ul>
         </li>
         <li class="nav-item dropdown">

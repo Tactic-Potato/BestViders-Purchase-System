@@ -136,14 +136,14 @@ body {
                         <td><?= htmlspecialchars($result['status']) == 1 ? 'Associated' : 'Not Associated'?></td>
                         <td><?= htmlspecialchars($result['materials']) ?></td>
                         <td>
-                            <?php if ($_SESSION['role'] == 'RH' && $result['status'] == 1): ?>
+                            <?php if ($_SESSION['role'] == 'PR' && $result['status'] == 1): ?>
                                 <a href="updateProvider.php?num=<?=$result['num']?>">Modify</a>
                             <?php endif; ?>
                         </td>
                         <td>
-                            <?php if ($_SESSION['role'] == 'RH' && $result['status'] == 1): ?>
+                            <?php if ($_SESSION['role'] == 'PR' && $result['status'] == 1): ?>
                                 <a href="removeProvider.php?num=<?=$result['num']?>">Remove</a>
-                            <?php elseif ($_SESSION['role'] == 'RH' && $result['status'] == 0): ?>
+                            <?php elseif ($_SESSION['role'] == 'PR' && $result['status'] == 0): ?>
                                 <a href="rehireProvider.php?num=<?=$result['num']?>">Re-Hire</a>
                             <?php endif; ?>
                         </td>

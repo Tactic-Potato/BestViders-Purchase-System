@@ -1,22 +1,6 @@
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Store</title>
-</head>
-<body>
-    <section id="header"> 
-        <h1>BestViders</h1> 
+
         <div id="menu">
         <ul class="navbar-nav">
-        <!-- Dropdown Orders -->
-        <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="ordersDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Orders
-            </a>
-            <ul class="dropdown-menu" aria-labelledby="ordersDropdown">
-                <li><a class="dropdown-item" href="order/WOrder_aprov.php">Check Orders</a></li>
-            </ul>
-        </li>
         <!-- Dropdown Providers -->
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="providersDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -34,7 +18,15 @@
                 Resquest
             </a>
             <ul class="dropdown-menu" aria-labelledby="requestsDropdown">
-                <li><a class="dropdown-item" href="request/WRequest.php">Check Requests</a></li>
+                <li><a class="dropdown-item" href="reception/WRequestToReceive.php">Check Requests</a></li>
+            </ul>
+        </li>
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="requestsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Reports
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="requestsDropdown">
+                <li><a class="dropdown-item" href="reception/WReports.php">Check Reports</a></li>
             </ul>
         </li>
         <!-- Logout Button -->

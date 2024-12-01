@@ -2,9 +2,6 @@
 require '../includes/config/conn.php';
 
 $db = connect();
-$manager_query = "SELECT num, firstName FROM employee WHERE charge = 'MNGR'"; // Filtrar solo managers potenciales
-$managers = mysqli_query($db, $manager_query);
-
 $charge_query = "SELECT code, name FROM charge";
 $charges = mysqli_query($db, $charge_query);
 
@@ -21,111 +18,198 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $charge = $_POST['charge'];
     $area = $_POST['area'];
 
-    // Usar el procedimiento almacenado
-    $stmt = mysqli_prepare($db, "CALL Sp_RegistrarEmpleado(?, ?, ?, ?, ?, ?, ?)");
-    
-    if (!$stmt) {
-        die('Error preparando la consulta: ' . mysqli_error($db));
+    // Verificar si el correo o el número de teléfono ya están registrados
+    $check_query = "SELECT * FROM employee WHERE email = ? OR numTel = ?";
+    $stmt_check = mysqli_prepare($db, $check_query);
+
+    if (!$stmt_check) {
+        die('Error preparando la consulta de verificación: ' . mysqli_error($db));
     }
 
-    // Vincular parámetros al procedimiento
-    mysqli_stmt_bind_param($stmt, 'sssssss', $firstName, $lastName, $surName, $numTel, $email, $charge, $area);
+    mysqli_stmt_bind_param($stmt_check, 'ss', $email, $numTel);
 
-    // Ejecutar el procedimiento
-    if (mysqli_stmt_execute($stmt)) {
+    mysqli_stmt_execute($stmt_check);
+    $result_check = mysqli_stmt_get_result($stmt_check);
+
+    if (mysqli_num_rows($result_check) > 0) {
+        // Si ya existe un correo o teléfono registrado
         echo "<script>
-                alert('Registro exitoso');
-                if (confirm('¿Deseas realizar otro registro?')) {
-                    document.getElementById('employeeForm').reset();
-                } else {
-                    window.location.href = '../index.php';
-                }
+                alert('El correo electrónico o el número de teléfono ya están registrados.');
+                window.history.back();
             </script>";
     } else {
-        echo "Error: " . mysqli_stmt_error($stmt);
+        // Si no existe el correo o teléfono, proceder con el registro
+        $stmt = mysqli_prepare($db, "CALL Sp_RegistrarEmpleado(?, ?, ?, ?, ?, ?, ?)");
+
+        if (!$stmt) {
+            die('Error preparando la consulta: ' . mysqli_error($db));
+        }
+
+        mysqli_stmt_bind_param($stmt, 'sssssss', $firstName, $lastName, $surName, $numTel, $email, $charge, $area);
+
+        if (mysqli_stmt_execute($stmt)) {
+            echo "<script>
+                    alert('Registro exitoso');
+                    if (confirm('¿Deseas realizar otro registro?')) {
+                        document.getElementById('employeeForm').reset();
+                    } else {
+                        window.location.href = '../index.php';
+                    }
+                </script>";
+        } else {
+            echo "Error: " . mysqli_stmt_error($stmt);
+        }
+
+        mysqli_stmt_close($stmt);
     }
 
-    // Cerrar el statement
-    mysqli_stmt_close($stmt);
+    mysqli_stmt_close($stmt_check);
 }
+
 ?>
+<!DOCTYPE html>
+<html lang="es">
 <head>
-    <link rel="stylesheet" href="../includes/css/Form.css">
-    <title>Human Resources</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add new Employee</title>
+    <style>
+        body {
+            min-height: 100vh;
+            background-image: url('https://4kwallpapers.com/images/wallpapers/macos-monterey-stock-black-dark-mode-layers-5k-4480x2520-5889.jpg');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+
+        .card-container {
+            width: 100%;
+            max-width: 800px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .return-btn {
+            background: #1a1a1a;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-block;
+            margin: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        .return-btn:hover {
+            background: #333;
+        }
+
+        .form-card {
+            padding: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .button-container {
+            margin-top: 2rem;
+        }
+
+        button {
+            background: #1a1a1a;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background: #333;
+        }
+    </style>
 </head>
 <body>
-<nav id="Return"><a href="../index.php"> Return </a></nav>
-<section id="formCont">
-    <div id="formCard">
-        <form id="employeeForm" method="POST">
-            <h2>Employee Name</h2>
-            <div class="row">
-                <div class="form-group">
-                    <label>Name</label>
-                    <input type="text" name="firstName" id="firstName" placeholder="Enter first name" pattern="[A-Za-z]+" required>
-                </div>
-                <div class="form-group">
-                    <label>Last Name</label>
-                    <input type="text" name="lastName" id="lastName" placeholder="Enter last name" pattern="[A-Za-z]+" required>
-                </div>
-                <div class="form-group">
-                    <label>Second Last Name</label>
-                    <input type="text" name="surName" id="surName" placeholder="Enter second last name" pattern="[A-Za-z]+" required>
-                </div>
-            </div>
+    <div class="card-container">
+        <a href="../index.php" class="return-btn">
+            <i class="fas fa-arrow-left me-2"></i>Return
+        </a>
+        <div class="form-card">
+            <form id="employeeForm" method="POST">
+                <h2>Employee Information</h2>
 
-            <h2>Contact</h2>
-            <div class="row">
                 <div class="form-group">
-                    <label>Phone Number</label>
-                    <input type="tel" name="numTel" id="numTel" placeholder="Enter phone number" required>
+                    <label for="firstName">First Name</label>
+                    <input type="text" name="firstName" id="firstName" placeholder="Enter first name" pattern="[A-Za-z]+" minlength ="2" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="lastName">Last Name</label>
+                    <input type="text" name="lastName" id="lastName" placeholder="Enter last name" pattern="[A-Za-z]+" minlength ="2" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="surName">Second Last Name</label>
+                    <input type="text" name="surName" id="surName" placeholder="Enter second last name" pattern="[A-Za-z]+" minlength ="2" required>
                 </div>
                 <div class="form-group">
-                    <label>Email</label>
+                    <label for="numTel">Phone Number</label>
+                    <input type="text" name="numTel" id="numTel" placeholder="Enter phone number" pattern="[0-9]+" maxlength="10" minlength="10" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
                     <input type="email" name="email" id="email" placeholder="Enter email address" required>
                 </div>
-            </div>
 
-            <h2>Work Information</h2>
-            <div class="row">
                 <div class="form-group">
-                    <label>Charge</label>
+                    <label for="charge">Charge</label>
                     <select name="charge" id="charge" required>
                         <option value="" disabled selected>Select charge</option>
                         <?php while($charge = mysqli_fetch_assoc($charges)): ?>
-                            <option value="<?php echo $charge['code']; ?>"><?php echo $charge['name']; ?></option>
+                            <option value="<?php echo htmlspecialchars($charge['code']); ?>"><?php echo htmlspecialchars($charge['name']); ?></option>
                         <?php endwhile; ?>
                     </select>
                 </div>
+
                 <div class="form-group">
-                    <label>Area</label>
+                    <label for="area">Area</label>
                     <select name="area" id="area" required>
                         <option value="" disabled selected>Select area</option>
                         <?php while($area = mysqli_fetch_assoc($areas)): ?>
-                            <option value="<?php echo $area['code']; ?>"><?php echo $area['name']; ?></option>
+                            <option value="<?php echo htmlspecialchars($area['code']); ?>"><?php echo htmlspecialchars($area['name']); ?></option>
                         <?php endwhile; ?>
                     </select>
                 </div>
-            </div>
 
-            <div class="button-container">
-                <button type="submit" class="button">ADD EMPLOYEE</button>
-            </div>
-        </form>
+                <div class="button-container">
+                    <button type="submit">Add Employee</button>
+                </div>
+            </form>
+        </div>
     </div>
-</section>
-
-<!-- 
-<div class="form-group">
-                    <label>Manager</label>
-                    <select name="manager" id="manager">
-                        <option value="">Make Manager</option> <!-- Esta opción insertará un valor NULL en el campo 'manager' -->
-                        <!-- <?php while($manager = mysqli_fetch_assoc($managers)): ?> -->
-                            <!-- <option value="<?php echo $manager['num']; ?>"> -->
-                                <!-- <?php echo $manager['num'] . " " . $manager['firstName']; ?> -->
-                            <!-- </option> -->
-                        <!-- <?php endwhile; ?> -->
-                    <!-- </select> -->
-                <!-- </div> -->
-
--->
+</body>
+</html>
