@@ -140,7 +140,6 @@ body {
             r.request_date,
             sr.name AS status_name,
             CONCAT(e.firstName, ' ', e.lastName) AS employee_name,
-            p.fiscal_name AS provider_name,
             GROUP_CONCAT(
                 CONCAT(
                     rm.material, ': ',
@@ -151,7 +150,6 @@ body {
             ) AS materials_detail
         FROM request r
         LEFT JOIN employee e ON r.employee = e.num
-        LEFT JOIN provider p ON r.provider = p.num
         LEFT JOIN request_material rm ON r.num = rm.request
         LEFT JOIN raw_material m ON rm.material = m.code
         LEFT JOIN status_request sr ON r.status = sr.code
@@ -167,7 +165,6 @@ body {
             <td><?= htmlspecialchars($row['request_date']) ?></td>
             <td><?= htmlspecialchars($row['status_name']) ?></td>
             <td><?= htmlspecialchars($row['employee_name']) ?></td>
-            <td><?= htmlspecialchars($row['provider_name']) ?></td>
             <td class="materials-list"><?= $row['materials_detail'] ?></td>
             <<td><a href="receptionCreate.php?requestNum=<?=$row['requestNum']?>">Report</a></td>
 

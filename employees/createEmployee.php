@@ -8,7 +8,6 @@ $charges = mysqli_query($db, $charge_query);
 $area_query = "SELECT code, name FROM area";
 $areas = mysqli_query($db, $area_query); 
 
-// Procesar el formulario
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $firstName = $_POST['firstName'];
     $lastName = $_POST['lastName'];
@@ -18,42 +17,36 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $charge = $_POST['charge'];
     $area = $_POST['area'];
 
-    // Verificar si el correo o el número de teléfono ya están registrados
     $check_query = "SELECT * FROM employee WHERE email = ? OR numTel = ?";
     $stmt_check = mysqli_prepare($db, $check_query);
 
     if (!$stmt_check) {
-        die('Error preparando la consulta de verificación: ' . mysqli_error($db));
+        die('Error doing the query: ' . mysqli_error($db));
     }
 
     mysqli_stmt_bind_param($stmt_check, 'ss', $email, $numTel);
-
     mysqli_stmt_execute($stmt_check);
     $result_check = mysqli_stmt_get_result($stmt_check);
 
     if (mysqli_num_rows($result_check) > 0) {
-        // Si ya existe un correo o teléfono registrado
-        echo "<script>
-                alert('El correo electrónico o el número de teléfono ya están registrados.');
-                window.history.back();
-            </script>";
+        $error_message = "Email or phone number already in use.";
     } else {
-        // Si no existe el correo o teléfono, proceder con el registro
         $stmt = mysqli_prepare($db, "CALL Sp_RegistrarEmpleado(?, ?, ?, ?, ?, ?, ?)");
 
         if (!$stmt) {
-            die('Error preparando la consulta: ' . mysqli_error($db));
+            die('Error doing the query: ' . mysqli_error($db));
         }
 
         mysqli_stmt_bind_param($stmt, 'sssssss', $firstName, $lastName, $surName, $numTel, $email, $charge, $area);
 
         if (mysqli_stmt_execute($stmt)) {
             echo "<script>
-                    alert('Registro exitoso');
-                    if (confirm('¿Deseas realizar otro registro?')) {
-                        document.getElementById('employeeForm').reset();
+                    alert('Registration successful');
+                    if (confirm('Do you want to register another employee?')) {
+                        document.getElementById('employeeForm').reset(); // reset form if user wants to add another
+                        window.location.reload(); // reload page to maintain form state
                     } else {
-                        window.location.href = '../index.php';
+                        window.location.href = '../index.php'; // redirect to main page
                     }
                 </script>";
         } else {
@@ -67,6 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 
 ?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -93,6 +87,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             border-radius: 15px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             overflow: hidden;
+        }
+
+        .error-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 1rem;
         }
 
         .return-btn {
@@ -158,31 +162,39 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <i class="fas fa-arrow-left me-2"></i>Return
         </a>
         <div class="form-card">
+            <!-- Mostrar el mensaje de error si existe -->
+            <?php if (isset($error_message)): ?>
+                <div class="error-message">
+                    <?php echo $error_message; ?>
+                </div>
+            <?php endif; ?>
+
             <form id="employeeForm" method="POST">
                 <h2>Employee Information</h2>
 
                 <div class="form-group">
                     <label for="firstName">First Name</label>
-                    <input type="text" name="firstName" id="firstName" placeholder="Enter first name" pattern="[A-Za-z]+" minlength ="2" required>
+                    <input type="text" name="firstName" id="firstName" placeholder="Enter first name" pattern="[A-Za-z]+" minlength="2" required value="<?php echo isset($_POST['firstName']) ? $_POST['firstName'] : ''; ?>">
                 </div>
 
                 <div class="form-group">
                     <label for="lastName">Last Name</label>
-                    <input type="text" name="lastName" id="lastName" placeholder="Enter last name" pattern="[A-Za-z]+" minlength ="2" required>
+                    <input type="text" name="lastName" id="lastName" placeholder="Enter last name" pattern="[A-Za-z]+" minlength="2" required value="<?php echo isset($_POST['lastName']) ? $_POST['lastName'] : ''; ?>">
                 </div>
 
                 <div class="form-group">
                     <label for="surName">Second Last Name</label>
-                    <input type="text" name="surName" id="surName" placeholder="Enter second last name" pattern="[A-Za-z]+" minlength ="2" required>
+                    <input type="text" name="surName" id="surName" placeholder="Enter second last name" pattern="[A-Za-z]+" minlength="2" required value="<?php echo isset($_POST['surName']) ? $_POST['surName'] : ''; ?>">
                 </div>
+
                 <div class="form-group">
                     <label for="numTel">Phone Number</label>
-                    <input type="text" name="numTel" id="numTel" placeholder="Enter phone number" pattern="[0-9]+" maxlength="10" minlength="10" required>
+                    <input type="text" name="numTel" id="numTel" placeholder="Enter phone number" pattern="[0-9]+" maxlength="10" minlength="10" required value="<?php echo isset($_POST['numTel']) ? $_POST['numTel'] : ''; ?>">
                 </div>
 
                 <div class="form-group">
                     <label for="email">Email</label>
-                    <input type="email" name="email" id="email" placeholder="Enter email address" required>
+                    <input type="email" name="email" id="email" placeholder="Enter email address" required value="<?php echo isset($_POST['email']) ? $_POST['email'] : ''; ?>">
                 </div>
 
                 <div class="form-group">
@@ -190,7 +202,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <select name="charge" id="charge" required>
                         <option value="" disabled selected>Select charge</option>
                         <?php while($charge = mysqli_fetch_assoc($charges)): ?>
-                            <option value="<?php echo htmlspecialchars($charge['code']); ?>"><?php echo htmlspecialchars($charge['name']); ?></option>
+                            <option value="<?php echo htmlspecialchars($charge['code']); ?>" <?php echo (isset($_POST['charge']) && $_POST['charge'] == $charge['code']) ? 'selected' : ''; ?>>
+                                <?php echo htmlspecialchars($charge['name']); ?>
+                            </option>
                         <?php endwhile; ?>
                     </select>
                 </div>
@@ -200,7 +214,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <select name="area" id="area" required>
                         <option value="" disabled selected>Select area</option>
                         <?php while($area = mysqli_fetch_assoc($areas)): ?>
-                            <option value="<?php echo htmlspecialchars($area['code']); ?>"><?php echo htmlspecialchars($area['name']); ?></option>
+                            <option value="<?php echo htmlspecialchars($area['code']); ?>" <?php echo (isset($_POST['area']) && $_POST['area'] == $area['code']) ? 'selected' : ''; ?>>
+                                <?php echo htmlspecialchars($area['name']); ?>
+                            </option>
                         <?php endwhile; ?>
                     </select>
                 </div>

@@ -1,3 +1,7 @@
+<?php
+session_start();
+$role = $_SESSION['role'];
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -118,13 +122,15 @@
             <table id="employeesTable" class="table table-hover">
                 <thead>
                     <tr>
-                        <th>Employee Number</th>
+                        <th>Num</th>
                         <th>Employee's Name</th>
                         <th>Status</th>
                         <th>Phone Number</th>
                         <th>Email</th>
                         <th>Charge</th>
                         <th>Area</th>
+                        <th>Modify</th>
+                        <th>Remove/ReHire</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -137,11 +143,23 @@
                         <tr>
                             <td><?= htmlspecialchars($result['num']) ?></td>
                             <td><?= htmlspecialchars($result['name']) ?></td>
-                            <td><?= $result['status'] == 1 ? 'Activo' : 'Inactivo' ?></td>
+                            <td><?= $result['status'] == 1 ? 'Active' : 'Inactive' ?></td>
                             <td><?= htmlspecialchars($result['numTel']) ?></td>
                             <td><?= htmlspecialchars($result['email']) ?></td>
                             <td><?= htmlspecialchars($result['charge']) ?></td>
                             <td><?= htmlspecialchars($result['area']) ?></td>
+                            <td>
+                            <?php if ($role === 'RH' && $result['status'] == 1): ?>
+                                <a href="updateEmployee.php?num=<?=$result['num']?>">Modify</a>
+                            <?php endif; ?>
+                            </td>
+                            <td>
+                                <?php if ($role === 'RH' && $result['status'] == 1): ?>
+                                    <a href="removeEmployee.php?num=<?=$result['num']?>">Remove</a>
+                                <?php elseif ($role === 'RH' && $result['status'] == 0): ?>
+                                    <a href="rehireEmployee.php?num=<?=$result['num']?>">Re-Hire</a>
+                                <?php endif; ?>
+                            </td>
                         </tr>
                     <?php } mysqli_close($db); ?>
                 </tbody>

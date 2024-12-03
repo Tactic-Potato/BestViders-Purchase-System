@@ -1,6 +1,5 @@
 DROP DATABASE IF EXISTS bestviders;
 CREATE DATABASE bestviders;
-USE bestviders;
 
 -- 1. Status Tables
 CREATE TABLE status_request (
@@ -9,11 +8,6 @@ CREATE TABLE status_request (
 );
 
 CREATE TABLE status_order (
-    code VARCHAR(10) PRIMARY KEY,
-    name VARCHAR(20) NOT NULL
-);
-
-CREATE TABLE status_reception (
     code VARCHAR(10) PRIMARY KEY,
     name VARCHAR(20) NOT NULL
 );
@@ -37,25 +31,19 @@ CREATE TABLE charge (
     name VARCHAR(100) NOT NULL
 );
 
-Alter TABLE employee (
+CREATE TABLE employee (
     num INT PRIMARY KEY AUTO_INCREMENT,
     firstName VARCHAR(100) NOT NULL,
     lastName VARCHAR(100) NOT NULL,
     surname VARCHAR(100) NULL,
     status BOOLEAN DEFAULT TRUE,
-    numTel VARCHAR(20) NULL UNIQUE,
-    email VARCHAR(100) NULL UNIQUE,
+    numTel VARCHAR(20) NULL,
+    email VARCHAR(100) NULL,
     charge VARCHAR(10),
     area VARCHAR(10),
     FOREIGN KEY (charge) REFERENCES charge(code),
     FOREIGN KEY (area) REFERENCES area(code) ON DELETE SET NULL
 );
-
-Alter TABLE employee (
-    modify column numTel VARCHAR(20) NULL UNIQUE,
-    modify column email VARCHAR(100) NULL UNIQUE
-);
-
 
 ALTER TABLE area
 ADD FOREIGN KEY (manager) REFERENCES employee(num) ON DELETE SET NULL;
@@ -63,13 +51,12 @@ ADD FOREIGN KEY (manager) REFERENCES employee(num) ON DELETE SET NULL;
 -- 4. Provider
 CREATE TABLE provider (
     num INT PRIMARY KEY AUTO_INCREMENT,
-    fiscal_name VARCHAR(100) NOT NULL UNIQUE,
-    email VARCHAR(100) NULL UNIQUE,
-    numTel VARCHAR(20) NULL UNIQUE,
+    fiscal_name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NULL,
+    numTel VARCHAR(20) NULL,
     status BOOLEAN DEFAULT TRUE,
     motive VARCHAR(250) NULL
 );
-
 
 -- 5. Raw Material
 CREATE TABLE raw_material (
@@ -96,41 +83,14 @@ CREATE TABLE orders (
     FOREIGN KEY (area) REFERENCES area(code)
 );
 
-
 -- 7. Request
 CREATE TABLE request (
     num INT PRIMARY KEY AUTO_INCREMENT,
     request_date DATE DEFAULT (CURRENT_DATE),
     estimated_date DATE,
     employee INT,
-    provider INT,
     order_num INT,
-    status VARCHAR(10) DEFAULT 'PEND',
-    FOREIGN KEY (employee) REFERENCES employee(num),
-    FOREIGN KEY (provider) REFERENCES provider(num),
-    FOREIGN KEY (order_num) REFERENCES orders(num),
-    FOREIGN KEY (status) REFERENCES status_request(code)
-); -- este ya no
-
-SELECT CONSTRAINT_NAME 
-FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE 
-WHERE TABLE_NAME = 'request' AND COLUMN_NAME = 'provider';
-
-
-ALTER TABLE request
-DROP FOREIGN KEY request_ibfk_2;
-
-ALTER TABLE request
-DROP COLUMN provider;
-
-CREATE TABLE request (
-    num INT PRIMARY KEY AUTO_INCREMENT,
-    request_date DATE DEFAULT (CURRENT_DATE),
-    estimated_date DATE,
-    employee INT,
-    provider INT,
-    order_num INT,
-    status VARCHAR(10) DEFAULT 'PEND',
+    status VARCHAR(10) DEFAULT 'PROC',
     FOREIGN KEY (employee) REFERENCES employee(num),
     FOREIGN KEY (order_num) REFERENCES orders(num),
     FOREIGN KEY (status) REFERENCES status_request(code)
@@ -154,7 +114,6 @@ CREATE TABLE order_material (
     FOREIGN KEY (order_num) REFERENCES orders(num),
     FOREIGN KEY (material) REFERENCES raw_material(code)
 );
-
 
 -- 9. Invoice
 CREATE TABLE invoice (
@@ -180,9 +139,6 @@ CREATE TABLE budget (
     FOREIGN KEY (area) REFERENCES area(code)
 );
 
-INSERT INTO budget (code, initialAmount, budgetRemain, budgetMonth, budgetYear, area) VALUES
-('BRH-1', 250000.00, 250000.00, MONTH(CURRENT_DATE), YEAR(CURRENT_DATE), 'RH');
-
 -- 11. User
 CREATE TABLE user (
     num INT PRIMARY KEY,
@@ -196,13 +152,10 @@ CREATE TABLE reception (
     num INT PRIMARY KEY AUTO_INCREMENT,
     receptionDate DATE DEFAULT (CURRENT_DATE),
     observations TEXT NULL,
-    missings INT NULL,
     employee INT,
     request INT,
-    status VARCHAR(10) DEFAULT 'PEND',
     FOREIGN KEY (employee) REFERENCES employee(num),
-    FOREIGN KEY (request) REFERENCES request(num),
-    FOREIGN KEY (status) REFERENCES status_reception(code)
+    FOREIGN KEY (request) REFERENCES request(num)
 );
 
 -- 14. Raw Provider
@@ -215,13 +168,13 @@ CREATE TABLE raw_provider (
     FOREIGN KEY (material) REFERENCES raw_material(code)
 );
 
--- 15. Trouble 
+-- 15. Trouble
 CREATE TABLE trouble (
     num INT PRIMARY KEY AUTO_INCREMENT,
     troubleDate DATE DEFAULT (CURRENT_DATE),
     description TEXT,
-    reception INT,
-    FOREIGN KEY (reception) REFERENCES reception(num)
+    provider INT,
+    FOREIGN KEY (provider) REFERENCES provider(num)
 );
 
 CREATE TABLE request_provider (
@@ -246,18 +199,31 @@ BEGIN
 END $$
 
 DELIMITER $$
-DROP TRIGGER RequestAutoAmount
-BEFORE INSERT ON request_material
+
+CREATE TRIGGER CreateUser
+AFTER INSERT ON employee
 FOR EACH ROW
 BEGIN
-    DECLARE unit_price DECIMAL(12, 2);
-    SELECT price INTO unit_price
-    FROM raw_provider
-    WHERE provider = (SELECT provider FROM request WHERE num = NEW.request)
-    AND material = NEW.material;
-    SET NEW.amount = NEW.quantity * unit_price;
-END$$
---
+    DECLARE Username VARCHAR(100);
+    
+    -- Generación del nombre de usuario
+    SET Username = CONCAT(NEW.firstName, '.', NEW.lastName);
+    
+    -- Verificación de si el nombre de usuario ya existe
+    DECLARE UsernameExists INT;
+    SET UsernameExists = (SELECT COUNT(*) FROM user WHERE username = Username);
+    
+    -- Si el nombre de usuario ya existe, agregar un sufijo numérico
+    IF UsernameExists > 0 THEN
+        SET Username = CONCAT(Username, '.', NEW.num);
+    END IF;
+    
+    -- Insertar el nuevo usuario
+    INSERT INTO user (num, username, password)
+    VALUES (NEW.num, Username, '1234567890');  -- Aquí usas la contraseña predeterminada que mencionaste
+    
+END $$
+
 DELIMITER $$
 CREATE TRIGGER RequestAutoAmount
 BEFORE INSERT ON request_material
@@ -272,56 +238,15 @@ BEGIN
     WHERE reqp.request = NEW.request
     AND rp.material = NEW.material
     LIMIT 1;
-
     IF unit_price IS NULL THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Material or Provider not found for the given request.';
     END IF;
-
     SET NEW.amount = NEW.quantity * unit_price;
 END $$
 
-DELIMITER ;
-
---
 DELIMITER $$
-DROP TRIGGER AutoInvoice
-AFTER INSERT ON request_material
-FOR EACH ROW
-BEGIN
-    DECLARE total_amount DECIMAL(12, 2);
-    DECLARE generated_folio VARCHAR(20);
-    DECLARE invoice_date DATE;
-    DECLARE provider_id INT;
-
-    SELECT SUM(amount) INTO total_amount
-    FROM request_material
-    WHERE request = NEW.request;
-    SELECT request_date, provider INTO invoice_date, provider_id
-    FROM request
-    WHERE num = NEW.request;
-        SET generated_folio = CONCAT(
-            'F', NEW.request,
-            LPAD(DAY(invoice_date), 2, '0'),
-            LPAD(MONTH(invoice_date), 2, '0'),
-            RIGHT(YEAR(invoice_date), 2)
-        );
-        
-    INSERT INTO invoice (folio, amount, subtotal, iva, payDate, request, provider)
-    VALUES (
-        generated_folio,
-        total_amount + (total_amount * 0.16),
-        total_amount,
-        total_amount * 0.16,
-        invoice_date,
-        NEW.request,
-        provider_id
-    );
-END$$
-
-
-DELIMITER $$
-DROP TRIGGER AutoBudget
+CREATE TRIGGER AutoBudget
 BEFORE INSERT ON invoice
 FOR EACH ROW
 BEGIN
@@ -332,13 +257,16 @@ BEGIN
     DECLARE invoice_year INT;
     DECLARE current_budget DECIMAL(12, 2);
 
+    -- Obtener el área asociada con el pedido
     SELECT area INTO area_code
     FROM orders
     WHERE num = (SELECT order_num FROM request WHERE num = NEW.request);
 
+    -- Calcular el mes y el año de la factura
     SET invoice_month = MONTH(NEW.payDate);
     SET invoice_year = YEAR(NEW.payDate);
 
+    -- Validar y actualizar el presupuesto
     SELECT budgetRemain, budgetMonth, budgetYear INTO current_budget, budget_month, budget_year
     FROM budget
     WHERE area = area_code AND budgetMonth = invoice_month AND budgetYear = invoice_year;
@@ -354,7 +282,100 @@ BEGIN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Insufficient budget to cover this invoice.';
     END IF;
-END $$
+END$$
+
+DELIMITER $$
+CREATE TRIGGER ValidateRequestProvider
+BEFORE INSERT ON request_provider
+FOR EACH ROW
+BEGIN
+    DECLARE provider_exists INT;
+
+    -- Verificar que el proveedor exista
+    SELECT COUNT(*) INTO provider_exists
+    FROM provider
+    WHERE num = NEW.provider;
+
+    IF provider_exists = 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Provider does not exist.';
+    END IF;
+END$$
+-- Creo que este es innecesario pero igual crealo
+
+DELIMITER $$
+CREATE TRIGGER AutoInvoice
+AFTER INSERT ON request_material
+FOR EACH ROW
+BEGIN
+    DECLARE total_amount DECIMAL(12, 2);
+    DECLARE generated_folio VARCHAR(20);
+    DECLARE invoice_date DATE;
+    SELECT request_date INTO invoice_date
+    FROM request
+    WHERE num = NEW.request;
+    INSERT INTO invoice (folio, amount, subtotal, iva, payDate, request, provider)
+    SELECT
+        CONCAT(
+            'F',
+            NEW.request,
+            LPAD(DAY(invoice_date), 2, '0'),
+            LPAD(MONTH(invoice_date), 2, '0'),
+            RIGHT(YEAR(invoice_date), 2),
+            '-',
+            rp.provider
+        ) AS folio,
+        SUM(rm.amount) + (SUM(rm.amount) * 0.16) AS amount,
+        SUM(rm.amount) AS subtotal,
+        SUM(rm.amount) * 0.16 AS iva,
+        invoice_date AS payDate,
+        NEW.request AS request,
+        rp.provider AS provider
+    FROM request_material rm
+    JOIN raw_provider rwp ON rwp.material = rm.material
+    JOIN request_provider rp ON rp.provider = rwp.provider
+    WHERE rm.request = NEW.request
+        AND rp.request = NEW.request
+        AND NOT EXISTS (
+            SELECT 1
+            FROM invoice i
+            WHERE i.request = NEW.request AND i.provider = rp.provider
+        )
+    GROUP BY rp.provider;
+    UPDATE invoice i
+    SET 
+        i.subtotal = (
+            SELECT COALESCE(SUM(rm.amount), 0)
+            FROM request_material rm
+            JOIN raw_provider rwp ON rwp.material = rm.material
+            WHERE rm.request = i.request
+                AND rwp.provider = i.provider
+        ),
+        i.amount = i.subtotal + (i.subtotal * 0.16),
+        i.iva = i.subtotal * 0.16
+    WHERE i.request = NEW.request;
+END$$
+
+DELIMITER $$
+CREATE TRIGGER UpdateOrderStatusToCOMP
+AFTER INSERT ON request
+FOR EACH ROW
+BEGIN
+    UPDATE orders
+    SET status = 'COMP'
+    WHERE num = NEW.order_num;
+END$$
+
+DELIMITER $$
+
+CREATE TRIGGER UpdateRequestStatusToCOMP
+AFTER INSERT ON reception
+FOR EACH ROW
+BEGIN
+    UPDATE request
+    SET status = 'COMP'
+    WHERE num = NEW.request;
+END$$
 
 /********************** PROCEDURES ***********************/
 DELIMITER $$
@@ -401,6 +422,33 @@ CREATE PROCEDURE Sp_CreateOrder(
 BEGIN
     INSERT INTO orders (description, employee, raw_material)
     VALUES (p_descrp, p_employee, p_rawMaterial);
+END$$
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -
+DELIMITER $$
+CREATE PROCEDURE Sp_RegistrarBudget(
+    IN p_code VARCHAR(10),
+    IN p_initialAmount DECIMAL(12, 2),
+    IN p_budgetMonth INT,
+    IN p_budgetYear INT,
+    IN p_area VARCHAR(10)
+)
+BEGIN
+    DECLARE budget_exists INT;
+    
+    -- Check if a budget with the same year, month, and area already exists
+    SELECT COUNT(*) INTO budget_exists
+    FROM budget
+    WHERE budgetYear = p_budgetYear AND budgetMonth = p_budgetMonth AND area = p_area;
+    
+    IF budget_exists = 0 THEN
+        -- Insert the new budget
+        INSERT INTO budget (code, initialAmount, budgetRemain, budgetMonth, budgetYear, area)
+        VALUES (p_code, p_initialAmount, p_initialAmount, p_budgetMonth, p_budgetYear, p_area);
+        
+        SELECT 'Budget registered successfully' AS message;
+    ELSE
+        SELECT 'Error: A budget for this year, month, and area already exists' AS message;
+    END IF;
 END$$
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -
 /* * * * * * * * * * * * * VIEWS * * * * * * * * * * * * */
@@ -517,19 +565,14 @@ END$$
 
 -- Status Request
 INSERT INTO status_request (code, name) VALUES
-('PEND', 'Pending'),
 ('PROC', 'In Process'),
 ('COMP', 'Completed');
 
 INSERT INTO status_order (code, name) VALUES
 ('PEND', 'Pending'),
 ('APRV', 'Approved'),
-('REJD', 'Rejected');
-
-INSERT INTO status_reception (code, name) VALUES
-('PEND', 'Pending'),
-('VERF', 'Verified'),
-('ERR', 'Errors');
+('REJD', 'Rejected'),
+('COMP', 'Completed');
 
 -- Category
 INSERT INTO category (code, name, description) VALUES
@@ -584,7 +627,6 @@ INSERT INTO employee (firstName, lastName, surname, status, numTel, email, charg
 ('Samuel', 'Ortiz', NULL, FALSE, '5552345699', 'samuel.ortiz@gmail.com', 'WRKR', 'PA2'),
 ('Rafael', 'Silva', NULL, TRUE, '5552345700', 'rafael.silva@gmail.com', 'WRKR', 'PA3'),
 ('Adriana', 'Reyes', NULL, FALSE, '5552345701', 'adriana.reyes@gmail.com', 'WRKR', 'PA3');
-
 
 -- Raw Material
 INSERT INTO raw_material (code, name, description, weight, stock, category) VALUES
@@ -655,201 +697,7 @@ INSERT INTO raw_provider (provider, material, price) VALUES
 
 -- Budget
 INSERT INTO budget (code, initialAmount, budgetRemain, budgetMonth, budgetYear, area) VALUES
-('BRH-1', 250000.00, 250000.00, MONTH(CURRENT_DATE), YEAR(CURRENT_DATE), 'RH');
-
-INSERT INTO budget (code, initialAmount, budgetRemain, budgetMonth, budgetYear, area) VALUES
 ('BPA1-1', 25000.00, 25000.00, MONTH(CURRENT_DATE), YEAR(CURRENT_DATE), 'PA1'),
 ('BPA2-1', 25000.00, 25000.00, MONTH(CURRENT_DATE), YEAR(CURRENT_DATE), 'PA2'),
 ('BPA3-1', 25000.00, 25000.00, MONTH(CURRENT_DATE), YEAR(CURRENT_DATE), 'PA3');
 
-INSERT INTO budget (code, initialAmount, budgetRemain, budgetMonth, budgetYear, area) VALUES
-('BPA1-2', 25000.00, 8000.00, 10, 2024, 'PA1'),
-('BPA2-2', 25000.00, 4000.00, 10, 2024, 'PA2'),
-('BPA3-2', 25000.00, 1000.00, 10, 2024, 'PA3'),
-('BPA3-3', 25000.00, 25000.00, 12, 2024, 'PA3');
-
-DELIMITER $$
-CREATE TRIGGER AutoInvoice
-AFTER INSERT ON request_material
-FOR EACH ROW
-BEGIN
-    DECLARE total_amount DECIMAL(12, 2);
-    DECLARE generated_folio VARCHAR(20);
-    DECLARE invoice_date DATE;
-    DECLARE provider_id INT;
-
-    -- Calcular el monto total
-    SELECT SUM(amount) INTO total_amount
-    FROM request_material
-    WHERE request = NEW.request;
-
-    -- Obtener la fecha de la solicitud
-    SELECT request_date INTO invoice_date
-    FROM request
-    WHERE num = NEW.request;
-
-    -- Obtener el proveedor relacionado
-    SELECT provider INTO provider_id
-    FROM request_provider
-    WHERE request = NEW.request;
-
-    -- Generar el folio de la factura
-    SET generated_folio = CONCAT(
-        'F', NEW.request,
-        LPAD(DAY(invoice_date), 2, '0'),
-        LPAD(MONTH(invoice_date), 2, '0'),
-        RIGHT(YEAR(invoice_date), 2)
-    );
-
-    -- Insertar en la tabla invoice
-    INSERT INTO invoice (folio, amount, subtotal, iva, payDate, request, provider)
-    VALUES (
-        generated_folio,
-        total_amount + (total_amount * 0.16),
-        total_amount,
-        total_amount * 0.16,
-        invoice_date,
-        NEW.request,
-        provider_id
-    );
-END$$
-
-DELIMITER $$
-CREATE TRIGGER AutoBudget
-BEFORE INSERT ON invoice
-FOR EACH ROW
-BEGIN
-    DECLARE area_code VARCHAR(10);
-    DECLARE budget_month INT;
-    DECLARE budget_year INT;
-    DECLARE invoice_month INT;
-    DECLARE invoice_year INT;
-    DECLARE current_budget DECIMAL(12, 2);
-
-    -- Obtener el área asociada con el pedido
-    SELECT area INTO area_code
-    FROM orders
-    WHERE num = (SELECT order_num FROM request WHERE num = NEW.request);
-
-    -- Calcular el mes y el año de la factura
-    SET invoice_month = MONTH(NEW.payDate);
-    SET invoice_year = YEAR(NEW.payDate);
-
-    -- Validar y actualizar el presupuesto
-    SELECT budgetRemain, budgetMonth, budgetYear INTO current_budget, budget_month, budget_year
-    FROM budget
-    WHERE area = area_code AND budgetMonth = invoice_month AND budgetYear = invoice_year;
-
-    IF budget_month IS NULL OR budget_year IS NULL THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'No matching budget found for this invoice period.';
-    ELSEIF current_budget >= NEW.amount THEN
-        UPDATE budget
-        SET budgetRemain = budgetRemain - NEW.amount
-        WHERE area = area_code AND budgetMonth = invoice_month AND budgetYear = invoice_year;
-    ELSE
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Insufficient budget to cover this invoice.';
-    END IF;
-END$$
-
-DELIMITER $$
-CREATE TRIGGER ValidateRequestProvider
-BEFORE INSERT ON request_provider
-FOR EACH ROW
-BEGIN
-    DECLARE provider_exists INT;
-
-    -- Verificar que el proveedor exista
-    SELECT COUNT(*) INTO provider_exists
-    FROM provider
-    WHERE num = NEW.provider;
-
-    IF provider_exists = 0 THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Provider does not exist.';
-    END IF;
-END$$
-
-DELIMITER $$
-CREATE TRIGGER AutoInvoice
-AFTER INSERT ON request_material
-FOR EACH ROW
-BEGIN
-    -- Declaración de variables
-    DECLARE total_amount DECIMAL(12, 2);
-    DECLARE generated_folio VARCHAR(20);
-    DECLARE invoice_date DATE;
-    DECLARE provider_id INT;
-
-    -- Cursor para iterar sobre los proveedores relacionados con la solicitud
-    DECLARE provider_cursor CURSOR FOR
-    SELECT provider
-    FROM request_provider
-    WHERE request = NEW.request;
-
-    -- Variable de control para el cursor
-    DECLARE done INT DEFAULT FALSE;
-
-    -- Manejo del final del cursor
-    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done
-
-
-DELIMITER $$
-CREATE TRIGGER AutoInvoice
-AFTER INSERT ON request_material
-FOR EACH ROW
-BEGIN
-    DECLARE total_amount DECIMAL(12, 2);
-    DECLARE generated_folio VARCHAR(20);
-    DECLARE invoice_date DATE;
-    DECLARE provider_id INT;
-    DECLARE done INT DEFAULT 0;
-    DECLARE cur_providers CURSOR FOR 
-        SELECT provider 
-        FROM request_provider 
-        WHERE request = NEW.request;
-    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
-
-    -- Obtener la fecha de la solicitud
-    SELECT request_date INTO invoice_date
-    FROM request
-    WHERE num = NEW.request;
-
-    -- Cursor para iterar sobre los proveedores
-    OPEN cur_providers;
-    read_loop: LOOP
-        FETCH cur_providers INTO provider_id;
-        IF done THEN
-            LEAVE read_loop;
-        END IF;
-
-        -- Calcular el monto total para el proveedor actual
-        SELECT SUM(amount) INTO total_amount
-        FROM request_material
-        WHERE request = NEW.request;
-
-        -- Generar el folio para la factura
-        SET generated_folio = CONCAT(
-            'F', NEW.request,
-            LPAD(DAY(invoice_date), 2, '0'),
-            LPAD(MONTH(invoice_date), 2, '0'),
-            RIGHT(YEAR(invoice_date), 2),
-            '-', provider_id
-        );
-
-        -- Crear la factura para el proveedor actual
-        INSERT INTO invoice (folio, amount, subtotal, iva, payDate, request, provider)
-        VALUES (
-            generated_folio,
-            total_amount + (total_amount * 0.16),
-            total_amount,
-            total_amount * 0.16,
-            invoice_date,
-            NEW.request,
-            provider_id
-        );
-    END LOOP;
-
-    CLOSE cur_providers;
-END$$

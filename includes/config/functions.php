@@ -121,6 +121,40 @@ function getReceptionInfo($num) {
 }
 
 
+function getEmployeeInfo($num){
+	$query = "SELECT
+                e.num AS num,
+                CONCAT(
+                    IFNULL(e.firstName, ''), ' ',
+                    IFNULL(e.lastName, ''), ' ',
+                    IFNULL(e.surname, '')
+                ) AS name,
+                e.status AS status,
+                e.numTel AS numTel,
+                e.email AS email,
+                c.name AS charge,
+                a.name AS area
+            FROM employee AS e
+            INNER JOIN charge AS c ON e.charge = c.code
+            INNER JOIN area AS a ON e.area = a.code where num= ".$num;
+	$db = connect();
+    if(!$resultado = mysqli_query($db,$query)){
+		exit(mysqli_error($db));
+    }
+	$infoEmployee = null;
+    
+    if (mysqli_num_rows($resultado) > 0) {
+        $row = mysqli_fetch_assoc($resultado);
+        $infoEmpployee = array(
+            'num' => $row['num'],
+            ''
+
+        );
+    }
+	return $infoEmployee;	
+}
+
+
 
 
 ?>
