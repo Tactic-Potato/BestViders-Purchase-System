@@ -100,6 +100,11 @@ body {
         <i class="fas fa-arrow-left me-2"></i>Return
     </a>
     
+    <div class="content-wrapper">
+    <a href="../index.php" class="return-btn">
+        <i class="fas fa-arrow-left me-2"></i>Return
+    </a>
+    
     <div class="table-container">
         <table class="table" id="ordersTable">
             <thead>
@@ -121,18 +126,21 @@ body {
                 $db = connect();
 
                 if (isset($_SESSION['role'])) {
-                    $area_code = $_SESSION['role'];  
-
+                    $area_code = $_SESSION['role']; 
                     $area_query = mysqli_query($db, "SELECT name FROM area WHERE code = '$area_code'");
                     $area_row = mysqli_fetch_assoc($area_query);
-
+                    
                     if ($area_row) {
                         $area_name = $area_row['name'];  
 
-                        $query = mysqli_query($db, "SELECT * FROM vw_order WHERE area = '$area_name'");
-                        $query = mysqli_query($db, "SELECT * from vw_order where status = 'Rejected'");
+                        // Filtrar por área y estado al mismo tiempo
+                        $query = mysqli_query($db, 
+                            "SELECT * FROM vw_order 
+                             WHERE area = '$area_name' 
+                             AND status = 'Rejected'"
+                        );
+
                         if (mysqli_num_rows($query) > 0) {
-                      
                             while ($result = mysqli_fetch_array($query)) { ?>
                                 <tr>
                                     <td><?= htmlspecialchars($result['num']) ?></td>
@@ -145,18 +153,14 @@ body {
                                 </tr>
                             <?php } 
                         } else {
-                
-                            echo "<tr><td colspan='7'>No orders found for your area.</td></tr>";
+                            echo "<tr><td colspan='7'>No orders found for your area and status.</td></tr>";
                         }
                     } else {
-        
                         echo "<tr><td colspan='7'>Error: Area not found.</td></tr>";
                     }
                 } else {
-            
                     echo "<tr><td colspan='7'>Session error: User area not found.</td></tr>";
                 }
-
 
                 mysqli_close($db);
                 ?>
