@@ -180,7 +180,7 @@
             console.error('Error:', error);
             alert('There was an issue removing the provider.');
         });
-
+ 
         const modal = bootstrap.Modal.getInstance(document.getElementById('removeProviderModal'));
         modal.hide();
     });
