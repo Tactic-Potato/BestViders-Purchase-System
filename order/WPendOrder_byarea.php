@@ -129,10 +129,14 @@ body {
                     if ($area_row) {
                         $area_name = $area_row['name'];  
 
-                        $query = mysqli_query($db, "SELECT * FROM vw_order WHERE area = '$area_name'");
-                        $query = mysqli_query($db, "SELECT * from vw_order where status = 'Pending'");
+                        // Consulta combinada para filtrar por área y estado
+                        $query = mysqli_query($db, 
+                            "SELECT * FROM vw_order 
+                             WHERE area = '$area_name' 
+                             AND status = 'Pending'"
+                        );
+
                         if (mysqli_num_rows($query) > 0) {
-                      
                             while ($result = mysqli_fetch_array($query)) { ?>
                                 <tr>
                                     <td><?= htmlspecialchars($result['num']) ?></td>
@@ -145,15 +149,12 @@ body {
                                 </tr>
                             <?php } 
                         } else {
-                        
-                            echo "<tr><td colspan='7'>No orders found for your area.</td></tr>";
+                            echo "<tr><td colspan='7'>No pending orders found for your area.</td></tr>";
                         }
                     } else {
-          
                         echo "<tr><td colspan='7'>Error: Area not found.</td></tr>";
                     }
                 } else {
-
                     echo "<tr><td colspan='7'>Session error: User area not found.</td></tr>";
                 }
 

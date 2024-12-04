@@ -123,16 +123,21 @@ body {
                 if (isset($_SESSION['role'])) {
                     $area_code = $_SESSION['role'];  
 
+                    // Obtener el nombre del área según el código de rol
                     $area_query = mysqli_query($db, "SELECT name FROM area WHERE code = '$area_code'");
                     $area_row = mysqli_fetch_assoc($area_query);
 
                     if ($area_row) {
                         $area_name = $area_row['name'];  
 
-                        $query = mysqli_query($db, "SELECT * FROM vw_order WHERE area = '$area_name'");
-                        $query = mysqli_query($db, "SELECT * from vw_order where status = 'Approved'");
+                        // Consulta SQL combinada: área y estado 'Approved'
+                        $query = mysqli_query($db, 
+                            "SELECT * FROM vw_order 
+                             WHERE area = '$area_name' 
+                             AND status = 'Approved'"
+                        );
+
                         if (mysqli_num_rows($query) > 0) {
-                      
                             while ($result = mysqli_fetch_array($query)) { ?>
                                 <tr>
                                     <td><?= htmlspecialchars($result['num']) ?></td>
@@ -145,15 +150,12 @@ body {
                                 </tr>
                             <?php } 
                         } else {
-           
-                            echo "<tr><td colspan='7'>No orders found for your area.</td></tr>";
+                            echo "<tr><td colspan='7'>No approved orders found for your area.</td></tr>";
                         }
                     } else {
-               
                         echo "<tr><td colspan='7'>Error: Area not found.</td></tr>";
                     }
                 } else {
-
                     echo "<tr><td colspan='7'>Session error: User area not found.</td></tr>";
                 }
 
