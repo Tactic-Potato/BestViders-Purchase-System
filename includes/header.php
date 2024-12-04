@@ -24,7 +24,10 @@ if (!isset($_SESSION['num'])) {
     <header class="bg-dark text-white py-3">
         <div class="container">
             <nav class="navbar navbar-expand-lg navbar-dark">
-                <a class="navbar-brand fs-1 fw-bold me-auto" href="#">BestViders</a>
+                <div class="d-flex flex-column align-items-start">
+                    <a class="navbar-brand fs-1 fw-bold" href="#">BestViders</a>
+                    <h1 class="text-light fs-5 mt-1"><?= $_SESSION['user_name'] ?></h1>
+                </div>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
