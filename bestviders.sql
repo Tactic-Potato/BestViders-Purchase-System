@@ -409,12 +409,24 @@ CREATE PROCEDURE sp_RemoveEmployee(
     IN p_status INT
 )
 BEGIN
-    UPDATE provider
+    UPDATE employee
     SET status = p_status
     WHERE num = p_num;
 END$$
 
--- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+DELIMITER $$
+CREATE PROCEDURE sp_RehireEmployee(
+    IN p_num INT,
+    IN p_status INT
+)
+BEGIN
+    UPDATE employee
+    SET status = p_status
+    WHERE num = p_num;
+END$$
+
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 DELIMITER $$
 CREATE PROCEDURE sp_RehireProvider(
     IN p_num INT,
