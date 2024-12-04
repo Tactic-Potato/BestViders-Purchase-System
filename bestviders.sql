@@ -1,6 +1,6 @@
 DROP DATABASE IF EXISTS bestviders;
 CREATE DATABASE bestviders;
-
+USE bestviders;
 -- 1. Status Tables
 CREATE TABLE status_request (
     code VARCHAR(10) PRIMARY KEY,
@@ -190,17 +190,18 @@ CREATE TABLE request_provider (
 
 /* * * * * * * * * * * * * TRIGGERS * * * * * * * * * * * * */
 DELIMITER $$
+
 CREATE TRIGGER CreateUser
 AFTER INSERT ON employee
 FOR EACH ROW
 BEGIN
     DECLARE Username VARCHAR(100);
+    DECLARE UsernameExists INT;
     
     -- Generación del nombre de usuario
     SET Username = CONCAT(NEW.firstName, '.', NEW.lastName);
     
     -- Verificación de si el nombre de usuario ya existe
-    DECLARE UsernameExists INT;
     SET UsernameExists = (SELECT COUNT(*) FROM user WHERE username = Username);
     
     -- Si el nombre de usuario ya existe, agregar un sufijo numérico
@@ -210,9 +211,12 @@ BEGIN
     
     -- Insertar el nuevo usuario
     INSERT INTO user (num, username, password)
-    VALUES (NEW.num, Username, '1234567890');  -- Aquí usas la contraseña predeterminada que mencionaste
+    VALUES (NEW.num, Username, '1234567890');  -- Contraseña predeterminada
     
 END $$
+
+DELIMITER ;
+
 
 DELIMITER $$
 CREATE TRIGGER RequestAutoAmount
