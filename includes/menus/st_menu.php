@@ -14,7 +14,7 @@
                 Reception
             </a>
             <ul class="dropdown-menu" aria-labelledby="employeesDropdown">
-                <li><a class="dropdown-item" href="receptions/Wreception.php">History Receptions</a></li>
+                <li><a class="dropdown-item" href="receptions/WReception.php">History Receptions</a></li>
                 <li><a class="dropdown-item" href="receptions/createReception.php">Add New Reception</a></li>
             </ul>
 
