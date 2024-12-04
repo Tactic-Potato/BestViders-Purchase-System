@@ -171,11 +171,13 @@ CREATE TABLE raw_provider (
 -- 15. Trouble
 CREATE TABLE trouble (
     num INT PRIMARY KEY AUTO_INCREMENT,
+    troubleNum int,
     troubleDate DATE DEFAULT (CURRENT_DATE),
     description TEXT,
     provider INT,
     FOREIGN KEY (provider) REFERENCES provider(num)
 );
+
 
 CREATE TABLE request_provider (
     request INT,
@@ -375,6 +377,18 @@ BEGIN
     UPDATE request
     SET status = 'COMP'
     WHERE num = NEW.request;
+END$$
+
+DELIMITER $$
+CREATE TRIGGER SetProviderNum
+BEFORE INSERT ON trouble
+FOR EACH ROW
+BEGIN
+    DECLARE next_troubleNum INT;
+    SELECT COALESCE(MAX(troubleNum), 0) + 1 INTO next_troubleNum
+    FROM trouble
+    WHERE provider = NEW.provider;
+    SET NEW.troubleNum = next_troubleNum;
 END$$
 
 /********************** PROCEDURES ***********************/
@@ -726,3 +740,9 @@ INSERT INTO budget (code, initialAmount, budgetRemain, budgetMonth, budgetYear, 
 ('BPA2-1', 25000.00, 25000.00, MONTH(CURRENT_DATE), YEAR(CURRENT_DATE), 'PA2'),
 ('BPA3-1', 25000.00, 25000.00, MONTH(CURRENT_DATE), YEAR(CURRENT_DATE), 'PA3');
 
+
+--Trouble
+
+INSERT INTO trouble (description, provider) VALUES ('Problema con entrega', 1);
+INSERT INTO trouble (description, provider) VALUES ('Producto defectuoso', 2);
+INSERT INTO trouble (description, provider) VALUES ('Retraso en entrega', 1);
