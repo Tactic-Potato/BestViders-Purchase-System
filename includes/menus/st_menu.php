@@ -7,9 +7,9 @@
                 Providers
             </a>
             <ul class="dropdown-menu" aria-labelledby="providersDropdown">
-                <li><a class="dropdown-item" href="provider/WProvider.php">Check All Providers</a></li>
-                <li><a class="dropdown-item" href="provider/WProviderRM.php">Check Removed Providers</a></li>
-                <li><a class="dropdown-item" href="provider/WAssocProvider.php">Check Associted Providers</a></li>
+                <li><a class="dropdown-item" href="reception/WProvider.php">Check All Providers</a></li>
+                <li><a class="dropdown-item" href="reception/WProviderRM.php">Check Removed Providers</a></li>
+                <li><a class="dropdown-item" href="reception/WAssocProvider.php">Check Associted Providers</a></li>
             </ul>
         </li>
         

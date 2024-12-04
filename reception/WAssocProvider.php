@@ -1,8 +1,3 @@
-<?php
-session_start();
-$role = $_SESSION['role'];
-?>
-
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap5.min.css" rel="stylesheet">
 
@@ -63,7 +58,6 @@ body {
     background-color: rgba(0, 0, 0, 0.02);
 }
 
-/* Custom DataTables Styling */
 .dataTables_wrapper .dataTables_length select {
     border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 6px;
@@ -127,9 +121,10 @@ body {
             </thead>
             <tbody>
                 <?php 
+                session_start();
                 include "../includes/config/conn.php";
                 $db = connect();
-                $query = mysqli_query($db, "SELECT * FROM vw_provider");
+                $query = mysqli_query($db, "SELECT * FROM vw_provider_assoc");
                 while ($result = mysqli_fetch_array($query)){ ?>
                     <tr>
                         <td><?= htmlspecialchars($result['num']) ?></td>
@@ -144,7 +139,6 @@ body {
         </table>
     </div> 
 </div>
-
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

@@ -1,11 +1,9 @@
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap5.min.css" rel="stylesheet">
 <?php
 session_start();
 $role = $_SESSION['role'];
 ?>
-
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap5.min.css" rel="stylesheet">
-
 <style>
 body {
     min-height: 100vh;
@@ -121,7 +119,6 @@ body {
                     <th>Fiscal Name</th>
                     <th>Email</th>
                     <th>Phone Number</th>
-                    <th>Status</th>
                     <th>Materials</th>
                 </tr>
             </thead>
@@ -129,14 +126,13 @@ body {
                 <?php 
                 include "../includes/config/conn.php";
                 $db = connect();
-                $query = mysqli_query($db, "SELECT * FROM vw_provider");
+                $query = mysqli_query($db, "SELECT * FROM vw_provider_removed");
                 while ($result = mysqli_fetch_array($query)){ ?>
                     <tr>
                         <td><?= htmlspecialchars($result['num']) ?></td>
                         <td><?= htmlspecialchars($result['fiscalName']) ?></td>
                         <td><?= htmlspecialchars($result['email']) ?></td>
                         <td><?= htmlspecialchars($result['numTel']) ?></td>
-                        <td><?= htmlspecialchars($result['status']) == 1 ? 'Associated' : 'Not Associated'?></td>
                         <td><?= htmlspecialchars($result['materials']) ?></td>
                     </tr>
                 <?php } mysqli_close($db); ?>
@@ -144,7 +140,6 @@ body {
         </table>
     </div> 
 </div>
-
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
