@@ -226,7 +226,7 @@ if (!$result) {
 
         $('.approve-btn').click(function() {
             var orderId = $(this).data('order-id');
-            if (confirm('¿Estás seguro de que quieres aprobar esta orden?')) {
+            if (confirm('Are you sure you want to approve this order?')) {
                 $.post('', { order_id: orderId, action: 'approve' }, function() {
                     location.reload();
                 });
@@ -245,7 +245,7 @@ if (!$result) {
                     location.reload();
                 });
             } else {
-                alert('Por favor, ingrese un motivo para el rechazo.');
+                alert('Please enter a reason for the rejection.');
             }
         });
     });

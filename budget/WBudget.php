@@ -2,7 +2,6 @@
 include "../includes/config/conn.php";
 $db = connect();
 
-// Get unique months and years ordered by date
 $monthsQuery = "SELECT DISTINCT budgetMonth, budgetYear FROM budget ORDER BY budgetYear DESC, budgetMonth DESC";
 $monthsResult = mysqli_query($db, $monthsQuery);
 $months = [];
@@ -10,7 +9,6 @@ while ($row = mysqli_fetch_assoc($monthsResult)) {
     $months[] = $row;
 }
 
-// Get current month and year
 $currentMonth = date('n');
 $currentYear = date('Y');
 ?>

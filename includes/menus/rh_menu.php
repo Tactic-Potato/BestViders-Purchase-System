@@ -7,7 +7,7 @@
             </a>
             <ul class="dropdown-menu" aria-labelledby="ordersDropdown">
             <li><a class="dropdown-item" href="budget/createBudget.php">Add New Budget</a></li>
-            <li><a class="dropdown-item" href="budget/WBudget.php">See Budgets</a></li>
+            <li><a class="dropdown-item" href="budget/WBudget.php">Check Budgets</a></li>
             </ul>
         </li>
         <li class="nav-item dropdown">

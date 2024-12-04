@@ -123,6 +123,8 @@ body {
                     <th>Phone Number</th>
                     <th>Status</th>
                     <th>Materials</th>
+                    <th>Modify</th>
+                    <th>Remove</th>
                 </tr>
             </thead>
             <tbody>
@@ -138,6 +140,18 @@ body {
                         <td><?= htmlspecialchars($result['numTel']) ?></td>
                         <td><?= htmlspecialchars($result['status']) == 1 ? 'Associated' : 'Not Associated'?></td>
                         <td><?= htmlspecialchars($result['materials']) ?></td>
+                        <td>
+                            <?php if ($role === 'PR' && $result['status'] == 1): ?>
+                                <a href="updateProvider.php?num=<?=$result['num']?>">Modify</a>
+                            <?php endif; ?>
+                        </td>
+                        <td>
+                            <?php if ($role === 'PR' && $result['status'] == 1): ?>
+                                <a href="removeProvider.php?num=<?=$result['num']?>">Remove</a>
+                            <?php elseif ($role === 'PR' && $result['status'] == 0): ?>
+                                <a href="rehireProvider.php?num=<?=$result['num']?>">Re-Hire</a>
+                            <?php endif; ?>
+                        </td>
                     </tr>
                 <?php } mysqli_close($db); ?>
             </tbody>

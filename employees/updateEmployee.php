@@ -89,7 +89,7 @@ if (isset($_GET['num']) && !empty($_GET['num'])) {
     exit("Employee number not provided.");
 }
 
-// Llamar a la función para obtener la información del empleado
+
 $conn = connect();
 $infoEmployee = getEmployeeInfo($num);
 

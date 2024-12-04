@@ -1,12 +1,10 @@
 <?php
 if (isset($_GET['num'])) {
-    $orderNum = htmlspecialchars($_GET['num']); // Obtener el número de la orden
+    $orderNum = htmlspecialchars($_GET['num']); 
 
-    // Conexión a la base de datos
     include "../includes/config/conn.php";
     $db = connect();
 
-    // Consulta para obtener los detalles de la orden
     $query = mysqli_query($db, "SELECT * FROM vw_order WHERE num = '$orderNum'");
     $orderDetails = mysqli_fetch_assoc($query);
     mysqli_close($db);

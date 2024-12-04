@@ -123,8 +123,6 @@ function getReceptionInfo($num) {
 
 function getEmployeeInfo($num) {
     $db = connect();
-
-    // Preparar la consulta para evitar inyecciones SQL
     $query = "SELECT
                 e.num AS num,
                 CONCAT(
@@ -143,7 +141,7 @@ function getEmployeeInfo($num) {
               WHERE e.num = ?";
 
     $stmt = mysqli_prepare($db, $query);
-    mysqli_stmt_bind_param($stmt, "i", $num); // `i` para indicar que es un entero
+    mysqli_stmt_bind_param($stmt, "i", $num);
     mysqli_stmt_execute($stmt);
     $resultado = mysqli_stmt_get_result($stmt);
 
@@ -165,7 +163,7 @@ function getEmployeeInfo($num) {
         );
     }
 
-    // Cerrar la conexión para liberar recursos
+
     mysqli_close($db);
 
     return $infoEmployee;

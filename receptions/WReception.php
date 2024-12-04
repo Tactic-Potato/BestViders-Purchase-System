@@ -3,27 +3,29 @@ require '../includes/config/conn.php';
 $db = connect();
 
 // Define title after DB connection
-$pageTitle = "Request History";
+$pageTitle = "Reception History";
 
 // Pagination
 $items_per_page = 9;
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($page - 1) * $items_per_page;
 
-// Get total number of requests
-$total_query = "SELECT COUNT(*) as total FROM request";
+// Get total number of receptions
+$total_query = "SELECT COUNT(*) as total FROM reception";
 $total_result = mysqli_query($db, $total_query);
 $total_row = mysqli_fetch_assoc($total_result);
 $total_pages = ceil($total_row['total'] / $items_per_page);
 
-// Get requests with related information
-$query = "SELECT r.num as request_num, r.request_date, r.estimated_date, r.status,
-                 o.num as order_num, o.description as order_description,
-                 CONCAT(e.firstName, ' ', e.lastName) as employee_name
-          FROM request r
-          JOIN orders o ON r.order_num = o.num
+// Get receptions with related information
+$query = "SELECT r.num as reception_num, r.observations, r.receptionDate,
+                 req.num as request_num, req.request_date, req.estimated_date,
+                 CONCAT(e.firstName, ' ', e.lastName) as employee_name,
+                 CONCAT(req_e.firstName, ' ', req_e.lastName) as requester_name
+          FROM reception r
+          JOIN request req ON r.request = req.num
           JOIN employee e ON r.employee = e.num
-          ORDER BY r.request_date DESC
+          JOIN employee req_e ON req.employee = req_e.num
+          ORDER BY r.receptionDate DESC
           LIMIT ?, ?";
 
 // Use prepared statement
@@ -34,29 +36,31 @@ if ($stmt === false) {
 
 $stmt->bind_param("ii", $offset, $items_per_page);
 $stmt->execute();
-$requests = $stmt->get_result();
+$receptions = $stmt->get_result();
 
-// Handle AJAX request for request details
-if(isset($_GET['action']) && $_GET['action'] == 'get_details' && isset($_GET['request_num'])) {
-    $request_num = intval($_GET['request_num']);
+// Handle AJAX request for reception details
+if(isset($_GET['action']) && $_GET['action'] == 'get_details' && isset($_GET['reception_num'])) {
+    $reception_num = intval($_GET['reception_num']);
     
-    // Get detailed request information
-    $details_query = "SELECT r.num as request_num, r.request_date, r.estimated_date, r.status,
-                             o.num as order_num, o.description as order_description,
-                             CONCAT(e.firstName, ' ', e.lastName) as employee_name
-                      FROM request r
-                      JOIN orders o ON r.order_num = o.num
-                      JOIN employee e ON r.employee = e.num
-                      WHERE r.num = ?";
+    // Get detailed reception information
+    $details_query = "SELECT r.num as reception_num, r.observations, r.receptionDate,
+                            req.num as request_num, req.request_date, req.estimated_date,
+                            CONCAT(e.firstName, ' ', e.lastName) as employee_name,
+                            CONCAT(req_e.firstName, ' ', req_e.lastName) as requester_name
+                     FROM reception r
+                     JOIN request req ON r.request = req.num
+                     JOIN employee e ON r.employee = e.num
+                     JOIN employee req_e ON req.employee = req_e.num
+                     WHERE r.num = ?";
     
     $stmt = $db->prepare($details_query);
     if ($stmt === false) {
         die("Error preparing details statement: " . $db->error);
     }
-    $stmt->bind_param("i", $request_num);
+    $stmt->bind_param("i", $reception_num);
     $stmt->execute();
     $result = $stmt->get_result();
-    $request_data = $result->fetch_assoc();
+    $reception_data = $result->fetch_assoc();
     
     // Get materials
     $materials_query = "SELECT rm.*, m.name, m.code 
@@ -67,12 +71,17 @@ if(isset($_GET['action']) && $_GET['action'] == 'get_details' && isset($_GET['re
     if ($stmt === false) {
         die("Error preparing materials statement: " . $db->error);
     }
-    $stmt->bind_param("i", $request_num);
+    $stmt->bind_param("i", $reception_data['request_num']);
     $stmt->execute();
     $materials_result = $stmt->get_result();
     $materials = [];
     while($row = $materials_result->fetch_assoc()) {
-        $materials[] = $row;
+        $materials[] = [
+            'code' => $row['code'],
+            'name' => $row['name'],
+            'quantity' => $row['quantity'],
+            'amount' => $row['amount']
+        ];
     }
     
     // Get providers
@@ -84,16 +93,20 @@ if(isset($_GET['action']) && $_GET['action'] == 'get_details' && isset($_GET['re
     if ($stmt === false) {
         die("Error preparing providers statement: " . $db->error);
     }
-    $stmt->bind_param("i", $request_num);
+    $stmt->bind_param("i", $reception_data['request_num']);
     $stmt->execute();
     $providers_result = $stmt->get_result();
     $providers = [];
     while($row = $providers_result->fetch_assoc()) {
-        $providers[] = $row;
+        $providers[] = [
+            'name' => $row['name'],
+            'email' => $row['email'],
+            'phone' => $row['numTel']
+        ];
     }
     
     $response = [
-        'request' => $request_data,
+        'reception' => $reception_data,
         'materials' => $materials,
         'providers' => $providers
     ];
@@ -162,14 +175,14 @@ if(isset($_GET['action']) && $_GET['action'] == 'get_details' && isset($_GET['re
             text-align: center;
         }
 
-        .request-grid {
+        .reception-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 1.5rem;
             margin-bottom: 2rem;
         }
 
-        .request-card {
+        .reception-card {
             background: #fff;
             border-radius: 10px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -177,17 +190,17 @@ if(isset($_GET['action']) && $_GET['action'] == 'get_details' && isset($_GET['re
             transition: transform 0.3s ease;
         }
 
-        .request-card:hover {
+        .reception-card:hover {
             transform: translateY(-5px);
         }
 
-        .request-card h3 {
+        .reception-card h3 {
             color: #1a1a1a;
             font-size: 1.2rem;
             margin-bottom: 1rem;
         }
 
-        .request-info {
+        .reception-info {
             color: #666;
             font-size: 0.9rem;
             margin-bottom: 0.5rem;
@@ -275,13 +288,13 @@ if(isset($_GET['action']) && $_GET['action'] == 'get_details' && isset($_GET['re
         }
 
         @media (max-width: 992px) {
-            .request-grid {
+            .reception-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
         }
 
         @media (max-width: 768px) {
-            .request-grid {
+            .reception-grid {
                 grid-template-columns: 1fr;
             }
         }
@@ -294,37 +307,40 @@ if(isset($_GET['action']) && $_GET['action'] == 'get_details' && isset($_GET['re
             
             <h1 class="page-title"><?php echo $pageTitle; ?></h1>
             
-            <div class="request-grid">
+            <div class="reception-grid">
                 <?php 
-                if ($requests && $requests->num_rows > 0) {
-                    while($request = $requests->fetch_assoc()): 
+                if ($receptions && $receptions->num_rows > 0) {
+                    while($reception = $receptions->fetch_assoc()): 
                 ?>
-                    <div class="request-card">
-                        <h3>Request #<?php echo htmlspecialchars($request['request_num']); ?></h3>
-                        <div class="request-info">
-                            <strong>Order:</strong> #<?php echo htmlspecialchars($request['order_num']); ?>
+                    <div class="reception-card">
+                        <h3>Reception #<?php echo htmlspecialchars($reception['reception_num']); ?></h3>
+                        <div class="reception-info">
+                            <strong>Request:</strong> #<?php echo htmlspecialchars($reception['request_num']); ?>
                         </div>
-                        <div class="request-info">
-                            <strong>Requested by:</strong> <?php echo htmlspecialchars($request['employee_name']); ?>
+                        <div class="reception-info">
+                            <strong>Received by:</strong> <?php echo htmlspecialchars($reception['employee_name']); ?>
                         </div>
-                        <div class="request-info">
-                            <strong>Request Date:</strong> <?php echo date('Y-m-d', strtotime($request['request_date'])); ?>
+                        <div class="reception-info">
+                            <strong>Reception Date:</strong> <?php echo date('Y-m-d', strtotime($reception['receptionDate'])); ?>
+                        </div>
+                        <div class="reception-info">
+                            <strong>Request Date:</strong> <?php echo date('Y-m-d', strtotime($reception['request_date'])); ?>
                         </div>
                         <button class="view-details-btn" 
-                                onclick="viewRequestDetails(<?php echo $request['request_num']; ?>)">
+                                onclick="viewReceptionDetails(<?php echo $reception['reception_num']; ?>)">
                             View Details
                         </button>
                     </div>
                 <?php 
                     endwhile;
                 } else {
-                    echo '<p class="text-center">No requests found.</p>';
+                    echo '<p class="text-center">No receptions found.</p>';
                 }
                 ?>
             </div>
             
             <!-- Pagination -->
-            <nav aria-label="Request history pagination">
+            <nav aria-label="Reception history pagination">
                 <ul class="pagination">
                     <?php if($page > 1): ?>
                         <li class="page-item">
@@ -353,7 +369,7 @@ if(isset($_GET['action']) && $_GET['action'] == 'get_details' && isset($_GET['re
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="detailsModalLabel">Request Details</h5>
+                    <h5 class="modal-title" id="detailsModalLabel">Reception Details</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body" id="modalContent">
@@ -368,8 +384,8 @@ if(isset($_GET['action']) && $_GET['action'] == 'get_details' && isset($_GET['re
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        function viewRequestDetails(requestNum) {
-            fetch(`?action=get_details&request_num=${requestNum}`)
+        function viewReceptionDetails(receptionNum) {
+            fetch(`?action=get_details&reception_num=${receptionNum}`)
                 .then(response => response.json())
                 .then(data => {
                     const modalContent = document.getElementById('modalContent');
@@ -382,40 +398,44 @@ if(isset($_GET['action']) && $_GET['action'] == 'get_details' && isset($_GET['re
                     
                     let providersHtml = data.providers.map(p => 
                         `<div class="detail-item">
-                            <span class="detail-value">${p.name} (${p.email} - ${p.numTel})</span>
+                            <span class="detail-value">${p.name} (${p.email} - ${p.phone})</span>
                         </div>`
                     ).join('');
                     
                     modalContent.innerHTML = `
                         <div class="detail-section">
-                            <h4>Request Information</h4>
+                            <h4>Reception Information</h4>
                             <div class="detail-item">
-                                <span class="detail-label">Request Number:</span>
-                                <span class="detail-value">#${data.request.request_num}</span>
+                                <span class="detail-label">Reception Number:</span>
+                                <span class="detail-value">#${data.reception.reception_num}</span>
                             </div>
                             <div class="detail-item">
-                                <span class="detail-label">Request Date:</span>
-                                <span class="detail-value">${data.request.request_date}</span>
+                                <span class="detail-label">Reception Date:</span>
+                                <span class="detail-value">${data.reception.receptionDate}</span>
                             </div>
                             <div class="detail-item">
-                                <span class="detail-label">Estimated Date:</span>
-                                <span class="detail-value">${data.request.estimated_date}</span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="detail-label">Requested By:</span>
-                                <span class="detail-value">${data.request.employee_name}</span>
+                                <span class="detail-label">Received By:</span>
+                                <span class="detail-value">${data.reception.employee_name}</span>
                             </div>
                         </div>
                         
                         <div class="detail-section">
-                            <h4>Order Information</h4>
+                            <h4>Request Information</h4>
                             <div class="detail-item">
-                                <span class="detail-label">Order Number:</span>
-                                <span class="detail-value">#${data.request.order_num}</span>
+                                <span class="detail-label">Request Number:</span>
+                                <span class="detail-value">#${data.reception.request_num}</span>
                             </div>
                             <div class="detail-item">
-                                <span class="detail-label">Description:</span>
-                                <span class="detail-value">${data.request.order_description}</span>
+                                <span class="detail-label">Request Date:</span>
+                                <span class="detail-value">${data.reception.request_date}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Estimated Date:</span>
+                                <span class="detail-value">${data.reception.estimated_date}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Requested By:</span>
+                                <span class="detail-value">${data.reception.requester_name}</span>
                             </div>
                         </div>
                         
@@ -428,6 +448,13 @@ if(isset($_GET['action']) && $_GET['action'] == 'get_details' && isset($_GET['re
                             <h4>Providers</h4>
                             ${providersHtml}
                         </div>
+                        
+                        <div class="detail-section">
+                            <h4>Observations</h4>
+                            <div class="detail-item">
+                                <span class="detail-value">${data.reception.observations || 'No observations'}</span>
+                            </div>
+                        </div>
                     `;
                     
                     const modal = new bootstrap.Modal(document.getElementById('detailsModal'));
@@ -435,7 +462,7 @@ if(isset($_GET['action']) && $_GET['action'] == 'get_details' && isset($_GET['re
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('Error loading request details');
+                    alert('Error loading reception details');
                 });
         }
     </script>

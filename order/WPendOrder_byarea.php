@@ -145,19 +145,18 @@ body {
                                 </tr>
                             <?php } 
                         } else {
-                            // Si no hay resultados, mostramos un mensaje de advertencia
+                        
                             echo "<tr><td colspan='7'>No orders found for your area.</td></tr>";
                         }
                     } else {
-                        // Si no se encuentra el nombre del área en la base de datos
+          
                         echo "<tr><td colspan='7'>Error: Area not found.</td></tr>";
                     }
                 } else {
-                    // Si no se ha encontrado el área en la sesión, mostramos un mensaje de error
+
                     echo "<tr><td colspan='7'>Session error: User area not found.</td></tr>";
                 }
 
-                // Cerrar la conexión a la base de datos
                 mysqli_close($db);
                 ?>
             </tbody>

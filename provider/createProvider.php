@@ -14,6 +14,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $numTel = $_POST['numTel'];
         $materials = isset($_POST['materials']) ? $_POST['materials'] : [];
 
+        // Check for duplicate entries
+        $check_query = "SELECT * FROM provider WHERE fiscal_name = ? OR email = ? OR numTel = ?";
+        $check_stmt = $db->prepare($check_query);
+        $check_stmt->bind_param("sss", $fiscal_name, $email, $numTel);
+        $check_stmt->execute();
+        $check_result = $check_stmt->get_result();
+
+        if ($check_result->num_rows > 0) {
+            $duplicate_entry = $check_result->fetch_assoc();
+            $error_message = "";
+            if ($duplicate_entry['fiscal_name'] == $fiscal_name) {
+                $error_message = "A provider with this fiscal name already exists.";
+            } elseif ($duplicate_entry['email'] == $email) {
+                $error_message = "A provider with this email already exists.";
+            } elseif ($duplicate_entry['numTel'] == $numTel) {
+                $error_message = "A provider with this phone number already exists.";
+            }
+            echo json_encode(['success' => false, 'message' => $error_message]);
+            exit;
+        }
+
         $db->begin_transaction();
 
         try {
@@ -152,6 +173,43 @@ $materials = $db->query($query_materials);
     </div>
 </div>
 
+<!-- Success Modal -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="successModalLabel">Success</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Provider added successfully!
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="window.location.href='../index.php'">Return to Home</button>
+                <button type="button" class="btn btn-primary" onclick="resetForm()">Add Another Provider</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Error Modal -->
+<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="errorModalLabel">Error</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="errorModalBody">
+                An error occurred while adding the provider.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 document.getElementById('providerForm').addEventListener('submit', function(e) {
@@ -167,17 +225,35 @@ document.getElementById('providerForm').addEventListener('submit', function(e) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            alert(data.message);
-            location.href = '../index.php';
+            showSuccessModal();
         } else {
-            alert('Error: ' + data.message);
+            showErrorModal(data.message);
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('An error occurred. Please try again.');
+        showErrorModal('An error occurred. Please try again.');
     });
 });
+
+function showSuccessModal() {
+    const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+    successModal.show();
+}
+
+function showErrorModal(message) {
+    const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+    document.getElementById('errorModalBody').textContent = message;
+    errorModal.show();
+}
+
+function resetForm() {
+    document.getElementById('providerForm').reset();
+    bootstrap.Modal.getInstance(document.getElementById('successModal')).hide();
+}
 </script>
 </body>
 </html>
+<?php
+mysqli_close($db);
+?>

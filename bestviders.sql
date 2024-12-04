@@ -37,8 +37,8 @@ CREATE TABLE employee (
     lastName VARCHAR(100) NOT NULL,
     surname VARCHAR(100) NULL,
     status BOOLEAN DEFAULT TRUE,
-    numTel VARCHAR(20) NULL,
-    email VARCHAR(100) NULL,
+    numTel VARCHAR(20) NULL UNIQUE,
+    email VARCHAR(100) NULL UNIQUE,
     charge VARCHAR(10),
     area VARCHAR(10),
     FOREIGN KEY (charge) REFERENCES charge(code),
@@ -51,9 +51,9 @@ ADD FOREIGN KEY (manager) REFERENCES employee(num) ON DELETE SET NULL;
 -- 4. Provider
 CREATE TABLE provider (
     num INT PRIMARY KEY AUTO_INCREMENT,
-    fiscal_name VARCHAR(100) NOT NULL,
-    email VARCHAR(100) NULL,
-    numTel VARCHAR(20) NULL,
+    fiscal_name VARCHAR(100) NOT NULL UNIQUE,
+    email VARCHAR(100) NULL UNIQUE,
+    numTel VARCHAR(20) NULL UNIQUE,
     status BOOLEAN DEFAULT TRUE,
     motive VARCHAR(250) NULL
 );
@@ -190,18 +190,6 @@ CREATE TABLE request_provider (
 
 /* * * * * * * * * * * * * TRIGGERS * * * * * * * * * * * * */
 DELIMITER $$
-CREATE TRIGGER CreateUser
-AFTER INSERT ON employee
-FOR EACH ROW
-BEGIN
-    DECLARE Username VARCHAR(100);
-    SET Username = CONCAT(NEW.firstName, ' ', NEW.lastName, ' ', IFNULL(NEW.surname, ''));
-    INSERT INTO user (num, username, password)
-    VALUES (NEW.num, Username, '1234567890');
-END $$
-
-DELIMITER $$
-
 CREATE TRIGGER CreateUser
 AFTER INSERT ON employee
 FOR EACH ROW
@@ -477,6 +465,30 @@ BEGIN
         SELECT 'Error: A budget for this year, month, and area already exists' AS message;
     END IF;
 END$$
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+DELIMITER $$
+
+CREATE PROCEDURE sp_RemoveEmployee(
+    IN p_num INT,
+    IN p_status INT
+)
+BEGIN
+    UPDATE employee
+    SET status = p_status
+    WHERE num = p_num;
+END$$
+
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+DELIMITER $$
+CREATE PROCEDURE sp_RehireEmployee(
+    IN p_num INT,
+    IN p_status INT
+)
+BEGIN
+    UPDATE employee
+    SET status = p_status
+    WHERE num = p_num;
+END$$
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -
 /* * * * * * * * * * * * * VIEWS * * * * * * * * * * * * */
     CREATE VIEW vw_employee_user AS
@@ -728,9 +740,19 @@ INSERT INTO budget (code, initialAmount, budgetRemain, budgetMonth, budgetYear, 
 ('BPA2-1', 25000.00, 25000.00, MONTH(CURRENT_DATE), YEAR(CURRENT_DATE), 'PA2'),
 ('BPA3-1', 25000.00, 25000.00, MONTH(CURRENT_DATE), YEAR(CURRENT_DATE), 'PA3');
 
-
 --Trouble
 
 INSERT INTO trouble (description, provider) VALUES ('Problema con entrega', 1);
 INSERT INTO trouble (description, provider) VALUES ('Producto defectuoso', 2);
 INSERT INTO trouble (description, provider) VALUES ('Retraso en entrega', 1);
+
+/*DELIMITER $$
+CREATE TRIGGER CreateUser
+AFTER INSERT ON employee
+FOR EACH ROW
+BEGIN
+    DECLARE Username VARCHAR(100);
+    SET Username = CONCAT(NEW.firstName, ' ', NEW.lastName, ' ', IFNULL(NEW.surname, ''));
+    INSERT INTO user (num, username, password)
+    VALUES (NEW.num, Username, '1234567890');
+END $$*/

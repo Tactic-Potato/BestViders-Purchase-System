@@ -14,19 +14,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $area = $_POST['area'];
 
     $currentYear = date('Y');
-    
-    // Validación de año
+
     if ($budgetYear < $currentYear) {
-        $error_message = "El año del presupuesto no puede ser anterior al año actual.";
+        $error_message = "The budget year can not be before the current year.";
     } else {
         $currentDate = new DateTime();
         $budgetDate = new DateTime("$budgetYear-$budgetMonth-01");
 
         // Validación de fecha
         if ($budgetDate < $currentDate) {
-            $error_message = "La fecha seleccionada no puede ser anterior a la fecha actual.";
+            $error_message = "The selected date cannot be earlier than the current date.";
         } else {
-            // Verificar si el código de presupuesto ya existe
+    
             $code_check_query = "SELECT COUNT(*) FROM budget WHERE code = ?";
             $stmt = mysqli_prepare($db, $code_check_query);
             mysqli_stmt_bind_param($stmt, 's', $code);
@@ -36,9 +35,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             mysqli_stmt_close($stmt);
 
             if ($count > 0) {
-                $error_message = "El código del presupuesto ya existe. Por favor, ingrese otro código.";
+                $error_message = "The budget code already exists. Please enter another code.";
             } else {
-                // Verificar si ya existe un presupuesto para la misma área, año y mes
+               
                 $area_check_query = "SELECT COUNT(*) FROM budget WHERE budgetYear = ? AND budgetMonth = ? AND area = ?";
                 $stmt = mysqli_prepare($db, $area_check_query);
                 mysqli_stmt_bind_param($stmt, 'iis', $budgetYear, $budgetMonth, $area);
@@ -48,9 +47,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 mysqli_stmt_close($stmt);
 
                 if ($count > 0) {
-                    $error_message = "Ya existe un presupuesto para este mes, año y área. Por favor, verifique.";
+                    $error_message = "There is already a budget for this month, year and area. Please verify.";
                 } else {
-                    // Si todo está bien, insertar el presupuesto
+                   
                     $stmt = mysqli_prepare($db, "CALL Sp_RegistrarBudget(?, ?, ?, ?, ?)");
                     if (!$stmt) {
                         die('Error preparando la consulta: ' . mysqli_error($db));

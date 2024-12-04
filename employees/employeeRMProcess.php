@@ -7,7 +7,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $num = $_GET['num'] ?? null;
     $status = $_GET['status'] ?? null;
 
-    // Validar si los parámetros se recibieron correctamente
     if (!$num || !$status) {
         echo "Error: Missing 'num' or 'status' parameters.";
         exit;
@@ -16,7 +15,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $num = intval($num);
     $status = intval($status);
 
-    // Llamar al procedimiento almacenado
     $remove = "CALL sp_RemoveEmployee(?, ?)";
     $stmt = $conn->prepare($remove);
 

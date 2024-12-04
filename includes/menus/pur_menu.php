@@ -17,6 +17,7 @@
                 <li><a class="dropdown-item" href="order/WOrder_toAprove.php">Pending Orders</a></li>
                 <li><a class="dropdown-item" href="order/WOrder_aprov.php">Approved Orders</a></li>
                 <li><a class="dropdown-item" href="order/WOrder_reject.php">Reject Orders</a></li>
+                <li><a class="dropdown-item" href="order/WOrder_comp.php">Complete Orders</a></li>
             </ul>
         </li>
         </li>
@@ -37,7 +38,7 @@
                 <li><a class="dropdown-item" href="provider/createProvider.php">Add Provider</a></li>
                 <li><a class="dropdown-item" href="provider/WProvider.php">Check All Providers</a></li>
                 <li><a class="dropdown-item" href="provider/WProviderRM.php">Check Removed Providers</a></li>
-                <li><a class="dropdown-item" href="provider/WAssocProvider.php">Check Associted Providers</a></li>
+                <li><a class="dropdown-item" href="provider/WAssocProvider.php">Check Associated Providers</a></li>
             </ul>
         </li>
                 <!-- Logout Button -->
