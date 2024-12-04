@@ -417,6 +417,19 @@ BEGIN
 END$$
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
 DELIMITER $$
+
+CREATE PROCEDURE sp_RemoveEmployee(
+    IN p_num INT,
+    IN p_status INT
+)
+BEGIN
+    UPDATE provider
+    SET status = p_status
+    WHERE num = p_num;
+END$$
+
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+DELIMITER $$
 CREATE PROCEDURE sp_RehireProvider(
     IN p_num INT,
     IN p_status INT

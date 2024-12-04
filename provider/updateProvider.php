@@ -91,7 +91,7 @@
     if (!$infoProvider) {
         exit("Provider not found.");
     }
-    ?>
+    ?> 
 
     <div class="card-container">
         <a href="../index.php" class="return-btn">
