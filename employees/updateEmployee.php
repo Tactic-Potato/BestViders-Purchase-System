@@ -78,54 +78,57 @@
         }
     </style>
 </head>
-    <?php
-    include "../includes/config/conn.php";
-    include "../includes/config/functions.php";
-    $query_employee = "select num, fiscal_name from employee";
-    $conn = connect(); 
+<?php
+include "../includes/config/conn.php";
+include "../includes/config/functions.php";
 
-    $num = $_REQUEST['num'];
+// Validar la recepción del parámetro `num`
+if (isset($_GET['num']) && !empty($_GET['num'])) {
+    $num = intval($_GET['num']); // Asegúrate de convertirlo a un entero para mayor seguridad
+} else {
+    exit("Employee number not provided.");
+}
 
-    $infoEmployee = geEmployeeInfo($num);
+// Llamar a la función para obtener la información del empleado
+$conn = connect();
+$infoEmployee = getEmployeeInfo($num);
 
-    if (!$infoEmployee) {
-        exit("Employee not found.");
-    }
-    ?>
+if (!$infoEmployee) {
+    exit("Employee not found.");
+}
+?>
 
-    <div class="card-container">
-        <a href="../index.php" class="return-btn">
-            <i class="fas fa-arrow-left me-2"></i>Return
-        </a>
-        <div class="form-card">
-            <form action="employeeUProcess.php" method="POST">
-                <h2 class="mb-4">Modify Employee</h2>
+<div class="card-container">
+    <a href="../index.php" class="return-btn">
+        <i class="fas fa-arrow-left me-2"></i>Return
+    </a>
+    <div class="form-card">
+        <form action="employeeUProcess.php" method="POST">
+            <h2 class="mb-4">Modify Employee</h2>
 
-                <div class="form-group">
-                    <label for="num">Employee Number</label>
-                    <input type="number" name="num" id="num" class="form-control" value="<?=$infoEmployee['num']?>" readonly>
-                </div>
+            <div class="form-group">
+                <label for="num">Employee Number</label>
+                <input type="number" name="num" id="num" class="form-control" value="<?= htmlspecialchars($infoEmployee['num']) ?>" readonly>
+            </div>
 
-                <div class="form-group">
-                    <label for="fiscalName">Employee Name</label>
-                    <input type="text" name="fiscalName" id="fiscalName" class="form-control" value="<?=$infoEmployee['']?>" readonly>
-                </div>
+            <div class="form-group">
+                <label for="fiscalName">Employee Name</label>
+                <input type="text" name="fiscalName" id="fiscalName" class="form-control" value="<?= htmlspecialchars($infoEmployee['name']) ?>" readonly>
+            </div>
 
-                <div class="form-group">
-                    <label for="numTel">Phone Number</label>
-                    <input type="text" name="numTel" id="numTel" class="form-control" placeholder="<?=$infoEmployee['numTel']?>">
-                </div>
+            <div class="form-group">
+                <label for="numTel">Phone Number</label>
+                <input type="text" name="numTel" id="numTel" class="form-control" placeholder="<?= htmlspecialchars($infoEmployee['numTel']) ?>">
+            </div>
 
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" name="email" id="email" class="form-control" placeholder="<?=$infoProvider['email']?>">
-                </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" name="email" id="email" class="form-control" placeholder="<?= htmlspecialchars($infoEmployee['email']) ?>">
+            </div>
 
-                <div class="button-container mt-4">
-                    <button type="submit" class="button">MODIFY</button>
-                </div>
-            </form>
-        </div>
+            <div class="button-container mt-4">
+                <button type="submit" class="button">MODIFY</button>
+            </div>
+        </form>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</div>

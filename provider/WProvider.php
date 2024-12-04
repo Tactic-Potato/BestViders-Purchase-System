@@ -143,7 +143,7 @@ body {
                         <td>
                             <?php if ($role === 'PR' && $result['status'] == 1): ?>
                                 <a href="updateProvider.php?num=<?=$result['num']?>">Modify</a>
-                            <?php endif; ?>
+                            <?php endif; ?> 
                         </td>
                         <td>
                             <?php if ($role === 'PR' && $result['status'] == 1): ?>

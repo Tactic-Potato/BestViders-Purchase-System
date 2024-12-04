@@ -74,7 +74,7 @@ function getRequestInfo($requestNum){
 
 
 function getReceptionInfo($num) {
-
+    $db = connect();
     $query = "
         SELECT 
             r.num AS reception_num,
@@ -121,8 +121,11 @@ function getReceptionInfo($num) {
 }
 
 
-function getEmployeeInfo($num){
-	$query = "SELECT
+function getEmployeeInfo($num) {
+    $db = connect();
+
+    // Preparar la consulta para evitar inyecciones SQL
+    $query = "SELECT
                 e.num AS num,
                 CONCAT(
                     IFNULL(e.firstName, ''), ' ',
@@ -134,27 +137,38 @@ function getEmployeeInfo($num){
                 e.email AS email,
                 c.name AS charge,
                 a.name AS area
-            FROM employee AS e
-            INNER JOIN charge AS c ON e.charge = c.code
-            INNER JOIN area AS a ON e.area = a.code where num= ".$num;
-	$db = connect();
-    if(!$resultado = mysqli_query($db,$query)){
-		exit(mysqli_error($db));
+              FROM employee AS e
+              INNER JOIN charge AS c ON e.charge = c.code
+              INNER JOIN area AS a ON e.area = a.code
+              WHERE e.num = ?";
+
+    $stmt = mysqli_prepare($db, $query);
+    mysqli_stmt_bind_param($stmt, "i", $num); // `i` para indicar que es un entero
+    mysqli_stmt_execute($stmt);
+    $resultado = mysqli_stmt_get_result($stmt);
+
+    if (!$resultado) {
+        exit("Error en la consulta: " . mysqli_error($db));
     }
-	$infoEmployee = null;
-    
+
+    $infoEmployee = null;
     if (mysqli_num_rows($resultado) > 0) {
         $row = mysqli_fetch_assoc($resultado);
-        $infoEmpployee = array(
+        $infoEmployee = array(
             'num' => $row['num'],
-            ''
-
+            'name' => $row['name'],
+            'status' => $row['status'],
+            'numTel' => $row['numTel'],
+            'email' => $row['email'],
+            'charge' => $row['charge'],
+            'area' => $row['area']
         );
     }
-	return $infoEmployee;	
+
+    // Cerrar la conexión para liberar recursos
+    mysqli_close($db);
+
+    return $infoEmployee;
 }
-
-
-
 
 ?>
